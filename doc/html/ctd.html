@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>ctd &#8212; USEA-Payload documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="_static/nature.css?v=5788fb53" />
+    <script src="_static/documentation_options.js?v=8d563738"></script>
+    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="_static/Picto32x32.ico"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="emap" href="emap.html" />
+    <link rel="prev" title="system" href="modules.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="emap.html" title="emap"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="modules.html" title="system"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">USEA-Payload documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" accesskey="U">system</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">ctd</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="ctd">
+<h1>ctd<a class="headerlink" href="#ctd" title="Link to this heading">¶</a></h1>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This module provides a CTD survey task</p>
+</div>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p id="module-ctd">ctd.py</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="ctd.DataCtd">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ctd.</span></span><span class="sig-name descname"><span class="pre">DataCtd</span></span><a class="headerlink" href="#ctd.DataCtd" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ctd.DriverCtd">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ctd.</span></span><span class="sig-name descname"><span class="pre">DriverCtd</span></span><a class="headerlink" href="#ctd.DriverCtd" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>DriverCtd class</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="ctd.DriverCtd.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ctd.DriverCtd.run" title="Link to this definition">¶</a></dt>
+<dd><p>Working task</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ctd.DriverCtd.time_before_activity">
+<span class="sig-name descname"><span class="pre">time_before_activity</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#ctd.DriverCtd.time_before_activity" title="Link to this definition">¶</a></dt>
+<dd><p>Get the time remaining before the next task activity</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><p>float: time remaining before the next task activity (sec)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ctd.manager">
+<span class="sig-prename descclassname"><span class="pre">ctd.</span></span><span class="sig-name descname"><span class="pre">manager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ctd.manager" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/logo_nke.png" alt="Logo"/>
+            </a></p>
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">ctd</a><ul>
+<li><a class="reference internal" href="#ctd.DataCtd"><code class="docutils literal notranslate"><span class="pre">DataCtd</span></code></a></li>
+<li><a class="reference internal" href="#ctd.DriverCtd"><code class="docutils literal notranslate"><span class="pre">DriverCtd</span></code></a><ul>
+<li><a class="reference internal" href="#ctd.DriverCtd.run"><code class="docutils literal notranslate"><span class="pre">DriverCtd.run()</span></code></a></li>
+<li><a class="reference internal" href="#ctd.DriverCtd.time_before_activity"><code class="docutils literal notranslate"><span class="pre">DriverCtd.time_before_activity()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#ctd.manager"><code class="docutils literal notranslate"><span class="pre">manager()</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="emap.html" title="emap"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="modules.html" title="system"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">USEA-Payload documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" >system</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">ctd</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2023, nke Instrumentation.
+    </div>
+  </body>
+</html>

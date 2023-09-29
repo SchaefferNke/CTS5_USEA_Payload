@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>timer_lib &#8212; USEA-Payload documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="_static/nature.css?v=5788fb53" />
+    <script src="_static/documentation_options.js?v=8d563738"></script>
+    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="_static/Picto32x32.ico"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="trace_lib" href="trace_lib.html" />
+    <link rel="prev" title="share_lib" href="share_lib.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="trace_lib.html" title="trace_lib"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="share_lib.html" title="share_lib"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">USEA-Payload documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" accesskey="U">system</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">timer_lib</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="timer-lib">
+<h1>timer_lib<a class="headerlink" href="#timer-lib" title="Link to this heading">¶</a></h1>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This module provides various time-related functions</p>
+</div>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p id="module-timer_lib">timer_lib.py</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="timer_lib.DriverTimer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">timer_lib.</span></span><span class="sig-name descname"><span class="pre">DriverTimer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#timer_lib.DriverTimer" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>DriverTimer class</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="timer_lib.DriverTimer.is_tick">
+<span class="sig-name descname"><span class="pre">is_tick</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#timer_lib.DriverTimer.is_tick" title="Link to this definition">¶</a></dt>
+<dd><p>Test if the specified timer period has elapsed</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><p>bool: True if the time period has elapsed</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="timer_lib.DriverTimer.remaining_time">
+<span class="sig-name descname"><span class="pre">remaining_time</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#timer_lib.DriverTimer.remaining_time" title="Link to this definition">¶</a></dt>
+<dd><p>Get the remaining time before next timer tick</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><p>float: remaining time (sec)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="timer_lib.DriverTimer.start_base_time">
+<span class="sig-name descname"><span class="pre">start_base_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">period</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#timer_lib.DriverTimer.start_base_time" title="Link to this definition">¶</a></dt>
+<dd><p>Start a timer with a specified base time (sec)</p>
+<dl class="simple">
+<dt>Parameters:</dt><dd><p>period (float): base time (sec)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="timer_lib.DriverTimer.start_one_shot">
+<span class="sig-name descname"><span class="pre">start_one_shot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">interval</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#timer_lib.DriverTimer.start_one_shot" title="Link to this definition">¶</a></dt>
+<dd><p>Start a one-shot timer for a specified interval of time (sec)</p>
+<dl class="simple">
+<dt>Parameters:</dt><dd><p>interval (float): interval of time (sec)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="timer_lib.DriverTimer.stop">
+<span class="sig-name descname"><span class="pre">stop</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#timer_lib.DriverTimer.stop" title="Link to this definition">¶</a></dt>
+<dd><p>Stop a timer</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="timer_lib.DriverTimer.wait_until_date">
+<span class="sig-name descname"><span class="pre">wait_until_date</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">date</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#timer_lib.DriverTimer.wait_until_date" title="Link to this definition">¶</a></dt>
+<dd><p>Wait until an exact date/time</p>
+<dl class="simple">
+<dt>Parameters:</dt><dd><p>date (str): date and time in “YY-MM-DD HH:MM:SS” format</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="timer_lib.DriverTimer.wait_until_duration">
+<span class="sig-name descname"><span class="pre">wait_until_duration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">duration</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#timer_lib.DriverTimer.wait_until_duration" title="Link to this definition">¶</a></dt>
+<dd><p>Wait for a specified interval of time (sec)</p>
+<dl class="simple">
+<dt>Parameters:</dt><dd><p>duration (float): time duration (sec)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="timer_lib.DriverTimer.wait_until_synchro">
+<span class="sig-name descname"><span class="pre">wait_until_synchro</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#timer_lib.DriverTimer.wait_until_synchro" title="Link to this definition">¶</a></dt>
+<dd><p>Wait until the current second to change</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/logo_nke.png" alt="Logo"/>
+            </a></p>
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">timer_lib</a><ul>
+<li><a class="reference internal" href="#timer_lib.DriverTimer"><code class="docutils literal notranslate"><span class="pre">DriverTimer</span></code></a><ul>
+<li><a class="reference internal" href="#timer_lib.DriverTimer.is_tick"><code class="docutils literal notranslate"><span class="pre">DriverTimer.is_tick()</span></code></a></li>
+<li><a class="reference internal" href="#timer_lib.DriverTimer.remaining_time"><code class="docutils literal notranslate"><span class="pre">DriverTimer.remaining_time()</span></code></a></li>
+<li><a class="reference internal" href="#timer_lib.DriverTimer.start_base_time"><code class="docutils literal notranslate"><span class="pre">DriverTimer.start_base_time()</span></code></a></li>
+<li><a class="reference internal" href="#timer_lib.DriverTimer.start_one_shot"><code class="docutils literal notranslate"><span class="pre">DriverTimer.start_one_shot()</span></code></a></li>
+<li><a class="reference internal" href="#timer_lib.DriverTimer.stop"><code class="docutils literal notranslate"><span class="pre">DriverTimer.stop()</span></code></a></li>
+<li><a class="reference internal" href="#timer_lib.DriverTimer.wait_until_date"><code class="docutils literal notranslate"><span class="pre">DriverTimer.wait_until_date()</span></code></a></li>
+<li><a class="reference internal" href="#timer_lib.DriverTimer.wait_until_duration"><code class="docutils literal notranslate"><span class="pre">DriverTimer.wait_until_duration()</span></code></a></li>
+<li><a class="reference internal" href="#timer_lib.DriverTimer.wait_until_synchro"><code class="docutils literal notranslate"><span class="pre">DriverTimer.wait_until_synchro()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="trace_lib.html" title="trace_lib"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="share_lib.html" title="share_lib"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">USEA-Payload documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" >system</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">timer_lib</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2023, nke Instrumentation.
+    </div>
+  </body>
+</html>

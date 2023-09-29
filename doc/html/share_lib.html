@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>share_lib &#8212; USEA-Payload documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="_static/nature.css?v=5788fb53" />
+    <script src="_static/documentation_options.js?v=8d563738"></script>
+    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="_static/Picto32x32.ico"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="timer_lib" href="timer_lib.html" />
+    <link rel="prev" title="serial_lib" href="serial_lib.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="timer_lib.html" title="timer_lib"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="serial_lib.html" title="serial_lib"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">USEA-Payload documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" accesskey="U">system</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">share_lib</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="share-lib">
+<h1>share_lib<a class="headerlink" href="#share-lib" title="Link to this heading">¶</a></h1>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This module provides various functions to share resources between tasks</p>
+</div>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p id="module-share_lib">share_lib.py</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="share_lib.DataFile">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">share_lib.</span></span><span class="sig-name descname"><span class="pre">DataFile</span></span><a class="headerlink" href="#share_lib.DataFile" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="share_lib.DataShare">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">share_lib.</span></span><span class="sig-name descname"><span class="pre">DataShare</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#share_lib.DataShare" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>DataShare class</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="share_lib.DataShare.read">
+<span class="sig-name descname"><span class="pre">read</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">object</span></span></span><a class="headerlink" href="#share_lib.DataShare.read" title="Link to this definition">¶</a></dt>
+<dd><p>Read a data</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><p>object: data object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="share_lib.DataShare.var">
+<span class="sig-name descname"><span class="pre">var</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;share_lib.DataValue</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#share_lib.DataShare.var" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="share_lib.DataShare.write">
+<span class="sig-name descname"><span class="pre">write</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#share_lib.DataShare.write" title="Link to this definition">¶</a></dt>
+<dd><p>Write a data</p>
+<dl class="simple">
+<dt>Parameters:</dt><dd><p>value (object): data object</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="share_lib.DataValue">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">share_lib.</span></span><span class="sig-name descname"><span class="pre">DataValue</span></span><a class="headerlink" href="#share_lib.DataValue" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="share_lib.EventShare">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">share_lib.</span></span><span class="sig-name descname"><span class="pre">EventShare</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#share_lib.EventShare" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>EventShare class</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="share_lib.EventShare.is_set">
+<span class="sig-name descname"><span class="pre">is_set</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#share_lib.EventShare.is_set" title="Link to this definition">¶</a></dt>
+<dd><p>Test the event state</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><p>bool: True if the event is set</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="share_lib.EventShare.reset">
+<span class="sig-name descname"><span class="pre">reset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#share_lib.EventShare.reset" title="Link to this definition">¶</a></dt>
+<dd><p>Clear the event</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="share_lib.EventShare.set">
+<span class="sig-name descname"><span class="pre">set</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#share_lib.EventShare.set" title="Link to this definition">¶</a></dt>
+<dd><p>Set the event</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="share_lib.EventShare.wait">
+<span class="sig-name descname"><span class="pre">wait</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#share_lib.EventShare.wait" title="Link to this definition">¶</a></dt>
+<dd><p>Wait until the event is set</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="share_lib.FileShare">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">share_lib.</span></span><span class="sig-name descname"><span class="pre">FileShare</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#share_lib.FileShare" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>FileShare class</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="share_lib.FileShare.read">
+<span class="sig-name descname"><span class="pre">read</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#share_lib.FileShare.read" title="Link to this definition">¶</a></dt>
+<dd><p>Read from file</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><p>str: content string without timestamp</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="share_lib.FileShare.write">
+<span class="sig-name descname"><span class="pre">write</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#share_lib.FileShare.write" title="Link to this definition">¶</a></dt>
+<dd><p>Write into file</p>
+<dl class="simple">
+<dt>Parameters:</dt><dd><p>info (str): string to write</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="share_lib.get_navigation">
+<span class="sig-prename descclassname"><span class="pre">share_lib.</span></span><span class="sig-name descname"><span class="pre">get_navigation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#share_lib.get_navigation" title="Link to this definition">¶</a></dt>
+<dd><p>Read navigation identification string</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><p>str: navigation identification string in “XX” format</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="share_lib.get_pressure">
+<span class="sig-prename descclassname"><span class="pre">share_lib.</span></span><span class="sig-name descname"><span class="pre">get_pressure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#share_lib.get_pressure" title="Link to this definition">¶</a></dt>
+<dd><p>Read last pressure value</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><p>float: pressure value (dbar)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="share_lib.get_profile">
+<span class="sig-prename descclassname"><span class="pre">share_lib.</span></span><span class="sig-name descname"><span class="pre">get_profile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#share_lib.get_profile" title="Link to this definition">¶</a></dt>
+<dd><p>Read profile identification string</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><p>str: profile identification string in “CCC_PP” format</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/logo_nke.png" alt="Logo"/>
+            </a></p>
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">share_lib</a><ul>
+<li><a class="reference internal" href="#share_lib.DataFile"><code class="docutils literal notranslate"><span class="pre">DataFile</span></code></a></li>
+<li><a class="reference internal" href="#share_lib.DataShare"><code class="docutils literal notranslate"><span class="pre">DataShare</span></code></a><ul>
+<li><a class="reference internal" href="#share_lib.DataShare.read"><code class="docutils literal notranslate"><span class="pre">DataShare.read()</span></code></a></li>
+<li><a class="reference internal" href="#share_lib.DataShare.var"><code class="docutils literal notranslate"><span class="pre">DataShare.var</span></code></a></li>
+<li><a class="reference internal" href="#share_lib.DataShare.write"><code class="docutils literal notranslate"><span class="pre">DataShare.write()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#share_lib.DataValue"><code class="docutils literal notranslate"><span class="pre">DataValue</span></code></a></li>
+<li><a class="reference internal" href="#share_lib.EventShare"><code class="docutils literal notranslate"><span class="pre">EventShare</span></code></a><ul>
+<li><a class="reference internal" href="#share_lib.EventShare.is_set"><code class="docutils literal notranslate"><span class="pre">EventShare.is_set()</span></code></a></li>
+<li><a class="reference internal" href="#share_lib.EventShare.reset"><code class="docutils literal notranslate"><span class="pre">EventShare.reset()</span></code></a></li>
+<li><a class="reference internal" href="#share_lib.EventShare.set"><code class="docutils literal notranslate"><span class="pre">EventShare.set()</span></code></a></li>
+<li><a class="reference internal" href="#share_lib.EventShare.wait"><code class="docutils literal notranslate"><span class="pre">EventShare.wait()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#share_lib.FileShare"><code class="docutils literal notranslate"><span class="pre">FileShare</span></code></a><ul>
+<li><a class="reference internal" href="#share_lib.FileShare.read"><code class="docutils literal notranslate"><span class="pre">FileShare.read()</span></code></a></li>
+<li><a class="reference internal" href="#share_lib.FileShare.write"><code class="docutils literal notranslate"><span class="pre">FileShare.write()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#share_lib.get_navigation"><code class="docutils literal notranslate"><span class="pre">get_navigation()</span></code></a></li>
+<li><a class="reference internal" href="#share_lib.get_pressure"><code class="docutils literal notranslate"><span class="pre">get_pressure()</span></code></a></li>
+<li><a class="reference internal" href="#share_lib.get_profile"><code class="docutils literal notranslate"><span class="pre">get_profile()</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="timer_lib.html" title="timer_lib"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="serial_lib.html" title="serial_lib"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">USEA-Payload documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" >system</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">share_lib</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2023, nke Instrumentation.
+    </div>
+  </body>
+</html>
