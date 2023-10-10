@@ -17,7 +17,13 @@ serial_locks = {}
 # Class definition
 class DriverSerial:
 	"""
-		DriverSerial class
+		DriverSerial class: serial port resource access for tasks
+
+		Attributes:
+			- name (str): name (eg: COM1)
+			- speed (int): baud rate (eg: 57600 bauds)
+			- size (int): read buffer size
+			- timeout (float): reading timeout (sec)
 		"""
 
 	# Create resource
@@ -37,7 +43,7 @@ class DriverSerial:
 			Open the serial port
 
 			Returns:
-				bool: True if the port is open
+				- bool: True if the port is open
 			"""
 		# Wait for resource
 		serial_locks[self.name].acquire()
@@ -70,7 +76,7 @@ class DriverSerial:
 			Get the number of bytes in the input buffer
 
 			Returns:
-				int: number of bytes in the reception buffer
+				- int: number of bytes in the reception buffer
 			"""
 		# Result
 		return self.serial.in_waiting
@@ -81,10 +87,10 @@ class DriverSerial:
 			Read size bytes from the serial port
 
 			Parameters:
-				size (int): number of bytes to read
+				- size (int): number of bytes to read
 
 			Returns:
-				int: bytes read from the serial port
+				- int: bytes read from the serial port
 			"""
 		# Result
 		return self.serial.read(size)
@@ -95,10 +101,10 @@ class DriverSerial:
 			Write the bytes data to the serial port
 
 			Parameters:
-				data: data to send
+				- data: data to send
 
 			Returns:
-				int: number of bytes written
+				- int: number of bytes written
 			"""
 		# Result
 		return self.serial.write(data)
@@ -109,10 +115,10 @@ class DriverSerial:
 			ASCII frame reception process
 
 			Parameters:
-				timeout (float): waiting time
+				- timeout (float): waiting time
 
 			Returns:
-				str: bytes read from the serial port
+				- str: bytes read from the serial port
 			"""
 		# Initialize
 		frame_rx = ""

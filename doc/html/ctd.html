@@ -54,16 +54,10 @@
 </div>
 <p id="module-ctd">ctd.py</p>
 <dl class="py class">
-<dt class="sig sig-object py" id="ctd.DataCtd">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ctd.</span></span><span class="sig-name descname"><span class="pre">DataCtd</span></span><a class="headerlink" href="#ctd.DataCtd" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-</dd></dl>
-
-<dl class="py class">
 <dt class="sig sig-object py" id="ctd.DriverCtd">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ctd.</span></span><span class="sig-name descname"><span class="pre">DriverCtd</span></span><a class="headerlink" href="#ctd.DriverCtd" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>DriverCtd class</p>
+<p>DriverCtd class: store and share CTD triplet</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="ctd.DriverCtd.run">
 <span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ctd.DriverCtd.run" title="Link to this definition">¶</a></dt>
@@ -75,11 +69,29 @@
 <span class="sig-name descname"><span class="pre">time_before_activity</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#ctd.DriverCtd.time_before_activity" title="Link to this definition">¶</a></dt>
 <dd><p>Get the time remaining before the next task activity</p>
 <dl class="simple">
-<dt>Returns:</dt><dd><p>float: time remaining before the next task activity (sec)</p>
+<dt>Returns:</dt><dd><ul class="simple">
+<li><p>float: time remaining before the next task activity (sec)</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
 
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ctd.DriverCtdContent">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ctd.</span></span><span class="sig-name descname"><span class="pre">DriverCtdContent</span></span><a class="headerlink" href="#ctd.DriverCtdContent" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>DataCtd class: CTD sample</p>
+<dl class="simple">
+<dt>Attributes:</dt><dd><ul class="simple">
+<li><p>timestamp (float): timestamp (Unix Epoch)</p></li>
+<li><p>pressure (float): pressure value (dbar)</p></li>
+<li><p>temperature (float): temperature value (degC)</p></li>
+<li><p>salinity (float): salinity value (PSU)</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
@@ -96,19 +108,16 @@
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-            <p class="logo"><a href="index.html">
-              <img class="logo" src="_static/logo_nke.png" alt="Logo"/>
-            </a></p>
   <div>
     <h3><a href="index.html">Table of Contents</a></h3>
     <ul>
 <li><a class="reference internal" href="#">ctd</a><ul>
-<li><a class="reference internal" href="#ctd.DataCtd"><code class="docutils literal notranslate"><span class="pre">DataCtd</span></code></a></li>
 <li><a class="reference internal" href="#ctd.DriverCtd"><code class="docutils literal notranslate"><span class="pre">DriverCtd</span></code></a><ul>
 <li><a class="reference internal" href="#ctd.DriverCtd.run"><code class="docutils literal notranslate"><span class="pre">DriverCtd.run()</span></code></a></li>
 <li><a class="reference internal" href="#ctd.DriverCtd.time_before_activity"><code class="docutils literal notranslate"><span class="pre">DriverCtd.time_before_activity()</span></code></a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#ctd.DriverCtdContent"><code class="docutils literal notranslate"><span class="pre">DriverCtdContent</span></code></a></li>
 <li><a class="reference internal" href="#ctd.manager"><code class="docutils literal notranslate"><span class="pre">manager()</span></code></a></li>
 </ul>
 </li>

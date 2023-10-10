@@ -47,12 +47,12 @@
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="ctd.html">ctd</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="ctd.html#ctd.DataCtd"><code class="docutils literal notranslate"><span class="pre">DataCtd</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="ctd.html#ctd.DriverCtd"><code class="docutils literal notranslate"><span class="pre">DriverCtd</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="ctd.html#ctd.DriverCtd.run"><code class="docutils literal notranslate"><span class="pre">DriverCtd.run()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="ctd.html#ctd.DriverCtd.time_before_activity"><code class="docutils literal notranslate"><span class="pre">DriverCtd.time_before_activity()</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="ctd.html#ctd.DriverCtdContent"><code class="docutils literal notranslate"><span class="pre">DriverCtdContent</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="ctd.html#ctd.manager"><code class="docutils literal notranslate"><span class="pre">manager()</span></code></a></li>
 </ul>
 </li>
@@ -91,14 +91,13 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="share_lib.html">share_lib</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="share_lib.html#share_lib.DataFile"><code class="docutils literal notranslate"><span class="pre">DataFile</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="share_lib.html#share_lib.DataShare"><code class="docutils literal notranslate"><span class="pre">DataShare</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="share_lib.html#share_lib.DataShare.read"><code class="docutils literal notranslate"><span class="pre">DataShare.read()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="share_lib.html#share_lib.DataShare.var"><code class="docutils literal notranslate"><span class="pre">DataShare.var</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="share_lib.html#share_lib.DataShare.variable"><code class="docutils literal notranslate"><span class="pre">DataShare.variable</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="share_lib.html#share_lib.DataShare.write"><code class="docutils literal notranslate"><span class="pre">DataShare.write()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="share_lib.html#share_lib.DataValue"><code class="docutils literal notranslate"><span class="pre">DataValue</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="share_lib.html#share_lib.DataShareContent"><code class="docutils literal notranslate"><span class="pre">DataShareContent</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="share_lib.html#share_lib.EventShare"><code class="docutils literal notranslate"><span class="pre">EventShare</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="share_lib.html#share_lib.EventShare.is_set"><code class="docutils literal notranslate"><span class="pre">EventShare.is_set()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="share_lib.html#share_lib.EventShare.reset"><code class="docutils literal notranslate"><span class="pre">EventShare.reset()</span></code></a></li>
@@ -111,6 +110,7 @@
 <li class="toctree-l3"><a class="reference internal" href="share_lib.html#share_lib.FileShare.write"><code class="docutils literal notranslate"><span class="pre">FileShare.write()</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="share_lib.html#share_lib.FileShareContent"><code class="docutils literal notranslate"><span class="pre">FileShareContent</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="share_lib.html#share_lib.get_navigation"><code class="docutils literal notranslate"><span class="pre">get_navigation()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="share_lib.html#share_lib.get_pressure"><code class="docutils literal notranslate"><span class="pre">get_pressure()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="share_lib.html#share_lib.get_profile"><code class="docutils literal notranslate"><span class="pre">get_profile()</span></code></a></li>
@@ -145,9 +145,6 @@
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-            <p class="logo"><a href="index.html">
-              <img class="logo" src="_static/logo_nke.png" alt="Logo"/>
-            </a></p>
 <div id="searchbox" style="display: none" role="search">
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">

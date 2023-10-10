@@ -57,13 +57,26 @@
 <dt class="sig sig-object py" id="timer_lib.DriverTimer">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">timer_lib.</span></span><span class="sig-name descname"><span class="pre">DriverTimer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#timer_lib.DriverTimer" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>DriverTimer class</p>
+<p>DriverTimer class: software timer for tasks</p>
+<dl class="simple">
+<dt>Attributes:</dt><dd><ul class="simple">
+<li><p>name (str): timer name</p></li>
+</ul>
+</dd>
+<dt>Operations:</dt><dd><ul class="simple">
+<li><p>One-shot: once started, the timer will set its flag only once. It must be re-started after each count</p></li>
+<li><p>Base-time: once started, the timer will set its flag after each base time completion. It re-starts counting automatically</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="timer_lib.DriverTimer.is_tick">
 <span class="sig-name descname"><span class="pre">is_tick</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#timer_lib.DriverTimer.is_tick" title="Link to this definition">¶</a></dt>
 <dd><p>Test if the specified timer period has elapsed</p>
 <dl class="simple">
-<dt>Returns:</dt><dd><p>bool: True if the time period has elapsed</p>
+<dt>Returns:</dt><dd><ul class="simple">
+<li><p>bool: True if the time period has elapsed</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -73,7 +86,9 @@
 <span class="sig-name descname"><span class="pre">remaining_time</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#timer_lib.DriverTimer.remaining_time" title="Link to this definition">¶</a></dt>
 <dd><p>Get the remaining time before next timer tick</p>
 <dl class="simple">
-<dt>Returns:</dt><dd><p>float: remaining time (sec)</p>
+<dt>Returns:</dt><dd><ul class="simple">
+<li><p>float: remaining time (sec)</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -83,7 +98,9 @@
 <span class="sig-name descname"><span class="pre">start_base_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">period</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#timer_lib.DriverTimer.start_base_time" title="Link to this definition">¶</a></dt>
 <dd><p>Start a timer with a specified base time (sec)</p>
 <dl class="simple">
-<dt>Parameters:</dt><dd><p>period (float): base time (sec)</p>
+<dt>Parameters:</dt><dd><ul class="simple">
+<li><p>period (float): base time (sec)</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -93,7 +110,9 @@
 <span class="sig-name descname"><span class="pre">start_one_shot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">interval</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#timer_lib.DriverTimer.start_one_shot" title="Link to this definition">¶</a></dt>
 <dd><p>Start a one-shot timer for a specified interval of time (sec)</p>
 <dl class="simple">
-<dt>Parameters:</dt><dd><p>interval (float): interval of time (sec)</p>
+<dt>Parameters:</dt><dd><ul class="simple">
+<li><p>interval (float): interval of time (sec)</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -109,7 +128,9 @@
 <span class="sig-name descname"><span class="pre">wait_until_date</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">date</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#timer_lib.DriverTimer.wait_until_date" title="Link to this definition">¶</a></dt>
 <dd><p>Wait until an exact date/time</p>
 <dl class="simple">
-<dt>Parameters:</dt><dd><p>date (str): date and time in “YY-MM-DD HH:MM:SS” format</p>
+<dt>Parameters:</dt><dd><ul class="simple">
+<li><p>date (str): date and time (“YY-MM-DD HH:MM:SS” format)</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -119,7 +140,9 @@
 <span class="sig-name descname"><span class="pre">wait_until_duration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">duration</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#timer_lib.DriverTimer.wait_until_duration" title="Link to this definition">¶</a></dt>
 <dd><p>Wait for a specified interval of time (sec)</p>
 <dl class="simple">
-<dt>Parameters:</dt><dd><p>duration (float): time duration (sec)</p>
+<dt>Parameters:</dt><dd><ul class="simple">
+<li><p>duration (float): time duration (sec)</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -141,9 +164,6 @@
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-            <p class="logo"><a href="index.html">
-              <img class="logo" src="_static/logo_nke.png" alt="Logo"/>
-            </a></p>
   <div>
     <h3><a href="index.html">Table of Contents</a></h3>
     <ul>

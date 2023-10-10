@@ -1,3 +1,7 @@
+.. image:: ../image/logo_nke.png
+   :align: center
+   :width: 250px
+
 USEA-Payload
 ============
 
@@ -20,7 +24,6 @@ API modules
 
 .. toctree::
    :maxdepth: 2
-   :caption: USEA-Payload API comes with the following system resources:
 
    modules
 

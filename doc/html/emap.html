@@ -57,14 +57,16 @@
 <dt class="sig sig-object py" id="emap.DriverEmap">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">emap.</span></span><span class="sig-name descname"><span class="pre">DriverEmap</span></span><a class="headerlink" href="#emap.DriverEmap" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>DriverEmap class</p>
+<p>DriverEmap class: manage communication with APMT navigation board</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="emap.DriverEmap.reply">
 <span class="sig-name descname"><span class="pre">reply</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trace_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frame</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#emap.DriverEmap.reply" title="Link to this definition">¶</a></dt>
 <dd><p>Send a frame on the serial port</p>
 <dl class="simple">
-<dt>Parameters:</dt><dd><p>trace_path (str): …
-frame (str): frame to send</p>
+<dt>Parameters:</dt><dd><ul class="simple">
+<li><p>trace_path (str): …</p></li>
+<li><p>frame (str): frame to send</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -74,9 +76,11 @@ frame (str): frame to send</p>
 <span class="sig-name descname"><span class="pre">reply_data_packet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trace_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frame</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">content</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#emap.DriverEmap.reply_data_packet" title="Link to this definition">¶</a></dt>
 <dd><p>Send a frame on the serial port (without data detail on debug)</p>
 <dl class="simple">
-<dt>Parameters:</dt><dd><p>trace_path (str): …
-frame (str): frame to send
-content (str): frame content</p>
+<dt>Parameters:</dt><dd><ul class="simple">
+<li><p>trace_path (str): …</p></li>
+<li><p>frame (str): frame to send</p></li>
+<li><p>content (str): frame content</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -92,7 +96,9 @@ content (str): frame content</p>
 <span class="sig-name descname"><span class="pre">time_before_sleep</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#emap.DriverEmap.time_before_sleep" title="Link to this definition">¶</a></dt>
 <dd><p>Get the time remaining before the task falls asleep</p>
 <dl class="simple">
-<dt>Returns:</dt><dd><p>float: time remaining before the task falls asleep (sec)</p>
+<dt>Returns:</dt><dd><ul class="simple">
+<li><p>float: time remaining before the task falls asleep (sec)</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -109,9 +115,13 @@ content (str): frame content</p>
 <span class="sig-prename descclassname"><span class="pre">emap.</span></span><span class="sig-name descname"><span class="pre">nmea_checksum_check</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frame</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#emap.nmea_checksum_check" title="Link to this definition">¶</a></dt>
 <dd><p>Check the checksum value of a received frame</p>
 <dl class="simple">
-<dt>Parameters:</dt><dd><p>frame (str): bytes read from the serial port</p>
+<dt>Parameters:</dt><dd><ul class="simple">
+<li><p>frame (str): bytes read from the serial port</p></li>
+</ul>
 </dd>
-<dt>Returns:</dt><dd><p>bool: True if the frame is correct</p>
+<dt>Returns:</dt><dd><ul class="simple">
+<li><p>bool: True if the frame is correct</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -121,10 +131,14 @@ content (str): frame content</p>
 <span class="sig-prename descclassname"><span class="pre">emap.</span></span><span class="sig-name descname"><span class="pre">nmea_checksum_compute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frame</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">count</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#emap.nmea_checksum_compute" title="Link to this definition">¶</a></dt>
 <dd><p>Compute the checksum of a frame to send</p>
 <dl class="simple">
-<dt>Parameters:</dt><dd><p>frame (str): frame to send
-count (int): number of bytes to send</p>
+<dt>Parameters:</dt><dd><ul class="simple">
+<li><p>frame (str): frame to send</p></li>
+<li><p>count (int): number of bytes to send</p></li>
+</ul>
 </dd>
-<dt>Returns:</dt><dd><p>int: computed checksum</p>
+<dt>Returns:</dt><dd><ul class="simple">
+<li><p>int: computed checksum</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -138,9 +152,6 @@ count (int): number of bytes to send</p>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-            <p class="logo"><a href="index.html">
-              <img class="logo" src="_static/logo_nke.png" alt="Logo"/>
-            </a></p>
   <div>
     <h3><a href="index.html">Table of Contents</a></h3>
     <ul>

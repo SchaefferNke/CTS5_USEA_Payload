@@ -25,10 +25,10 @@ def nmea_checksum_check(frame: str) -> bool:
 		Check the checksum value of a received frame
 
 		Parameters:
-			frame (str): bytes read from the serial port
+			- frame (str): bytes read from the serial port
 
 		Returns:
-			bool: True if the frame is correct
+			- bool: True if the frame is correct
 		"""
 	if frame[0] != "$":
 		return False
@@ -48,11 +48,11 @@ def nmea_checksum_compute(frame: str, count: int) -> int:
 		Compute the checksum of a frame to send
 
 		Parameters:
-			frame (str): frame to send
-			count (int): number of bytes to send
+			- frame (str): frame to send
+			- count (int): number of bytes to send
 
 		Returns:
-			int: computed checksum
+			- int: computed checksum
 		"""
 	checksum = 0
 	for c in frame[0:count]:
@@ -63,7 +63,7 @@ def nmea_checksum_compute(frame: str, count: int) -> int:
 # Class definition
 class DriverEmap:
 	"""
-		DriverEmap class
+		DriverEmap class: manage communication with APMT navigation board
 		"""
 
 	# Create resource
@@ -80,8 +80,8 @@ class DriverEmap:
 			Send a frame on the serial port
 
 			Parameters:
-				trace_path (str): ...
-				frame (str): frame to send
+				- trace_path (str): ...
+				- frame (str): frame to send
 			"""
 		global frame_emap, frame_print
 
@@ -96,9 +96,9 @@ class DriverEmap:
 			Send a frame on the serial port (without data detail on debug)
 
 			Parameters:
-				trace_path (str): ...
-				frame (str): frame to send
-				content (str): frame content
+				- trace_path (str): ...
+				- frame (str): frame to send
+				- content (str): frame content
 			"""
 		global frame_emap, frame_print
 
@@ -114,7 +114,7 @@ class DriverEmap:
 			Get the time remaining before the task falls asleep
 
 			Returns:
-				float: time remaining before the task falls asleep (sec)
+				- float: time remaining before the task falls asleep (sec)
 			"""
 		# Waiting for the next command
 		return self.timer.remaining_time()

@@ -18,7 +18,13 @@ events = {}
 # Class definition
 class EventShare:
 	"""
-		EventShare class
+		EventShare class: share an event between tasks
+
+		Attributes:
+			- name (str): event name
+
+		Operations:
+			- Binary semaphore used for synchronization purpose
 		"""
 
 	# Create resource
@@ -50,7 +56,7 @@ class EventShare:
 			Test the event state
 
 			Returns:
-				bool: True if the event is set
+				- bool: True if the event is set
 			"""
 		# Test
 		return events[self.name].is_set()
@@ -69,7 +75,13 @@ var_locks = {}
 
 
 # File record definition
-class DataValue:
+class DataShareContent:
+	"""
+		DataShareContent class: shared variable
+
+		Attributes:
+			- value (object): variable object
+		"""
 
 	# Variable
 	def __init__(self):
@@ -79,11 +91,17 @@ class DataValue:
 # Class definition
 class DataShare:
 	"""
-		DataShare class
+		DataShare class: share a variable between tasks
+
+		Attributes:
+			- name (str): variable name
+
+		Operations:
+			- Binary semaphore used for mutual exclusion on a resource variable
 		"""
 
 	# Variable
-	var = DataValue()
+	variable = DataShareContent()
 
 	# Create resource
 	def __init__(self, name: str):
@@ -95,15 +113,15 @@ class DataShare:
 	# Read resource
 	def read(self) -> object:
 		"""
-			Read a data
+			Read a variable
 
 			Returns:
-				object: data object
+				- object: data object
 			"""
 		# Wait for resource
 		var_locks[self.name].acquire()
 		# Read value
-		value = self.var.value
+		value = self.variable.value
 		# Release resource
 		var_locks[self.name].release()
 		# Result
@@ -112,15 +130,15 @@ class DataShare:
 	# Write resource
 	def write(self, value: object):
 		"""
-			Write a data
+			Write a variable
 
 			Parameters:
-				value (object): data object
+				- value (object): data object
 			"""
 		# Wait for resource
 		var_locks[self.name].acquire()
 		# Write value
-		self.var.value = value
+		self.variable.value = value
 		# Release resource
 		var_locks[self.name].release()
 
@@ -130,7 +148,14 @@ file_locks = {}
 
 
 # File record definition
-class DataFile:
+class FileShareContent:
+	"""
+		FileShareContent class: shared file
+
+		Attributes:
+			- timestamp (str): Unix Epoch timestamp
+			- string (str): event
+		"""
 
 	# File content
 	def __init__(self):
@@ -141,7 +166,13 @@ class DataFile:
 # Class definition
 class FileShare:
 	"""
-		FileShare class
+		FileShare class: share a file between tasks
+
+		Attributes:
+			- filename (str): file name
+
+		Operations:
+			- Binary semaphore used for mutual exclusion on a resource file
 		"""
 
 	# Create resource
@@ -152,17 +183,17 @@ class FileShare:
 		if not filename in file_locks:
 			file_locks[filename] = threading.Lock()
 		# File content
-		self.content = DataFile()
+		self.content = FileShareContent()
 		self.content.timestamp = 0.0
 		self.content.string = ""
 
 	# Read resource file
-	def read(self) -> str:
+	def read(self) -> object:
 		"""
 			Read from file
 
 			Returns:
-				str: content string without timestamp
+				- object: content (timestamp and string)
 			"""
 		# Wait for resource
 		file_locks[self.filename].acquire()
@@ -183,10 +214,10 @@ class FileShare:
 	# Write resource file
 	def write(self, info: str):
 		"""
-			Write into file
+			Write in file
 
 			Parameters:
-				info (str): string to write
+				- info (str): string to write
 			"""
 		# Wait for resource
 		file_locks[self.filename].acquire()
@@ -206,7 +237,7 @@ def get_profile(path: str) -> str:
 		Read profile identification string
 
 		Returns:
-			str: profile identification string in "CCC_PP" format
+			- str: profile identification string ("CCC_PP" format)
 		"""
 	# Create resource
 	share = FileShare(path, "profile.txt")
@@ -222,7 +253,7 @@ def get_navigation(path: str) -> int:
 		Read navigation identification string
 
 		Returns:
-			str: navigation identification string in "XX" format
+			- str: navigation identification string ("XX" format)
 		"""
 	# Create resource
 	share = FileShare(path, "navigation.txt")
@@ -273,7 +304,7 @@ def get_pressure(path: str) -> float:
 		Read last pressure value
 
 		Returns:
-			float: pressure value (dbar)
+			- float: pressure value (dbar)
 		"""
 	# Create resource
 	share = FileShare(path, "pressure.txt")
