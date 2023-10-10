@@ -18,12 +18,18 @@ It enables third-party Python programming in USEA-Payload acquisition board.
   - Assessment of specific data processing
 - Validate performance prior to industrial integration by nke
 
-## Application file tree
+## Resources
 
-USEA-Payload API comes with the following system resources:
+### Developer support
+
+[API documentation](https://support.nke-instrumentation.com/USEA-Payload-Documentation/index.html)
+
+### Application file tree
+
 ```
 +-- system
 |   +-- emap.py
+|   +-- const.py
 |   +-- ctd.py
 |   +-- io_lib.py
 |   +-- serial_lib.py
@@ -43,7 +49,7 @@ main.py
 ## License information
 
 This application is restricted to PROVOR-CTS5 use.\
-All rights reserved to nke Instrumentation.
+All rights reserved to [nke Instrumentation](https://www.nke-instrumentation.com).
 
 <p align="center">
 <img src="./doc/image/Float2.png" width="850"/>

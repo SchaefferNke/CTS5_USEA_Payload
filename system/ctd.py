@@ -18,7 +18,16 @@ global path
 
 
 # Output definition
-class DataCtd:
+class DriverCtdContent:
+	"""
+		DataCtd class: CTD sample
+
+		Attributes:
+			- timestamp (float): timestamp (Unix Epoch)
+			- pressure (float): pressure value (dbar)
+			- temperature (float): temperature value (degC)
+			- salinity (float): salinity value (PSU)
+		"""
 
 	# Output
 	def __init__(self):
@@ -31,7 +40,7 @@ class DataCtd:
 # Class definition
 class DriverCtd:
 	"""
-		DriverCtd class
+		DriverCtd class: store and share CTD triplet
 		"""
 
 	# Create resource
@@ -40,7 +49,7 @@ class DriverCtd:
 		self.timer = DriverTimer(path, "ctd")
 		self.share_data = FileShare(path, "ctd.txt")
 		# Output
-		self.output = DataCtd()
+		self.output = DriverCtdContent()
 		self.output.timestamp = 0.0
 		self.output.pressure = 0.0
 		self.output.temperature = 0.0
@@ -52,7 +61,7 @@ class DriverCtd:
 			Get the time remaining before the next task activity
 
 			Returns:
-				float: time remaining before the next task activity (sec)
+				- float: time remaining before the next task activity (sec)
 			"""
 		# Waiting for the next measurement
 		return self.timer.remaining_time()

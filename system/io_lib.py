@@ -14,7 +14,10 @@ io_locks = {}
 # Class definition
 class DriverIO:
 	"""
-		DriverIO class
+		DriverIO class: inputs/outputs resources access for tasks
+
+		Attributes:
+			- name (str): IO name
 		"""
 
 	# Create resource
@@ -59,7 +62,7 @@ class DriverIO:
 			Test the output state
 
 			Returns:
-				bool: True if the output is on
+				- bool: True if the output is on
 			"""
 		# Wait for resource
 		io_locks[self.name].acquire()
