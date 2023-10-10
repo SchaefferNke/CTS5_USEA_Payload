@@ -14,8 +14,8 @@ def trace_log(trace_path: str, event: str):
 		Print on console and save event in logger file
 
 		Parameters:
-			- trace_path (str): ...
-			- event (str): event to trace
+			trace_path (str): ...
+			event (str): event to trace
 		"""
 	# Format
 	utc = datetime.datetime.now()

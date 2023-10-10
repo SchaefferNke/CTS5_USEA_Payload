@@ -18,15 +18,8 @@ timer_locks = {}
 # Class definition
 class DriverTimer:
 	"""
-		DriverTimer class: software timer for tasks
-
-		Attributes:
-			- name (str): timer name
-
-		Operations:
-			- One-shot: once started, the timer will set its flag only once. It must be re-started after each count
-			- Base-time: once started, the timer will set its flag after each base time completion. It re-starts counting automatically
-	"""
+		DriverTimer class
+		"""
 
 	# Create resource
 	def __init__(self, path: str, name: str):
@@ -46,7 +39,7 @@ class DriverTimer:
 			Start a one-shot timer for a specified interval of time (sec)
 
 			Parameters:
-				- interval (float): interval of time (sec)
+				interval (float): interval of time (sec)
 			"""
 		# Trace
 		trace_log(self.path, "TIMER    > Start tmr_" + self.name + " one-shot " + str(interval) + " sec")
@@ -63,11 +56,11 @@ class DriverTimer:
 	# Start (base time)
 	def start_base_time(self, period: float):
 		"""
-			Start a timer with a specified base time (sec)
+		Start a timer with a specified base time (sec)
 
-			Parameters:
-				- period (float): base time (sec)
-			"""
+		Parameters:
+			period (float): base time (sec)
+		"""
 		# Trace
 		trace_log(self.path, "TIMER    > Start tmr_" + self.name + " base time " + str(period) + " sec")
 		# Wait for resource
@@ -101,7 +94,7 @@ class DriverTimer:
 			Test if the specified timer period has elapsed
 
 			Returns:
-				- bool: True if the time period has elapsed
+				bool: True if the time period has elapsed
 			"""
 		# Wait for resource
 		timer_locks[self.name].acquire()
@@ -130,7 +123,7 @@ class DriverTimer:
 			Wait for a specified interval of time (sec)
 
 			Parameters:
-				- duration (float): time duration (sec)
+				duration (float): time duration (sec)
 			"""
 		# Trace
 		trace_log(self.path, "TIMER    > Wait tmr_" + self.name + " " + str(duration) + " sec")
@@ -161,7 +154,7 @@ class DriverTimer:
 			Wait until an exact date/time
 
 			Parameters:
-				- date (str): date and time ("YY-MM-DD HH:MM:SS" format)
+				date (str): date and time in "YY-MM-DD HH:MM:SS" format
 			"""
 		# Trace
 		trace_log(self.path, "TIMER    > Wait tmr_" + self.name + " " + date)
@@ -215,7 +208,7 @@ class DriverTimer:
 			Get the remaining time before next timer tick
 
 			Returns:
-				- float: remaining time (sec)
+				float: remaining time (sec)
 			"""
 		# Wait for resource
 		timer_locks[self.name].acquire()

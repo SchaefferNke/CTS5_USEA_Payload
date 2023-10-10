@@ -24,7 +24,7 @@ def acquisition_process(self, string: str) -> bool:
 		Sample acquisition process
 
 		Returns:
-			- bool: True if the acquisition process is successful
+			bool: True if the acquisition process is successful
 		"""
 	# Print
 	trace_log(path, "SENSOR   > " + string)
@@ -63,15 +63,6 @@ def acquisition_process(self, string: str) -> bool:
 
 # Output definition
 class DataSensor:
-	"""
-		DataSensor class: sensor sample
-
-		Attributes:
-			- timestamp (float): timestamp
-			- channel1 (float): channel 1 raw value
-			- channel2 (float): channel 2 raw value
-			- channel3 (float): channel 3 raw value
-		"""
 
 	# Output
 	def __init__(self):
@@ -110,7 +101,7 @@ class DriverSensor:
 			Get the time remaining before the next task activity
 
 			Returns:
-				- float: time remaining before the next task activity (sec)
+				float: time remaining before the next task activity (sec)
 			"""
 		# Waiting for the next measurement
 		if not self.active:
@@ -136,7 +127,7 @@ class DriverSensor:
 			Sample acquisition process
 
 			Returns:
-				- bool: True if the acquisition process is successful
+				bool: True if the acquisition process is successful
 			"""
 		# Acquire
 		return acquisition_process(self, "Acquire")
@@ -166,7 +157,7 @@ class TestSensor:
 			Test process
 
 			Returns:
-				- bool: True if the test process is successful
+				bool: True if the test process is successful
 			"""
 		# Acquire
 		return acquisition_process(self, "Test")

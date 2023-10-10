@@ -54,45 +54,37 @@
 </div>
 <p id="module-share_lib">share_lib.py</p>
 <dl class="py class">
+<dt class="sig sig-object py" id="share_lib.DataFile">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">share_lib.</span></span><span class="sig-name descname"><span class="pre">DataFile</span></span><a class="headerlink" href="#share_lib.DataFile" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="share_lib.DataShare">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">share_lib.</span></span><span class="sig-name descname"><span class="pre">DataShare</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#share_lib.DataShare" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>DataShare class: share a variable between tasks</p>
-<dl class="simple">
-<dt>Attributes:</dt><dd><ul class="simple">
-<li><p>name (str): variable name</p></li>
-</ul>
-</dd>
-<dt>Operations:</dt><dd><ul class="simple">
-<li><p>Binary semaphore used for mutual exclusion on a resource variable</p></li>
-</ul>
-</dd>
-</dl>
+<p>DataShare class</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="share_lib.DataShare.read">
 <span class="sig-name descname"><span class="pre">read</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">object</span></span></span><a class="headerlink" href="#share_lib.DataShare.read" title="Link to this definition">¶</a></dt>
-<dd><p>Read a variable</p>
+<dd><p>Read a data</p>
 <dl class="simple">
-<dt>Returns:</dt><dd><ul class="simple">
-<li><p>object: data object</p></li>
-</ul>
+<dt>Returns:</dt><dd><p>object: data object</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="share_lib.DataShare.variable">
-<span class="sig-name descname"><span class="pre">variable</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;share_lib.DataShareContent</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#share_lib.DataShare.variable" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="share_lib.DataShare.var">
+<span class="sig-name descname"><span class="pre">var</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;share_lib.DataValue</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#share_lib.DataShare.var" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="share_lib.DataShare.write">
 <span class="sig-name descname"><span class="pre">write</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#share_lib.DataShare.write" title="Link to this definition">¶</a></dt>
-<dd><p>Write a variable</p>
+<dd><p>Write a data</p>
 <dl class="simple">
-<dt>Parameters:</dt><dd><ul class="simple">
-<li><p>value (object): data object</p></li>
-</ul>
+<dt>Parameters:</dt><dd><p>value (object): data object</p>
 </dd>
 </dl>
 </dd></dl>
@@ -100,41 +92,22 @@
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py" id="share_lib.DataShareContent">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">share_lib.</span></span><span class="sig-name descname"><span class="pre">DataShareContent</span></span><a class="headerlink" href="#share_lib.DataShareContent" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="share_lib.DataValue">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">share_lib.</span></span><span class="sig-name descname"><span class="pre">DataValue</span></span><a class="headerlink" href="#share_lib.DataValue" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>DataShareContent class: shared variable</p>
-<dl class="simple">
-<dt>Attributes:</dt><dd><ul class="simple">
-<li><p>value (object): variable object</p></li>
-</ul>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="share_lib.EventShare">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">share_lib.</span></span><span class="sig-name descname"><span class="pre">EventShare</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#share_lib.EventShare" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>EventShare class: share an event between tasks</p>
-<dl class="simple">
-<dt>Attributes:</dt><dd><ul class="simple">
-<li><p>name (str): event name</p></li>
-</ul>
-</dd>
-<dt>Operations:</dt><dd><ul class="simple">
-<li><p>Binary semaphore used for synchronization purpose</p></li>
-</ul>
-</dd>
-</dl>
+<p>EventShare class</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="share_lib.EventShare.is_set">
 <span class="sig-name descname"><span class="pre">is_set</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#share_lib.EventShare.is_set" title="Link to this definition">¶</a></dt>
 <dd><p>Test the event state</p>
 <dl class="simple">
-<dt>Returns:</dt><dd><ul class="simple">
-<li><p>bool: True if the event is set</p></li>
-</ul>
+<dt>Returns:</dt><dd><p>bool: True if the event is set</p>
 </dd>
 </dl>
 </dd></dl>
@@ -163,25 +136,13 @@
 <dt class="sig sig-object py" id="share_lib.FileShare">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">share_lib.</span></span><span class="sig-name descname"><span class="pre">FileShare</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#share_lib.FileShare" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>FileShare class: share a file between tasks</p>
-<dl class="simple">
-<dt>Attributes:</dt><dd><ul class="simple">
-<li><p>filename (str): file name</p></li>
-</ul>
-</dd>
-<dt>Operations:</dt><dd><ul class="simple">
-<li><p>Binary semaphore used for mutual exclusion on a resource file</p></li>
-</ul>
-</dd>
-</dl>
+<p>FileShare class</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="share_lib.FileShare.read">
-<span class="sig-name descname"><span class="pre">read</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">object</span></span></span><a class="headerlink" href="#share_lib.FileShare.read" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">read</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#share_lib.FileShare.read" title="Link to this definition">¶</a></dt>
 <dd><p>Read from file</p>
 <dl class="simple">
-<dt>Returns:</dt><dd><ul class="simple">
-<li><p>object: content (timestamp and string)</p></li>
-</ul>
+<dt>Returns:</dt><dd><p>str: content string without timestamp</p>
 </dd>
 </dl>
 </dd></dl>
@@ -189,29 +150,13 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="share_lib.FileShare.write">
 <span class="sig-name descname"><span class="pre">write</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#share_lib.FileShare.write" title="Link to this definition">¶</a></dt>
-<dd><p>Write in file</p>
+<dd><p>Write into file</p>
 <dl class="simple">
-<dt>Parameters:</dt><dd><ul class="simple">
-<li><p>info (str): string to write</p></li>
-</ul>
+<dt>Parameters:</dt><dd><p>info (str): string to write</p>
 </dd>
 </dl>
 </dd></dl>
 
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="share_lib.FileShareContent">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">share_lib.</span></span><span class="sig-name descname"><span class="pre">FileShareContent</span></span><a class="headerlink" href="#share_lib.FileShareContent" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>FileShareContent class: shared file</p>
-<dl class="simple">
-<dt>Attributes:</dt><dd><ul class="simple">
-<li><p>timestamp (str): Unix Epoch timestamp</p></li>
-<li><p>string (str): event</p></li>
-</ul>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="py function">
@@ -219,9 +164,7 @@
 <span class="sig-prename descclassname"><span class="pre">share_lib.</span></span><span class="sig-name descname"><span class="pre">get_navigation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#share_lib.get_navigation" title="Link to this definition">¶</a></dt>
 <dd><p>Read navigation identification string</p>
 <dl class="simple">
-<dt>Returns:</dt><dd><ul class="simple">
-<li><p>str: navigation identification string (“XX” format)</p></li>
-</ul>
+<dt>Returns:</dt><dd><p>str: navigation identification string in “XX” format</p>
 </dd>
 </dl>
 </dd></dl>
@@ -231,9 +174,7 @@
 <span class="sig-prename descclassname"><span class="pre">share_lib.</span></span><span class="sig-name descname"><span class="pre">get_pressure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#share_lib.get_pressure" title="Link to this definition">¶</a></dt>
 <dd><p>Read last pressure value</p>
 <dl class="simple">
-<dt>Returns:</dt><dd><ul class="simple">
-<li><p>float: pressure value (dbar)</p></li>
-</ul>
+<dt>Returns:</dt><dd><p>float: pressure value (dbar)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -243,9 +184,7 @@
 <span class="sig-prename descclassname"><span class="pre">share_lib.</span></span><span class="sig-name descname"><span class="pre">get_profile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#share_lib.get_profile" title="Link to this definition">¶</a></dt>
 <dd><p>Read profile identification string</p>
 <dl class="simple">
-<dt>Returns:</dt><dd><ul class="simple">
-<li><p>str: profile identification string (“CCC_PP” format)</p></li>
-</ul>
+<dt>Returns:</dt><dd><p>str: profile identification string in “CCC_PP” format</p>
 </dd>
 </dl>
 </dd></dl>
@@ -259,17 +198,21 @@
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/logo_nke.png" alt="Logo"/>
+            </a></p>
   <div>
     <h3><a href="index.html">Table of Contents</a></h3>
     <ul>
 <li><a class="reference internal" href="#">share_lib</a><ul>
+<li><a class="reference internal" href="#share_lib.DataFile"><code class="docutils literal notranslate"><span class="pre">DataFile</span></code></a></li>
 <li><a class="reference internal" href="#share_lib.DataShare"><code class="docutils literal notranslate"><span class="pre">DataShare</span></code></a><ul>
 <li><a class="reference internal" href="#share_lib.DataShare.read"><code class="docutils literal notranslate"><span class="pre">DataShare.read()</span></code></a></li>
-<li><a class="reference internal" href="#share_lib.DataShare.variable"><code class="docutils literal notranslate"><span class="pre">DataShare.variable</span></code></a></li>
+<li><a class="reference internal" href="#share_lib.DataShare.var"><code class="docutils literal notranslate"><span class="pre">DataShare.var</span></code></a></li>
 <li><a class="reference internal" href="#share_lib.DataShare.write"><code class="docutils literal notranslate"><span class="pre">DataShare.write()</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#share_lib.DataShareContent"><code class="docutils literal notranslate"><span class="pre">DataShareContent</span></code></a></li>
+<li><a class="reference internal" href="#share_lib.DataValue"><code class="docutils literal notranslate"><span class="pre">DataValue</span></code></a></li>
 <li><a class="reference internal" href="#share_lib.EventShare"><code class="docutils literal notranslate"><span class="pre">EventShare</span></code></a><ul>
 <li><a class="reference internal" href="#share_lib.EventShare.is_set"><code class="docutils literal notranslate"><span class="pre">EventShare.is_set()</span></code></a></li>
 <li><a class="reference internal" href="#share_lib.EventShare.reset"><code class="docutils literal notranslate"><span class="pre">EventShare.reset()</span></code></a></li>
@@ -282,7 +225,6 @@
 <li><a class="reference internal" href="#share_lib.FileShare.write"><code class="docutils literal notranslate"><span class="pre">FileShare.write()</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#share_lib.FileShareContent"><code class="docutils literal notranslate"><span class="pre">FileShareContent</span></code></a></li>
 <li><a class="reference internal" href="#share_lib.get_navigation"><code class="docutils literal notranslate"><span class="pre">get_navigation()</span></code></a></li>
 <li><a class="reference internal" href="#share_lib.get_pressure"><code class="docutils literal notranslate"><span class="pre">get_pressure()</span></code></a></li>
 <li><a class="reference internal" href="#share_lib.get_profile"><code class="docutils literal notranslate"><span class="pre">get_profile()</span></code></a></li>
