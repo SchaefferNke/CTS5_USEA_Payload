@@ -113,7 +113,11 @@ def manager(self):
 				self.output.salinity = float(split[2])
 				# Store data
 				file = open(path + "ctd/" + get_profile(path) + "_ctd.csv", "a+")
-				file.write(f"{self.output.timestamp:.3f}" + "," + f"{self.output.pressure:.2f}" + "," + f"{self.output.temperature:.3f}" + "," + f"{self.output.salinity:.3f}" + "\n")
+				file.write(
+					f"{self.output.timestamp:.3f}" + "," +
+					f"{self.output.pressure:.2f}" + "," +
+					f"{self.output.temperature:.3f}" + "," +
+					f"{self.output.salinity:.3f}" + "\n")
 				file.close()
 
 			# Wait

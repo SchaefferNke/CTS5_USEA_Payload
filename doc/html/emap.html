@@ -59,8 +59,14 @@
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>DriverEmap class: manage communication with APMT navigation board</p>
 <dl class="py method">
-<dt class="sig sig-object py" id="emap.DriverEmap.reply">
-<span class="sig-name descname"><span class="pre">reply</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trace_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frame</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#emap.DriverEmap.reply" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="emap.DriverEmap.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#emap.DriverEmap.run" title="Link to this definition">¶</a></dt>
+<dd><p>Working task</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="emap.DriverEmap.send_ascii">
+<span class="sig-name descname"><span class="pre">send_ascii</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trace_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frame</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#emap.DriverEmap.send_ascii" title="Link to this definition">¶</a></dt>
 <dd><p>Send a frame on the serial port</p>
 <dl class="simple">
 <dt>Parameters:</dt><dd><ul class="simple">
@@ -72,23 +78,17 @@
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="emap.DriverEmap.reply_data_packet">
-<span class="sig-name descname"><span class="pre">reply_data_packet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trace_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frame</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">content</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#emap.DriverEmap.reply_data_packet" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="emap.DriverEmap.send_binary">
+<span class="sig-name descname"><span class="pre">send_binary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trace_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frame</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">content</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bytes</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#emap.DriverEmap.send_binary" title="Link to this definition">¶</a></dt>
 <dd><p>Send a frame on the serial port (without data detail on debug)</p>
 <dl class="simple">
 <dt>Parameters:</dt><dd><ul class="simple">
 <li><p>trace_path (str): …</p></li>
 <li><p>frame (str): frame to send</p></li>
-<li><p>content (str): frame content</p></li>
+<li><p>content (bytes): frame content</p></li>
 </ul>
 </dd>
 </dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="emap.DriverEmap.run">
-<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#emap.DriverEmap.run" title="Link to this definition">¶</a></dt>
-<dd><p>Working task</p>
 </dd></dl>
 
 <dl class="py method">
@@ -112,11 +112,11 @@
 
 <dl class="py function">
 <dt class="sig sig-object py" id="emap.nmea_checksum_check">
-<span class="sig-prename descclassname"><span class="pre">emap.</span></span><span class="sig-name descname"><span class="pre">nmea_checksum_check</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frame</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#emap.nmea_checksum_check" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">emap.</span></span><span class="sig-name descname"><span class="pre">nmea_checksum_check</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frame</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bytes</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#emap.nmea_checksum_check" title="Link to this definition">¶</a></dt>
 <dd><p>Check the checksum value of a received frame</p>
 <dl class="simple">
 <dt>Parameters:</dt><dd><ul class="simple">
-<li><p>frame (str): bytes read from the serial port</p></li>
+<li><p>frame (bytes): bytes read from the serial port</p></li>
 </ul>
 </dd>
 <dt>Returns:</dt><dd><ul class="simple">
@@ -127,13 +127,32 @@
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="emap.nmea_checksum_compute">
-<span class="sig-prename descclassname"><span class="pre">emap.</span></span><span class="sig-name descname"><span class="pre">nmea_checksum_compute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frame</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">count</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#emap.nmea_checksum_compute" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="emap.nmea_checksum_compute_ascii">
+<span class="sig-prename descclassname"><span class="pre">emap.</span></span><span class="sig-name descname"><span class="pre">nmea_checksum_compute_ascii</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frame</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">count</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#emap.nmea_checksum_compute_ascii" title="Link to this definition">¶</a></dt>
 <dd><p>Compute the checksum of a frame to send</p>
 <dl class="simple">
 <dt>Parameters:</dt><dd><ul class="simple">
 <li><p>frame (str): frame to send</p></li>
 <li><p>count (int): number of bytes to send</p></li>
+</ul>
+</dd>
+<dt>Returns:</dt><dd><ul class="simple">
+<li><p>int: computed checksum</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="emap.nmea_checksum_compute_binary">
+<span class="sig-prename descclassname"><span class="pre">emap.</span></span><span class="sig-name descname"><span class="pre">nmea_checksum_compute_binary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frame</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">content</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bytes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">count_frame</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">count_content</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#emap.nmea_checksum_compute_binary" title="Link to this definition">¶</a></dt>
+<dd><p>Compute the checksum of a frame to send</p>
+<dl class="simple">
+<dt>Parameters:</dt><dd><ul class="simple">
+<li><p>frame (str): frame to send</p></li>
+<li><p>content (bytes): content to send</p></li>
+<li><p>count_frame (int): number of frame bytes to send</p></li>
+<li><p>count_content (int): number of content bytes to send</p></li>
 </ul>
 </dd>
 <dt>Returns:</dt><dd><ul class="simple">
@@ -157,15 +176,16 @@
     <ul>
 <li><a class="reference internal" href="#">emap</a><ul>
 <li><a class="reference internal" href="#emap.DriverEmap"><code class="docutils literal notranslate"><span class="pre">DriverEmap</span></code></a><ul>
-<li><a class="reference internal" href="#emap.DriverEmap.reply"><code class="docutils literal notranslate"><span class="pre">DriverEmap.reply()</span></code></a></li>
-<li><a class="reference internal" href="#emap.DriverEmap.reply_data_packet"><code class="docutils literal notranslate"><span class="pre">DriverEmap.reply_data_packet()</span></code></a></li>
 <li><a class="reference internal" href="#emap.DriverEmap.run"><code class="docutils literal notranslate"><span class="pre">DriverEmap.run()</span></code></a></li>
+<li><a class="reference internal" href="#emap.DriverEmap.send_ascii"><code class="docutils literal notranslate"><span class="pre">DriverEmap.send_ascii()</span></code></a></li>
+<li><a class="reference internal" href="#emap.DriverEmap.send_binary"><code class="docutils literal notranslate"><span class="pre">DriverEmap.send_binary()</span></code></a></li>
 <li><a class="reference internal" href="#emap.DriverEmap.time_before_sleep"><code class="docutils literal notranslate"><span class="pre">DriverEmap.time_before_sleep()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#emap.manager"><code class="docutils literal notranslate"><span class="pre">manager()</span></code></a></li>
 <li><a class="reference internal" href="#emap.nmea_checksum_check"><code class="docutils literal notranslate"><span class="pre">nmea_checksum_check()</span></code></a></li>
-<li><a class="reference internal" href="#emap.nmea_checksum_compute"><code class="docutils literal notranslate"><span class="pre">nmea_checksum_compute()</span></code></a></li>
+<li><a class="reference internal" href="#emap.nmea_checksum_compute_ascii"><code class="docutils literal notranslate"><span class="pre">nmea_checksum_compute_ascii()</span></code></a></li>
+<li><a class="reference internal" href="#emap.nmea_checksum_compute_binary"><code class="docutils literal notranslate"><span class="pre">nmea_checksum_compute_binary()</span></code></a></li>
 </ul>
 </li>
 </ul>

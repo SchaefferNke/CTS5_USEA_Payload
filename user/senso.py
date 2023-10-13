@@ -1,12 +1,13 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 """
-	sensor.py
+	senso.py
 	"""
 
 # Standard libraries
 import sys
 import os
+import zipfile
 
 # Project libraries
 from system.const import *
@@ -27,7 +28,7 @@ def acquisition_process(self, string: str) -> bool:
 			- bool: True if the acquisition process is successful
 		"""
 	# Print
-	trace_log(path, "SENSOR   > " + string)
+	trace_log(path, "SENSO    > " + string)
 	# Power-on
 	self.power_io.set_on()
 	# Warm-up
@@ -39,7 +40,7 @@ def acquisition_process(self, string: str) -> bool:
 		# Parse
 		split = frame_data.split(",")
 		# Print
-		trace_log(path, "SENSOR   > Rx=" + frame_data)
+		trace_log(path, "SENSO    > Rx=" + frame_data)
 		# Extract
 		self.output.timestamp = datetime.datetime.now().timestamp()
 		self.output.channel1 = float(split[2])
@@ -50,7 +51,7 @@ def acquisition_process(self, string: str) -> bool:
 	# Error
 	else:
 		# Print
-		trace_log(path, "SENSOR   > Time-out")
+		trace_log(path, "SENSO    > Time-out")
 		# Result
 		result = False
 	# Power-off
@@ -62,9 +63,9 @@ def acquisition_process(self, string: str) -> bool:
 
 
 # Output definition
-class DataSensor:
+class DataSenso:
 	"""
-		DataSensor class: sensor sample
+		DataSenso class: sensor sample
 
 		Attributes:
 			- timestamp (float): timestamp
@@ -82,23 +83,23 @@ class DataSensor:
 
 
 # Class definition
-class DriverSensor:
+class DriverSenso:
 	"""
-		Driver_sensor class
+		DriverSenso class
 		"""
 
 	# Create resource
 	def __init__(self):
 		# Manager
 		self.active = False
-		self.step = USEA_SENSOR_STEP_IDLE
+		self.step = USEA_PAYLOAD_STEP_IDLE
 		self.power_io = DriverIO("OUT5")
 		self.serial = DriverSerial("COM5", 19200, 128, 0.15)
-		self.timer = DriverTimer(path, "sensor")
-		self.share_data = FileShare(path, "sensor.txt")
-		self.share_step = DataShare("sensor_step")
+		self.timer = DriverTimer(path, "senso")
+		self.share_data = FileShare(path, "senso.txt")
+		self.share_step = DataShare("senso_step")
 		# Output
-		self.output = DataSensor()
+		self.output = DataSenso()
 		self.output.timestamp = 0.0
 		self.output.channel1 = 0.0
 		self.output.channel2 = 0.0
@@ -115,7 +116,7 @@ class DriverSensor:
 		# Waiting for the next measurement
 		if not self.active:
 			result = -1.0
-		elif self.step == USEA_SENSOR_STEP_RECORD:
+		elif self.step == USEA_PAYLOAD_STEP_RECORD:
 			result = self.timer.remaining_time()
 		else:
 			result = 0.0
@@ -143,9 +144,9 @@ class DriverSensor:
 
 
 # Class definition
-class TestSensor:
+class TestSenso:
 	"""
-		Test_sensor class
+		TestSenso class
 		"""
 
 	# Create resource
@@ -154,7 +155,7 @@ class TestSensor:
 		self.power_io = DriverIO("OUT5")
 		self.serial = DriverSerial("COM5", 19200, 128, 0.15)
 		# Output
-		self.output = DataSensor()
+		self.output = DataSenso()
 		self.output.timestamp = 0.0
 		self.output.channel1 = 0.0
 		self.output.channel2 = 0.0
@@ -172,17 +173,55 @@ class TestSensor:
 		return acquisition_process(self, "Test")
 
 
+# Compression
+def compress():
+	"""
+		Compress the data files
+		"""
+	# Create names
+	zip_src_name = path + "payload/"
+	zip_tmp_name = path + "temp/" + get_profile(path) + "_payload.zip"
+	zip_dst_name = path + "payload/" + get_profile(path) + "_payload.zip"
+	# No file to compress
+	if not os.listdir(zip_src_name):
+		return
+	# Remove src archive
+	if os.path.isfile(zip_tmp_name):
+		os.remove(zip_tmp_name)
+	# Remove dst archive
+	if os.path.isfile(zip_dst_name):
+		os.remove(zip_dst_name)
+	# Create archive
+	zip_file = zipfile.ZipFile(zip_tmp_name, "w")
+	# For files in folder
+	while True:
+		# Scan directory
+		if not os.listdir(zip_src_name):
+			break
+		# File name
+		file_name = os.listdir(zip_src_name)[0]
+		# Add file
+		zip_file.write(zip_src_name + file_name, file_name, compress_type=zipfile.ZIP_DEFLATED)
+		# Remove file
+		os.remove(zip_src_name + file_name)
+	# Close archive
+	zip_file.close()
+	# Move archive
+	os.rename(zip_tmp_name, zip_dst_name)
+
+
 # Create resources
 path = "./"
-sensor_driver = DriverSensor()
+senso_driver = DriverSenso()
 
 
 # Manager
 def manager(self):
 	global path
+	file_name = ""
 
 	# Trace
-	trace_log(path, "SENSOR   > Activate")
+	trace_log(path, "SENSO    > Activate")
 
 	# Activate task
 	self.active = True
@@ -206,18 +245,19 @@ def manager(self):
 			navigation = get_navigation(path)
 
 			# Wait
-			if self.step == USEA_SENSOR_STEP_IDLE:
+			if self.step == USEA_PAYLOAD_STEP_IDLE:
 				# Ascent step
-				if ((navigation == USEA_NAVIGATION_STATE_ASCENT)
-				 or (navigation == USEA_NAVIGATION_STATE_ASCENT_1)
-				 or (navigation == USEA_NAVIGATION_STATE_ASCENT_2)
-				 or (navigation == USEA_NAVIGATION_STATE_ASCENT_3)):
+				if (
+					(navigation == USEA_NAVIGATION_STATE_ASCENT) or
+					(navigation == USEA_NAVIGATION_STATE_ASCENT_1) or
+					(navigation == USEA_NAVIGATION_STATE_ASCENT_2) or
+					(navigation == USEA_NAVIGATION_STATE_ASCENT_3)):
 					# Create file name
-					filename = path + "payload/" + get_profile(path) + "_payload.csv"
+					file_name = path + "payload/" + get_profile(path) + "_payload.csv"
 					# Print
-					trace_log(path, "SENSOR   > Start acquisition")
+					trace_log(path, "SENSO    > Start acquisition")
 					# Start recording
-					self.step = USEA_SENSOR_STEP_RECORD
+					self.step = USEA_PAYLOAD_STEP_RECORD
 					# Share step
 					self.share_step.write(self.step)
 				# Wait
@@ -225,74 +265,86 @@ def manager(self):
 					time.sleep(0.1)
 
 			# Record
-			elif self.step == USEA_SENSOR_STEP_RECORD:
+			elif self.step == USEA_PAYLOAD_STEP_RECORD:
 				# Ascent step
-				if ((navigation == USEA_NAVIGATION_STATE_ASCENT)
-				 or (navigation == USEA_NAVIGATION_STATE_ASCENT_1)
-				 or (navigation == USEA_NAVIGATION_STATE_ASCENT_2)
-				 or (navigation == USEA_NAVIGATION_STATE_ASCENT_3)):
+				if (
+					(navigation == USEA_NAVIGATION_STATE_ASCENT) or
+					(navigation == USEA_NAVIGATION_STATE_ASCENT_1) or
+					(navigation == USEA_NAVIGATION_STATE_ASCENT_2) or
+					(navigation == USEA_NAVIGATION_STATE_ASCENT_3)):
 					# Acquisition rate
 					if self.timer.is_tick():
 						# Acquire
 						if self.acquire_sample():
 							# Print
-							trace_log(path, "SENSOR   > Record")
+							trace_log(path, "SENSO    > Record")
 							# Share data
-							self.share_data.write(f"{self.output.channel1:.3f}" + "," + f"{self.output.channel2:.3f}" + "," + f"{self.output.channel3:.3f}")
+							self.share_data.write(
+								f"{self.output.channel1:.3f}" + "," +
+								f"{self.output.channel2:.3f}" + "," +
+								f"{self.output.channel3:.3f}")
 							# Store data
-							file = open(filename, "a+")
-							file.write(f"{self.output.timestamp:.3f}" + "," + f"{self.output.channel1:.3f}" + "," + f"{self.output.channel2:.3f}" + "," + f"{self.output.channel3:.3f}" + "\n")
+							file = open(file_name, "a+")
+							file.write(
+								f"{self.output.timestamp:.3f}" + "," +
+								f"{self.output.channel1:.3f}" + "," +
+								f"{self.output.channel2:.3f}" + "," +
+								f"{self.output.channel3:.3f}" + "\n")
 							file.close()
 					# Wait
 					else:
 						time.sleep(0.1)
 				# Surface step
-				elif ((navigation == USEA_NAVIGATION_STATE_SUB_SURFACE)
-				   or (navigation == USEA_NAVIGATION_STATE_BUOYANCY_INCREASE)
-				   or (navigation == USEA_NAVIGATION_STATE_SURFACE_ACQUISITION)):
+				elif (
+					(navigation == USEA_NAVIGATION_STATE_SUB_SURFACE) or
+					(navigation == USEA_NAVIGATION_STATE_BUOYANCY_INCREASE) or
+					(navigation == USEA_NAVIGATION_STATE_SURFACE_ACQUISITION)):
 					# Print
-					trace_log(path, "SENSOR   > Stop acquisition")
+					trace_log(path, "SENSO    > Stop acquisition")
 					# Stop recording
-					self.step = USEA_SENSOR_STEP_SURFACE
+					self.step = USEA_PAYLOAD_STEP_SURFACE
 					# Share step
 					self.share_step.write(self.step)
 				# Other
 				else:
 					# Print
-					trace_log(path, "SENSOR   > Stop acquisition")
+					trace_log(path, "SENSO    > Stop acquisition")
 					# Stop recording
-					self.step = USEA_SENSOR_STEP_IDLE
+					self.step = USEA_PAYLOAD_STEP_IDLE
 					# Share step
 					self.share_step.write(self.step)
 
 			# Surface
-			elif self.step == USEA_SENSOR_STEP_SURFACE:
+			elif self.step == USEA_PAYLOAD_STEP_SURFACE:
 				# Treatment step
 				if navigation == USEA_NAVIGATION_STATE_DATA_PROCESSING:
 					# Print
-					trace_log(path, "SENSOR   > Start processing")
+					trace_log(path, "SENSO    > Start processing")
 					# Start processing
-					self.step = USEA_SENSOR_STEP_TREAT
+					self.step = USEA_PAYLOAD_STEP_TREAT
 					# Share step
 					self.share_step.write(self.step)
 					# Treatment
 					time.sleep(15.0)
+					# Compress
+					compress()
 					# Print
-					trace_log(path, "SENSOR   > Stop processing")
+					trace_log(path, "SENSO    > Stop processing")
 					# Stop processing
-					self.step = USEA_SENSOR_STEP_IDLE
+					self.step = USEA_PAYLOAD_STEP_IDLE
 					# Share step
 					self.share_step.write(self.step)
 				# Surface step
-				elif ((navigation == USEA_NAVIGATION_STATE_SUB_SURFACE)
-				   or (navigation == USEA_NAVIGATION_STATE_BUOYANCY_INCREASE)
-				   or (navigation == USEA_NAVIGATION_STATE_SURFACE_ACQUISITION)):
+				elif (
+					(navigation == USEA_NAVIGATION_STATE_SUB_SURFACE) or
+					(navigation == USEA_NAVIGATION_STATE_BUOYANCY_INCREASE) or
+					(navigation == USEA_NAVIGATION_STATE_SURFACE_ACQUISITION)):
 					# Ignore
 					time.sleep(0.1)
 				# Other
 				else:
 					# Stop recording
-					self.step = USEA_SENSOR_STEP_IDLE
+					self.step = USEA_PAYLOAD_STEP_IDLE
 					# Share step
 					self.share_step.write(self.step)
 
@@ -306,7 +358,7 @@ def manager(self):
 		print(err)
 		print(traceback.format_exc())
 		# Trace
-		trace_log(path, "SENSOR   > [ERROR]")
+		trace_log(path, "SENSO    > [ERROR]")
 
 
 # Test function
@@ -319,6 +371,6 @@ if __name__ == "__main__":
 	sys.path.insert(1, "../")
 	path = "../"
 	# Allocate resource
-	sensor = DriverSensor()
+	senso = DriverSenso()
 	# Run
-	sensor.run()
+	senso.run()

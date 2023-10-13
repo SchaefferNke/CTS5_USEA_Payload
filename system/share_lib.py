@@ -5,6 +5,7 @@
 	"""
 
 # Standard libraries
+import os
 import datetime
 import threading
 
@@ -195,6 +196,13 @@ class FileShare:
 			Returns:
 				- object: content (timestamp and string)
 			"""
+		# Resource doesn't exist
+		if not os.path.isfile(self.path + "share/" + self.filename):
+			# Fill empty content
+			self.content.timestamp = 0.0
+			self.content.string = "?"
+			# Result
+			return str(self.content)
 		# Wait for resource
 		file_locks[self.filename].acquire()
 		# Read file

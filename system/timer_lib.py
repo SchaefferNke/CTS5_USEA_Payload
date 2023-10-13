@@ -25,7 +25,7 @@ class DriverTimer:
 
 		Operations:
 			- One-shot: once started, the timer will set its flag only once. It must be re-started after each count
-			- Base-time: once started, the timer will set its flag after each base time completion. It re-starts counting automatically
+			- Base-time: once started, the timer will set its flag after each base time completion.
 	"""
 
 	# Create resource
@@ -37,7 +37,9 @@ class DriverTimer:
 		self.one_shot = False
 		self.duration = 0.0
 		self.end = 0.0
-		if not name in timer_locks:
+		if name in timer_locks:
+			return
+		else:
 			timer_locks[name] = threading.Lock()
 
 	# Start (one-shot)

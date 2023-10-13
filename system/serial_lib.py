@@ -34,7 +34,9 @@ class DriverSerial:
 		self.size = size
 		self.timeout = timeout
 		self.serial = None
-		if not name in serial_locks:
+		if name in serial_locks:
+			return
+		else:
 			serial_locks[name] = threading.Lock()
 
 	# Open serial port
