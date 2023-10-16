@@ -6,20 +6,14 @@
 
 # Standard libraries
 import sys
-import os
-import time
 import zipfile
 
 # Project libraries
-from system.const import *
 from system.io_lib import *
 from system.serial_lib import *
 from system.timer_lib import *
 from system.share_lib import *
 from system.trace_lib import *
-
-# Global var
-global path
 
 
 # Compute NMEA checksum (receive)

@@ -140,6 +140,10 @@ class DriverSerial:
 				while True:
 					# Time out
 					if datetime.datetime.now().timestamp() >= timeout:
+						# Close serial port
+						self.serial.close()
+						# Release resource
+						serial_locks[self.name].release()
 						# Exit
 						return ""
 					# Wait character

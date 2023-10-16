@@ -6,17 +6,16 @@
 
 # Standard libraries
 import sys
-import os
 import zipfile
 
 # Project libraries
-from system.const import *
 from system.io_lib import *
 from system.serial_lib import *
 from system.timer_lib import *
 from system.share_lib import *
 
-global path
+# Versioning
+SENSO_VERSION = "v1.0.0"
 
 
 # Acquisition process
@@ -161,16 +160,35 @@ class TestSenso:
 		self.output.channel2 = 0.0
 		self.output.channel3 = 0.0
 
+	# Sensor version
+	@staticmethod
+	def get_version() -> str:
+		"""
+			Get version
+
+			Returns:
+				- str: version string
+			"""
+		return SENSO_VERSION
+
 	# Test sensor
-	def test(self) -> bool:
+	def test(self) -> str:
 		"""
 			Test process
 
 			Returns:
-				- bool: True if the test process is successful
+				- str: result string
 			"""
 		# Acquire
-		return acquisition_process(self, "Test")
+		if acquisition_process(self, "Test"):
+			# Reply
+			return "c1=" + f"{self.output.channel1:.3f}" +\
+				", c2=" + f"{self.output.channel2:.3f}" +\
+				", c3=" + f"{self.output.channel3:.3f}"
+		# Error
+		else:
+			# Reply
+			return "no reply"
 
 
 # Compression
@@ -324,7 +342,7 @@ def manager(self):
 					self.step = USEA_PAYLOAD_STEP_TREAT
 					# Share step
 					self.share_step.write(self.step)
-					# Treatment
+					# Simulate treatment delay
 					time.sleep(15.0)
 					# Compress
 					compress()

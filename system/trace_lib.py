@@ -19,10 +19,10 @@ def trace_log(trace_path: str, event: str):
 		"""
 	# Format
 	utc = datetime.datetime.now()
-	string = utc.strftime("%y-%m-%d %H:%M:%S ") + event
+	string = utc.strftime("%y-%m-%d %H:%M:%S : ") + event
 	# Print to terminal
 	print(string)
 	# Save in logger
-	log = open(trace_path + "log/trace.log", "a+")
+	log = open(trace_path + "log/payload.log", "a+")
 	log.write(string + "\r")
 	log.close()

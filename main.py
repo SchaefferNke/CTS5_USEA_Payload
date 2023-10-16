@@ -43,12 +43,12 @@ if __name__ == "__main__":
 	thread_emap = threading.Thread(target=emap_driver.run)
 	thread_ctd = threading.Thread(target=ctd_driver.run)
 	thread_senso = threading.Thread(target=senso_driver.run)
-	#thread_silicate = threading.Thread(target=silicate_driver.run)
+	thread_silicate = threading.Thread(target=silicate_driver.run)
 	# Launch tasks
 	thread_emap.start()
 	thread_ctd.start()
 	thread_senso.start()
-	#thread_silicate.start()
+	thread_silicate.start()
 
 	# Main loop
 	try:

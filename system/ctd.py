@@ -6,15 +6,11 @@
 
 # Standard libraries
 import sys
-import os
 import traceback
 
 # Project libraries
 from system.timer_lib import *
 from system.share_lib import *
-
-# Global var
-global path
 
 
 # Output definition

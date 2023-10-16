@@ -1,0 +1,12 @@
+Copyright (c) 2023 nke Instrumentation
+
+The information contained in this document is the exclusive technical information of nke Instrumentation.
+The transmission, reproduction, distribution and publication of this document, as well as the use of its
+contents, are prohibited without authorization. Offenders will be liable to pay damages. All rights are
+reserved in the event of the granting of a patent or the registration of a utility model or design.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
+TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+DEALINGS IN THE SOFTWARE.

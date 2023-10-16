@@ -6,17 +6,13 @@
 
 # Standard libraries
 import sys
-import os
+import zipfile
 
 # Project libraries
-from system.const import *
 from system.serial_lib import *
 from system.timer_lib import *
 from system.share_lib import *
 from user.senso import TestSenso
-
-# Global var
-global path
 
 
 # Compute NMEA checksum (receive)
@@ -153,6 +149,48 @@ path = "./"
 emap_driver = DriverEmap()
 
 
+# Logger extract
+def logger_extract(size: int):
+	"""
+		Create extract of the logger file
+
+		Parameters:
+			- size (int): extract size (in bytes)
+		"""
+	# Create names
+	log_src_name = path + "log/payload.log"
+	log_dst_name = path + "temp/payload.log"
+	zip_dst_name = path + "payload/payload.log.zip"
+	# Remove dst logger
+	if os.path.isfile(log_dst_name):
+		os.remove(log_dst_name)
+	# Remove dst archive
+	if os.path.isfile(zip_dst_name):
+		os.remove(zip_dst_name)
+	# Read extract
+	file_src = open(log_src_name, "r")
+	file_src.seek(0, os.SEEK_END)
+	offset = file_src.tell()
+	if offset < size:
+		file_src.seek(0, os.SEEK_SET)
+	else:
+		file_src.seek(offset - size, os.SEEK_SET)
+	content = file_src.read(size)
+	file_src.close()
+	# Write extract
+	file_dst = open(log_dst_name, "w")
+	file_dst.write(content)
+	file_dst.close()
+	# Create archive
+	zip_file = zipfile.ZipFile(zip_dst_name, "w")
+	# Add file
+	zip_file.write(log_dst_name, "payload.log", compress_type=zipfile.ZIP_DEFLATED)
+	# Close archive
+	zip_file.close()
+	# Remove file
+	os.remove(log_dst_name)
+
+
 # Manager
 def manager(self):
 	global path
@@ -282,6 +320,8 @@ def manager(self):
 					# share information
 					share = FileShare(path, "synchro.txt")
 					share.write(f"{drift:.3f}")
+					# Synchronize system clock
+					# TODO: os.system("sudo date -u --set=%s" % utc.strftime("20%y-%m-%dT%H:%M:%S"))
 					# Reply
 					self.send_ascii(path, "GPSACK")
 
@@ -301,13 +341,40 @@ def manager(self):
 					trace_log(path, "EMAP     > Rx=$" + frame_string)
 					# Parse
 					split = data_string.split(",")
-					# Sensor command
-					if split[2] == "?payload-data":
+					# User version
+					if split[2] == "?payload-version":
+						# Get version
+						reply = self.payload.get_version()
+						# Reply
+						self.send_ascii(path, "COMMANDACK," + str(len(reply)) + "," + reply)
+					# Application reset
+					elif split[2] == "!payload-reset":
+						# Reply
+						self.send_ascii(path, "COMMANDACK")
+						# Delay
+						time.sleep(1.0)
+						# Restart
+						# TODO: os.system("sudo shutdown -r now")
+						# TODO: os.system("sudo reboot -f")
+					# Sensor test
+					elif split[2] == "?payload-data":
 						# Acquire data
-						if self.payload.test():
-							self.send_ascii(path, "COMMANDACK,2,ok")
-						else:
-							self.send_ascii(path, "COMMANDACK,5,error")
+						reply = self.payload.test()
+						# Reply
+						self.send_ascii(path, "COMMANDACK," + str(len(reply)) + "," + reply)
+					# Logger request on
+					elif split[2] == "!payload-logger:1":
+						# Test request
+						if not os.path.isfile(path + "share/logger.txt"):
+							# Create request
+							file_request = open(path + "share/logger.txt", "w")
+							file_request.close()
+					# Logger request off
+					elif split[2] == "!payload-logger:0":
+						# Test request
+						if os.path.isfile(path + "share/logger.txt"):
+							# Remove request
+							os.remove(path + "share/logger.txt")
 					# Error
 					else:
 						self.send_ascii(path, "COMMANDNACK")
@@ -316,27 +383,35 @@ def manager(self):
 				elif "LIST" in frame_string[0:4]:
 					# Print
 					trace_log(path, "EMAP     > Rx=$" + frame_string)
+					# Logger request
+					if os.path.isfile(path + "share/logger.txt"):
+						# Prepare logger extract
+						logger_extract(32 * 1024)
+						# Remove request
+						os.remove(path + "share/logger.txt")
 					# Scan directories
 					file_list = os.listdir(path + "payload/")
 					# No file test
 					no_file = True
 					# Check file
-					for file_name in file_list:
+					for list_name in file_list:
 						# Get file size
-						file_size = os.path.getsize(path + "payload/" + file_name)
+						file_size = os.path.getsize(path + "payload/" + list_name)
 						# File size is correct
 						if (file_size > 0) and (file_size < 131072):
 							# Reply
-							self.send_ascii(path, "LISTACK,1," + file_name)
+							self.send_ascii(path, "LISTACK,1," + list_name)
 							# No file test
 							no_file = False
 							# Exit
 							break
 						# File size error
 						else:
+							# Keep file in memory
 							continue
-					# Error
+					# No file
 					if no_file:
+						# Reply
 						self.send_ascii(path, "LISTACK,0")
 
 				# GET processing
