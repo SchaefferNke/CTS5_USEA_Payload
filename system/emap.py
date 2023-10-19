@@ -87,6 +87,7 @@ class DriverEmap:
 		# Manager
 		self.serial = DriverSerial("COM1", 57600, len("DATA,xxx,xxxx,*CS\r\n") + 512, 0.15)
 		self.timer = DriverTimer(path, "emap")
+		# TODO: isoler la classe capteur du fichier system
 		self.payload_step = DataShare("senso_step")
 		self.payload = TestSenso()
 
@@ -124,16 +125,18 @@ class DriverEmap:
 		self.serial.write(string.encode("ascii"))
 		trace_log(trace_path, "EMAP     > Tx=" + frame_ascii)
 
-	# Get the time remaining before the task falls asleep
-	def time_before_sleep(self) -> float:
+	# Get next task activity
+	def time_before_activity(self) -> float:
 		"""
-			Get the time remaining before the task falls asleep
+			Get the time remaining before the next task activity
 
 			Returns:
-				- float: time remaining before the task falls asleep (sec)
+				- float: time remaining before the next task activity (sec)
 			"""
 		# Waiting for the next command
-		return self.timer.remaining_time()
+		if self.timer.remaining_time() > 0.0:
+			return 0.0
+		return 3600.0
 
 	# Run task
 	def run(self):
@@ -160,7 +163,7 @@ def logger_extract(size: int):
 	# Create names
 	log_src_name = path + "log/payload.log"
 	log_dst_name = path + "temp/payload.log"
-	zip_dst_name = path + "payload/payload.log.zip"
+	zip_dst_name = path + "payload/payload_logger.zip"
 	# Remove dst logger
 	if os.path.isfile(log_dst_name):
 		os.remove(log_dst_name)
@@ -212,7 +215,7 @@ def manager(self):
 					time.sleep(0.1)
 					continue
 				# Start timer
-				self.timer.start_one_shot(0.999)
+				self.timer.start_one_shot(2.5)
 				# Wait start of frame
 				if self.serial.read(1).decode() != "$":
 					continue
@@ -320,10 +323,12 @@ def manager(self):
 					# share information
 					share = FileShare(path, "synchro.txt")
 					share.write(f"{drift:.3f}")
-					# Synchronize system clock
-					# TODO: os.system("sudo date -u --set=%s" % utc.strftime("20%y-%m-%dT%H:%M:%S"))
 					# Reply
 					self.send_ascii(path, "GPSACK")
+					# Wait
+					time.sleep(0.5)
+					# Synchronize system clock
+					os.system("sudo date -u --set=%s" % utc.strftime("20%y-%m-%dT%H:%M:%S"))
 
 				# PING processing
 				elif "PING" in frame_string[0:4]:
@@ -347,34 +352,49 @@ def manager(self):
 						reply = self.payload.get_version()
 						# Reply
 						self.send_ascii(path, "COMMANDACK," + str(len(reply)) + "," + reply)
-					# Application reset
-					elif split[2] == "!payload-reset":
-						# Reply
-						self.send_ascii(path, "COMMANDACK")
-						# Delay
-						time.sleep(1.0)
-						# Restart
-						# TODO: os.system("sudo shutdown -r now")
-						# TODO: os.system("sudo reboot -f")
 					# Sensor test
 					elif split[2] == "?payload-data":
 						# Acquire data
 						reply = self.payload.test()
 						# Reply
 						self.send_ascii(path, "COMMANDACK," + str(len(reply)) + "," + reply)
+					# Update
+					elif split[2] == "!payload-update":
+						# Check if update file exists
+						if os.path.isfile(path + "temp/payload_update.zip"):
+							# Reply
+							self.send_ascii(path, "COMMANDACK")
+							# Wait
+							time.sleep(0.5)
+							# Interpret script
+							# TODO
+						# Error
+						else:
+							# Reply
+							self.send_ascii(path, "COMMANDNACK")
+					# Application reset
+					elif split[2] == "!payload-reset":
+						# Reply
+						self.send_ascii(path, "COMMANDACK")
+						# Delay
+						time.sleep(0.5)
+						# Restart
+						os.system("sudo reboot")
 					# Logger request on
 					elif split[2] == "!payload-logger:1":
 						# Test request
-						if not os.path.isfile(path + "share/logger.txt"):
-							# Create request
-							file_request = open(path + "share/logger.txt", "w")
+						if not os.path.isfile(path + "temp/logger.txt"):
+							file_request = open(path + "temp/logger.txt", "w")
 							file_request.close()
+						# Reply
+						self.send_ascii(path, "COMMANDACK")
 					# Logger request off
 					elif split[2] == "!payload-logger:0":
 						# Test request
-						if os.path.isfile(path + "share/logger.txt"):
-							# Remove request
-							os.remove(path + "share/logger.txt")
+						if os.path.isfile(path + "temp/logger.txt"):
+							os.remove(path + "temp/logger.txt")
+						# Reply
+						self.send_ascii(path, "COMMANDACK")
 					# Error
 					else:
 						self.send_ascii(path, "COMMANDNACK")
@@ -384,11 +404,11 @@ def manager(self):
 					# Print
 					trace_log(path, "EMAP     > Rx=$" + frame_string)
 					# Logger request
-					if os.path.isfile(path + "share/logger.txt"):
+					if os.path.isfile(path + "temp/logger.txt"):
 						# Prepare logger extract
 						logger_extract(32 * 1024)
 						# Remove request
-						os.remove(path + "share/logger.txt")
+						os.remove(path + "temp/logger.txt")
 					# Scan directories
 					file_list = os.listdir(path + "payload/")
 					# No file test
@@ -436,15 +456,32 @@ def manager(self):
 					trace_log(path, "EMAP     > Rx=$" + frame_string)
 					# Parse
 					split = data_string.split(",")
-					# Filename
-					file_name = path + "config/" + split[1]
-					# Remove file
-					if os.path.isfile(file_name):
-						os.remove(file_name)
-					# Initialize data block
-					index_cpt = 1
-					# Reply
-					self.send_ascii(path, "PUTACK,512")
+					# Configuration file
+					if split[1] == "payload.cfg":
+						# Filename
+						file_name = path + "config/payload.cfg"
+						# Remove file
+						if os.path.isfile(file_name):
+							os.remove(file_name)
+						# Initialize data block
+						index_cpt = 1
+						# Reply
+						self.send_ascii(path, "PUTACK,512")
+					# Update file
+					elif split[1] == "payload_update.zip":
+						# Filename
+						file_name = path + "temp/payload_update.zip"
+						# Remove file
+						if os.path.isfile(file_name):
+							os.remove(file_name)
+						# Initialize data block
+						index_cpt = 1
+						# Reply
+						self.send_ascii(path, "PUTACK,512")
+					# Other
+					else:
+						# Reply
+						self.send_ascii(path, "PUTNACK")
 
 				# DATA processing
 				elif "DATA," in frame_string[0:5]:

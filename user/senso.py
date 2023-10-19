@@ -114,7 +114,9 @@ class DriverSenso:
 			"""
 		# Waiting for the next measurement
 		if not self.active:
-			result = -1.0
+			result = 3600.0
+		elif self.step == USEA_PAYLOAD_STEP_IDLE:
+			result = 3600.0
 		elif self.step == USEA_PAYLOAD_STEP_RECORD:
 			result = self.timer.remaining_time()
 		else:

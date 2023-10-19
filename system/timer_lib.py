@@ -111,15 +111,23 @@ class DriverTimer:
 		if self.active:
 			# Get result
 			if datetime.datetime.now().timestamp() < self.end:
+				# Result
 				result = False
 			else:
-				# Reload duration
-				if not self.one_shot:
-					self.end = self.end + self.duration
+				# One-shot mode
+				if self.one_shot:
+					# Deactivate
+					self.active = False
+				# Base-time mode
+				else:
+					# Compute next time
+					while datetime.datetime.now().timestamp() >= self.end:
+						self.end = self.end + self.duration
 				# Result
 				result = True
 		# Deactivated
 		else:
+			# Result
 			result = False
 		# Release resource
 		timer_locks[self.name].release()

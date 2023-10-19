@@ -92,17 +92,29 @@
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="emap.DriverEmap.time_before_sleep">
-<span class="sig-name descname"><span class="pre">time_before_sleep</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#emap.DriverEmap.time_before_sleep" title="Link to this definition">¶</a></dt>
-<dd><p>Get the time remaining before the task falls asleep</p>
+<dt class="sig sig-object py" id="emap.DriverEmap.time_before_activity">
+<span class="sig-name descname"><span class="pre">time_before_activity</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#emap.DriverEmap.time_before_activity" title="Link to this definition">¶</a></dt>
+<dd><p>Get the time remaining before the next task activity</p>
 <dl class="simple">
 <dt>Returns:</dt><dd><ul class="simple">
-<li><p>float: time remaining before the task falls asleep (sec)</p></li>
+<li><p>float: time remaining before the next task activity (sec)</p></li>
 </ul>
 </dd>
 </dl>
 </dd></dl>
 
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="emap.logger_extract">
+<span class="sig-prename descclassname"><span class="pre">emap.</span></span><span class="sig-name descname"><span class="pre">logger_extract</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#emap.logger_extract" title="Link to this definition">¶</a></dt>
+<dd><p>Create extract of the logger file</p>
+<dl class="simple">
+<dt>Parameters:</dt><dd><ul class="simple">
+<li><p>size (int): extract size (in bytes)</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
@@ -179,9 +191,10 @@
 <li><a class="reference internal" href="#emap.DriverEmap.run"><code class="docutils literal notranslate"><span class="pre">DriverEmap.run()</span></code></a></li>
 <li><a class="reference internal" href="#emap.DriverEmap.send_ascii"><code class="docutils literal notranslate"><span class="pre">DriverEmap.send_ascii()</span></code></a></li>
 <li><a class="reference internal" href="#emap.DriverEmap.send_binary"><code class="docutils literal notranslate"><span class="pre">DriverEmap.send_binary()</span></code></a></li>
-<li><a class="reference internal" href="#emap.DriverEmap.time_before_sleep"><code class="docutils literal notranslate"><span class="pre">DriverEmap.time_before_sleep()</span></code></a></li>
+<li><a class="reference internal" href="#emap.DriverEmap.time_before_activity"><code class="docutils literal notranslate"><span class="pre">DriverEmap.time_before_activity()</span></code></a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#emap.logger_extract"><code class="docutils literal notranslate"><span class="pre">logger_extract()</span></code></a></li>
 <li><a class="reference internal" href="#emap.manager"><code class="docutils literal notranslate"><span class="pre">manager()</span></code></a></li>
 <li><a class="reference internal" href="#emap.nmea_checksum_check"><code class="docutils literal notranslate"><span class="pre">nmea_checksum_check()</span></code></a></li>
 <li><a class="reference internal" href="#emap.nmea_checksum_compute_ascii"><code class="docutils literal notranslate"><span class="pre">nmea_checksum_compute_ascii()</span></code></a></li>

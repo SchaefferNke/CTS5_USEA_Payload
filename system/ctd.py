@@ -6,11 +6,12 @@
 
 # Standard libraries
 import sys
+import time
 import traceback
 
 # Project libraries
-from system.timer_lib import *
 from system.share_lib import *
+from system.trace_lib import *
 
 
 # Output definition
@@ -42,7 +43,6 @@ class DriverCtd:
 	# Create resource
 	def __init__(self):
 		# Manager
-		self.timer = DriverTimer(path, "ctd")
 		self.share_data = FileShare(path, "ctd.txt")
 		# Output
 		self.output = DriverCtdContent()
@@ -50,17 +50,6 @@ class DriverCtd:
 		self.output.pressure = 0.0
 		self.output.temperature = 0.0
 		self.output.salinity = 0.0
-
-	# Get next task activity
-	def time_before_activity(self) -> float:
-		"""
-			Get the time remaining before the next task activity
-
-			Returns:
-				- float: time remaining before the next task activity (sec)
-			"""
-		# Waiting for the next measurement
-		return self.timer.remaining_time()
 
 	# Run task
 	def run(self):
@@ -83,17 +72,9 @@ def manager(self):
 	# Trace
 	trace_log(path, "CTD      > Activate")
 
-	# Start timer
-	self.timer.start_base_time(1.0)
-
 	# Loop
 	try:
 		while True:
-
-			# Acquisition rate
-			if not self.timer.is_tick():
-				time.sleep(0.1)
-				continue
 
 			# Read resource
 			self.share_data.read()

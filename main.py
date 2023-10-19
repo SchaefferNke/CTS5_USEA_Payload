@@ -6,6 +6,7 @@
 
 # Standard libraries
 import os
+import time
 import threading
 import traceback
 
@@ -40,10 +41,11 @@ if __name__ == "__main__":
 		os.makedirs("temp")
 
 	# Create tasks
-	thread_emap = threading.Thread(target=emap_driver.run)
-	thread_ctd = threading.Thread(target=ctd_driver.run)
-	thread_senso = threading.Thread(target=senso_driver.run)
-	thread_silicate = threading.Thread(target=silicate_driver.run)
+	thread_emap = threading.Thread(target=emap_driver.run, name="task_emap")
+	thread_ctd = threading.Thread(target=ctd_driver.run, name="task_ctd")
+	thread_senso = threading.Thread(target=senso_driver.run, name="task_senso")
+	thread_silicate = threading.Thread(target=silicate_driver.run, name="task_silicate")
+
 	# Launch tasks
 	thread_emap.start()
 	thread_ctd.start()
@@ -54,11 +56,10 @@ if __name__ == "__main__":
 	try:
 		while True:
 			# Activity management
-			"""activity_emap = emap_driver.time_before_sleep()
-			activity_ctd = ctd_driver.time_before_activity()
+			"""activity_emap = emap_driver.time_before_activity()
 			activity_senso = senso_driver.time_before_activity()
-			print("\t"+f"{activity_emap:+2.3f}"+"\t"+f"{activity_ctd:+2.3f}"+"\t"+f"{activity_senso:+2.3f}")
-			time.sleep(0.345)"""
+			print("\t"+f"{activity_emap:+.3f}"+"\t"+f"{activity_senso:+.3f}")
+			time.sleep(0.450)"""
 
 	# Error
 	except Exception as err:
