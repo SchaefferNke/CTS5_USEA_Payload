@@ -37,7 +37,7 @@ It enables third-party Python programming in USEA-Payload acquisition board.
 |   +-- timer_lib.py
 |   +-- trace_lib.py
 +-- user
-|   +-- your_driver.py
+|   +-- user_driver.py
 main.py
 ```
 

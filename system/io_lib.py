@@ -12,19 +12,21 @@ io_locks = {}
 
 
 # Class definition
-class DriverIO:
+class DriverIOOutput:
 	"""
-		DriverIO class: inputs/outputs resources access for tasks
+		DriverIOOutput class: outputs resources access for tasks
 
 		Attributes:
 			- name (str): IO name
 		"""
 
 	# Create resource
+	# TODO: ajouter paramètre d'accès GPIO
 	def __init__(self, name: str):
 		# Manager
 		self.name = name
 		self.is_on = False
+		# TODO: configurer en sortie
 		if not name in io_locks:
 			io_locks[name] = threading.Lock()
 
@@ -36,7 +38,7 @@ class DriverIO:
 		# Wait for resource
 		io_locks[self.name].acquire()
 		# Set output on
-		# ...
+		# TODO: ...
 		# Save state
 		self.is_on = True
 		# Release resource
@@ -50,7 +52,7 @@ class DriverIO:
 		# Wait for resource
 		io_locks[self.name].acquire()
 		# Set output off
-		# ...
+		# TODO: ...
 		# Save state
 		self.is_on = False
 		# Release resource
@@ -68,6 +70,42 @@ class DriverIO:
 		io_locks[self.name].acquire()
 		# Test
 		result = self.is_on
+		# Release resource
+		io_locks[self.name].release()
+		# Result
+		return result
+
+
+# Class definition
+class DriverIOInput:
+	"""
+		DriverIOInput class: inputs resources access for tasks
+
+		Attributes:
+			- name (str): IO name
+		"""
+
+	# Create resource
+	# TODO: ajouter paramètre d'accès GPIO
+	def __init__(self, name: str):
+		# Manager
+		self.name = name
+		# TODO: configurer en entrée
+		if not name in io_locks:
+			io_locks[name] = threading.Lock()
+
+	# Test input state
+	def is_on(self) -> bool:
+		"""
+			Test the input state
+
+			Returns:
+				- bool: True if the input is on
+			"""
+		# Wait for resource
+		io_locks[self.name].acquire()
+		# Test
+		# TODO: result = ...
 		# Release resource
 		io_locks[self.name].release()
 		# Result

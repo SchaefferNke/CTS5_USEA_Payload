@@ -65,7 +65,8 @@ class DriverSilicate:
 	def __init__(self):
 		# Manager
 		self.step = USEA_PAYLOAD_STEP_SURFACE
-		self.power_io = DriverIO("OUT5")
+		self.io_power = DriverIOOutput("CMDV2_5")
+		self.io_alarm = DriverIOInput("ALARMS_5")
 		self.serial = DriverSerial("COM5", 57600, len("DATA,xxx,xxxx,*CS\r\n") + 512, 0.15)
 		self.timer = DriverTimer(path, "silicate")
 		self.share_step = DataShare("silicate_step")
@@ -297,7 +298,7 @@ def manager(self):
 					# Print
 					trace_log(path, "SILICATE > Start acquisition")
 					# Power-on
-					self.power_io.set_on()
+					self.io_power.set_on()
 					# Start recording
 					self.step = USEA_PAYLOAD_STEP_RECORD
 					# Share step
@@ -313,7 +314,7 @@ def manager(self):
 					# Print
 					trace_log(path, "SILICATE > Stop acquisition")
 					# Power-on
-					self.power_io.set_off()
+					self.io_power.set_off()
 					# Stop recording
 					self.step = USEA_PAYLOAD_STEP_SURFACE
 					# Share step

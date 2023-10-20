@@ -12,6 +12,7 @@ import zipfile
 from system.serial_lib import *
 from system.timer_lib import *
 from system.share_lib import *
+# TODO : pas d'import du code utilisateur
 from user.senso import TestSenso
 
 
@@ -87,7 +88,7 @@ class DriverEmap:
 		# Manager
 		self.serial = DriverSerial("COM1", 57600, len("DATA,xxx,xxxx,*CS\r\n") + 512, 0.15)
 		self.timer = DriverTimer(path, "emap")
-		# TODO: isoler la classe capteur du fichier system
+		# TODO: la classe capteur n'est pas connue
 		self.payload_step = DataShare("senso_step")
 		self.payload = TestSenso()
 
@@ -367,7 +368,7 @@ def manager(self):
 							# Wait
 							time.sleep(0.5)
 							# Interpret script
-							# TODO
+							# TODO: ouvrir l'archive et appliquer le script
 						# Error
 						else:
 							# Reply

@@ -29,7 +29,7 @@ def acquisition_process(self, string: str) -> bool:
 	# Print
 	trace_log(path, "SENSO    > " + string)
 	# Power-on
-	self.power_io.set_on()
+	self.io_power.set_on()
 	# Warm-up
 	time.sleep(3.5)
 	# Acquisition
@@ -54,7 +54,7 @@ def acquisition_process(self, string: str) -> bool:
 		# Result
 		result = False
 	# Power-off
-	self.power_io.set_off()
+	self.io_power.set_off()
 	# Delay before new power-on (for proper operation of the sensor)
 	time.sleep(0.5)
 	# Result
@@ -92,7 +92,8 @@ class DriverSenso:
 		# Manager
 		self.active = False
 		self.step = USEA_PAYLOAD_STEP_IDLE
-		self.power_io = DriverIO("OUT5")
+		self.io_power = DriverIOOutput("CMDV2_4")
+		self.io_alarm = DriverIOInput("ALARMS_4")
 		self.serial = DriverSerial("COM5", 19200, 128, 0.15)
 		self.timer = DriverTimer(path, "senso")
 		self.share_data = FileShare(path, "senso.txt")
@@ -153,7 +154,7 @@ class TestSenso:
 	# Create resource
 	def __init__(self):
 		# Manager
-		self.power_io = DriverIO("OUT5")
+		self.io_power = DriverIOOutput("CMDV2_4")
 		self.serial = DriverSerial("COM5", 19200, 128, 0.15)
 		# Output
 		self.output = DataSenso()
