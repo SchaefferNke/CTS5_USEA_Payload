@@ -65,8 +65,8 @@ class DriverSilicate:
 	def __init__(self):
 		# Manager
 		self.step = USEA_PAYLOAD_STEP_SURFACE
-		self.io_power = DriverIOOutput("CMDV2_5")
-		self.io_alarm = DriverIOInput("ALARMS_5")
+		self.io_power = DriverIOOutput("GPIO_3_20")
+		self.io_alarm = DriverIOInput("GPIO_2_0")
 		self.serial = DriverSerial("COM5", 57600, len("DATA,xxx,xxxx,*CS\r\n") + 512, 0.15)
 		self.timer = DriverTimer(path, "silicate")
 		self.share_step = DataShare("silicate_step")

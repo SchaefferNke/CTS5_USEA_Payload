@@ -88,7 +88,7 @@ class DriverEmap:
 		# Manager
 		self.serial = DriverSerial("COM1", 57600, len("DATA,xxx,xxxx,*CS\r\n") + 512, 0.15)
 		self.timer = DriverTimer(path, "emap")
-		# TODO: la classe capteur n'est pas connue
+		# TODO: Isoler la classe capteur
 		self.payload_step = DataShare("senso_step")
 		self.payload = TestSenso()
 
@@ -329,7 +329,8 @@ def manager(self):
 					# Wait
 					time.sleep(0.5)
 					# Synchronize system clock
-					os.system("sudo date -u --set=%s" % utc.strftime("20%y-%m-%dT%H:%M:%S"))
+					if not os.name == "nt":
+						os.system("sudo date -u --set=%s" % utc.strftime("20%y-%m-%dT%H:%M:%S"))
 
 				# PING processing
 				elif "PING" in frame_string[0:4]:
@@ -380,7 +381,8 @@ def manager(self):
 						# Delay
 						time.sleep(0.5)
 						# Restart
-						os.system("sudo reboot")
+						if not os.name == "nt":
+							os.system("sudo reboot")
 					# Logger request on
 					elif split[2] == "!payload-logger:1":
 						# Test request

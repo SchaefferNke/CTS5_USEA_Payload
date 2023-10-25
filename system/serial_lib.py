@@ -98,12 +98,12 @@ class DriverSerial:
 		return self.serial.read(size)
 
 	# Write the bytes data to the port
-	def write(self, data) -> int:
+	def write(self, data: bytes) -> int:
 		"""
 			Write the bytes data to the serial port
 
 			Parameters:
-				- data: data to send
+				- data (bytes): data to send
 
 			Returns:
 				- int: number of bytes written

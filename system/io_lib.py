@@ -5,10 +5,29 @@
 	"""
 
 # Standard libraries
+import os
 import threading
 
 # Lock list
 io_locks = {}
+
+
+# Generate GPIO string for system command
+def io_name_to_gpio_name(name: str) -> str:
+	"""
+		Translates IO name into system GPIO name
+
+		Parameters:
+			- name (str): IO name (eg: GPIO_3_8)
+
+		Returns:
+			- str: GPIO name for system access (eg: gpiochip3 8)
+		"""
+	# Format
+	split = name.split("_")
+	result = "gpiochip" + str(int(split[1])-1) + " " + split[2]
+	# Result
+	return result
 
 
 # Class definition
@@ -17,16 +36,14 @@ class DriverIOOutput:
 		DriverIOOutput class: outputs resources access for tasks
 
 		Attributes:
-			- name (str): IO name
+			- name (str): IO name (eg: GPIO_3_8)
 		"""
 
 	# Create resource
-	# TODO: ajouter paramètre d'accès GPIO
 	def __init__(self, name: str):
 		# Manager
 		self.name = name
 		self.is_on = False
-		# TODO: configurer en sortie
 		if not name in io_locks:
 			io_locks[name] = threading.Lock()
 
@@ -38,7 +55,8 @@ class DriverIOOutput:
 		# Wait for resource
 		io_locks[self.name].acquire()
 		# Set output on
-		# TODO: ...
+		if not os.name == "nt":
+			os.system("gpioset " + io_name_to_gpio_name(self.name) + "=1")
 		# Save state
 		self.is_on = True
 		# Release resource
@@ -52,7 +70,8 @@ class DriverIOOutput:
 		# Wait for resource
 		io_locks[self.name].acquire()
 		# Set output off
-		# TODO: ...
+		if not os.name == "nt":
+			os.system("gpioset " + io_name_to_gpio_name(self.name) + "=0")
 		# Save state
 		self.is_on = False
 		# Release resource
@@ -82,15 +101,13 @@ class DriverIOInput:
 		DriverIOInput class: inputs resources access for tasks
 
 		Attributes:
-			- name (str): IO name
+			- name (str): IO name (eg: GPIO_3_4)
 		"""
 
 	# Create resource
-	# TODO: ajouter paramètre d'accès GPIO
 	def __init__(self, name: str):
 		# Manager
 		self.name = name
-		# TODO: configurer en entrée
 		if not name in io_locks:
 			io_locks[name] = threading.Lock()
 
@@ -105,8 +122,13 @@ class DriverIOInput:
 		# Wait for resource
 		io_locks[self.name].acquire()
 		# Test
-		# TODO: result = ...
+		if not os.name == "nt":
+			result = os.system("gpioget " + io_name_to_gpio_name(self.name))
+		else:
+			result = "0"
 		# Release resource
 		io_locks[self.name].release()
 		# Result
-		return result
+		if result == "1":
+			return True
+		return False

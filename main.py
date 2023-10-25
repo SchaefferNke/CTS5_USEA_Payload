@@ -57,7 +57,7 @@ if __name__ == "__main__":
 	thread_silicate.start()
 
 	# CPLD activity
-	io_sleepn = DriverIOOutput("SLEEPN_V2")
+	io_sleepn = DriverIOOutput("GPIO_3_27")
 
 	# Main loop
 	try:

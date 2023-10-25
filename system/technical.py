@@ -28,12 +28,18 @@ class DriverTechnical:
 		# Counters
 		self.activity_start = 0.0
 		self.activity_run = 0.0
+		self.cpu_freq_max = 0.0
+		self.cpu_freq_sum = 0.0
 		self.cpu_usage_max = 0.0
 		self.cpu_usage_sum = 0.0
 		self.cpu_temp_max = 0.0
 		self.cpu_temp_sum = 0.0
 		self.mem_usage_max = 0.0
 		self.mem_usage_sum = 0.0
+		# Check SD card
+		# TODO: stratégie détection carte mémoire (démarrage, permanent, ... ?)
+		print(psutil.disk_partitions(all=False))
+		self.sd_card = False
 
 	# Reset diagnosis counters
 	def diagnosis_reset(self):
@@ -43,6 +49,8 @@ class DriverTechnical:
 		# Reset
 		self.activity_start = datetime.datetime.now().timestamp()
 		self.activity_run = 0.0
+		self.cpu_freq_max = 0.0
+		self.cpu_freq_sum = 0.0
 		self.cpu_usage_max = 0.0
 		self.cpu_usage_sum = 0.0
 		self.cpu_temp_max = 0.0
@@ -57,14 +65,21 @@ class DriverTechnical:
 			"""
 		# System activity
 		self.activity_run = self.activity_run + 1.0
+		# CPU frequency
+		cpu_freq = psutil.cpu_freq().current
+		self.cpu_freq_sum = self.cpu_freq_sum + cpu_freq
+		if cpu_freq > self.cpu_freq_max:
+			self.cpu_freq_max = cpu_freq
 		# CPU usage
 		cpu_usage = psutil.cpu_percent(interval=None)
 		self.cpu_usage_sum = self.cpu_usage_sum + cpu_usage
 		if cpu_usage > self.cpu_usage_max:
 			self.cpu_usage_max = cpu_usage
 		# CPU temperature
-		cpu_temp = 0.0
-		# TODO: cpu_temp = psutil.sensors_temperatures(fahrenheit=False)
+		if not os.name == "nt":
+			cpu_temp = psutil.sensors_temperatures(fahrenheit=False)
+		else:
+			cpu_temp = 15.3
 		self.cpu_temp_sum = self.cpu_temp_sum + cpu_temp
 		if cpu_temp > self.cpu_temp_max:
 			self.cpu_temp_max = cpu_temp
@@ -84,6 +99,8 @@ class DriverTechnical:
 		activity_percent = 100.0 * self.activity_run / activity_duration
 		if activity_percent > 100.0:
 			activity_percent = 100.0
+		# CPU frequency
+		cpu_freq = self.cpu_freq_sum / self.activity_run
 		# CPU usage
 		cpu_usage = self.cpu_usage_sum / self.activity_run
 		# CPU temperature
@@ -92,7 +109,9 @@ class DriverTechnical:
 		mem_usage = self.mem_usage_sum / self.activity_run
 		# Disk free
 		disk_free = 0.0
-		# TODO: disk_free = (psutil.disk_usage("/dev/sda1").total - psutil.disk_usage("/dev/sda1").used) / 1073741824.0
+		if self.sd_card:
+			if not os.name == "nt":
+				disk_free = (psutil.disk_usage("/dev/sda1").total - psutil.disk_usage("/dev/sda1").used) / 1073741824.0
 		# Create names
 		dest_file = path + "payload/" + get_profile(path) + "_payload.txt"
 		user_file = path + "share/technical.txt"
@@ -102,12 +121,21 @@ class DriverTechnical:
 		# Open file
 		tech_file = open(dest_file, "w")
 		# Write system info
-		tech_file.write(
-			"[PAYLOAD]\n" +
-			"CPU=" + f"{cpu_usage:.0f}" + "/" + f"{self.cpu_usage_max:.0f}" + " %\n" +
-			"RAM=" + f"{mem_usage:.0f}" + "/" + f"{self.mem_usage_max:.0f}" + " %\n" +
-			"Tcpu=" + f"{cpu_temp:.1f}" + "/" + f"{self.cpu_temp_max:.1f}" + " degC\n" +
-			"Available space=" + f"{disk_free:.1f}" + " GB\n")
+		if self.sd_card:
+			tech_file.write(
+				"[PAYLOAD]\n" +
+				"CPU frequency=" + f"{cpu_freq:.0f}" + "/" + f"{self.cpu_freq_max:.0f}" + " MHz\n" +
+				"CPU usage=" + f"{cpu_usage:.0f}" + "/" + f"{self.cpu_usage_max:.0f}" + " %\n" +
+				"CPU temperature=" + f"{cpu_temp:.1f}" + "/" + f"{self.cpu_temp_max:.1f}" + " degC\n" +
+				"RAM usage=" + f"{mem_usage:.0f}" + "/" + f"{self.mem_usage_max:.0f}" + " %\n" +
+				"Available space=" + f"{disk_free:.1f}" + " GB\n")
+		else:
+			tech_file.write(
+				"[PAYLOAD]\n" +
+				"CPU frequency=" + f"{cpu_freq:.0f}" + "/" + f"{self.cpu_freq_max:.0f}" + " MHz\n" +
+				"CPU usage=" + f"{cpu_usage:.0f}" + "/" + f"{self.cpu_usage_max:.0f}" + " %\n" +
+				"CPU temperature=" + f"{cpu_temp:.1f}" + "/" + f"{self.cpu_temp_max:.1f}" + " degC\n" +
+				"RAM usage=" + f"{mem_usage:.0f}" + "/" + f"{self.mem_usage_max:.0f}" + " %\n")
 		# Write power info
 		tech_file.write(
 			"[POWER]\n" +
@@ -184,7 +212,6 @@ def manager(self):
 					trace_log(path, "TECH     > Stop monitoring")
 					# Save diagnosis
 					self.diagnosis_save()
-
 					# Stop treatment
 					self.step = USEA_PAYLOAD_STEP_IDLE
 
