@@ -5,15 +5,20 @@
 	"""
 
 # Standard libraries
+import os
 import sys
+import time
+import datetime
 import zipfile
+import traceback
 
 # Project libraries
-from system.io_lib import *
-from system.serial_lib import *
-from system.timer_lib import *
-from system.share_lib import *
-from system.trace_lib import *
+from system.io_lib import DriverIOOutput, DriverIOInput
+from system.serial_lib import DriverSerial
+from system.timer_lib import DriverTimer
+from system.share_lib import DataShare, get_navigation, get_profile
+from system.trace_lib import trace_log
+from system.const import *
 
 
 # Compute NMEA checksum (receive)
@@ -67,7 +72,7 @@ class DriverSilicate:
 		self.step = USEA_PAYLOAD_STEP_SURFACE
 		self.io_power = DriverIOOutput("GPIO_3_20")
 		self.io_alarm = DriverIOInput("GPIO_2_0")
-		self.serial = DriverSerial("COM5", 57600, len("DATA,xxx,xxxx,*CS\r\n") + 512, 0.15)
+		self.serial = DriverSerial("COM_5", 57600, len("DATA,xxx,xxxx,*CS\r\n") + 512, 0.15)
 		self.timer = DriverTimer(path, "silicate")
 		self.share_step = DataShare("silicate_step")
 

@@ -60,7 +60,7 @@
 <p>DriverIOInput class: inputs resources access for tasks</p>
 <dl class="simple">
 <dt>Attributes:</dt><dd><ul class="simple">
-<li><p>name (str): IO name</p></li>
+<li><p>name (str): IO name (eg: “GPIO_3_4”)</p></li>
 </ul>
 </dd>
 </dl>
@@ -85,7 +85,7 @@
 <p>DriverIOOutput class: outputs resources access for tasks</p>
 <dl class="simple">
 <dt>Attributes:</dt><dd><ul class="simple">
-<li><p>name (str): IO name</p></li>
+<li><p>name (str): IO name (eg: “GPIO_3_8”)</p></li>
 </ul>
 </dd>
 </dl>
@@ -115,6 +115,22 @@
 
 </dd></dl>
 
+<dl class="py function">
+<dt class="sig sig-object py" id="io_lib.name_to_gpio_name">
+<span class="sig-prename descclassname"><span class="pre">io_lib.</span></span><span class="sig-name descname"><span class="pre">name_to_gpio_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#io_lib.name_to_gpio_name" title="Link to this definition">¶</a></dt>
+<dd><p>Translates IO name into system GPIO name</p>
+<dl class="simple">
+<dt>Parameters:</dt><dd><ul class="simple">
+<li><p>name (str): IO name (eg: “GPIO_3_8”)</p></li>
+</ul>
+</dd>
+<dt>Returns:</dt><dd><ul class="simple">
+<li><p>str: GPIO name for system access (eg: “gpiochip3 8”)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 
 
@@ -138,6 +154,7 @@
 <li><a class="reference internal" href="#io_lib.DriverIOOutput.set_on"><code class="docutils literal notranslate"><span class="pre">DriverIOOutput.set_on()</span></code></a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#io_lib.name_to_gpio_name"><code class="docutils literal notranslate"><span class="pre">name_to_gpio_name()</span></code></a></li>
 </ul>
 </li>
 </ul>

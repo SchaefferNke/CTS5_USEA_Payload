@@ -5,6 +5,7 @@
 	"""
 
 # Standard libraries
+import os
 import datetime
 import serial
 import threading
@@ -14,13 +15,34 @@ import traceback
 serial_locks = {}
 
 
+# Format serial string for system access
+def name_to_serial_name(name: str) -> str:
+	"""
+		Translates serial name into system serial name
+
+		Parameters:
+			- name (str): serial name (eg: "COM_1")
+
+		Returns:
+			- str: system serial name for system access (eg: "/dev/tty0")
+		"""
+	# Format
+	split = name.split("_")
+	if not os.name == "nt":
+		result = "/dev/tty" + str(int(split[1])-1)
+	else:
+		result = "COM" + split[1]
+	# Result
+	return result
+
+
 # Class definition
 class DriverSerial:
 	"""
 		DriverSerial class: serial port resource access for tasks
 
 		Attributes:
-			- name (str): name (eg: COM1)
+			- name (str): name (eg: "COM_1")
 			- speed (int): baud rate (eg: 57600 bauds)
 			- size (int): read buffer size
 			- timeout (float): reading timeout (sec)
@@ -29,15 +51,15 @@ class DriverSerial:
 	# Create resource
 	def __init__(self, name: str, speed: int, size: int, timeout: float):
 		# Manager
-		self.name = name
+		self.name = name_to_serial_name(name)
 		self.speed = speed
 		self.size = size
 		self.timeout = timeout
 		self.serial = None
-		if name in serial_locks:
+		if self.name in serial_locks:
 			return
 		else:
-			serial_locks[name] = threading.Lock()
+			serial_locks[self.name] = threading.Lock()
 
 	# Open serial port
 	def open(self) -> bool:

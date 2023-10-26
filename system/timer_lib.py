@@ -6,10 +6,11 @@
 
 # Standard libraries
 import time
+import datetime
 import threading
 
 # Project libraries
-from system.trace_lib import *
+from system.trace_lib import trace_log
 
 # Lock list
 timer_locks = {}

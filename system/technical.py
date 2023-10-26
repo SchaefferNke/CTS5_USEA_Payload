@@ -5,19 +5,24 @@
 	"""
 
 # Standard libraries
+import os
 import sys
+import time
+import datetime
 import psutil
 import traceback
 
 # Project libraries
-from system.timer_lib import *
-from system.share_lib import *
+from system.timer_lib import DriverTimer
+from system.share_lib import get_navigation, get_profile
+from system.trace_lib import trace_log
+from system.const import *
 
 
 # Class definition
-class DriverTechnical:
+class DriverTechnicalSystem:
 	"""
-		DriverTechnical class: system monitoring
+		DriverTechnicalSystem class: system monitoring
 		"""
 
 	# Create resource
@@ -162,9 +167,73 @@ class DriverTechnical:
 		manager(self)
 
 
+# Class definition
+class DriverTechnicalUser:
+	"""
+		DriverTechnicalUser class: sensor monitoring
+
+		Parameters:
+			- name (str): sensor identification string (eg: "SENSO")
+		"""
+
+	# Create resource
+	def __init__(self, name):
+		# Manager
+		self.name = name
+		# Failure flags
+		self.error_count = 0
+		self.alarm_count = 0
+
+	# Reset diagnosis counters
+	def diagnosis_reset(self):
+		"""
+			Reset the diagnosis counters
+			"""
+		# Reset
+		self.error_count = 0
+		self.alarm_count = 0
+
+	# Update error diagnosis
+	def diagnosis_error(self):
+		"""
+			Increment error counter
+			"""
+		# Increment
+		self.error_count = self.error_count + 1
+
+	# Update alarm diagnosis
+	def diagnosis_alarm(self):
+		"""
+			Increment alarm counter
+			"""
+		# Increment
+		self.alarm_count = self.alarm_count + 1
+
+	# Save diagnosis
+	def diagnosis_save(self):
+		"""
+			Save diagnosis into technical file
+			"""
+		# If errors
+		if self.error_count or self.alarm_count:
+			# Create name
+			error_dst_name = path + "share/payload.txt"
+			# Remove dst file
+			if os.path.isfile(error_dst_name):
+				os.remove(error_dst_name)
+			# Write content
+			file_dst = open(error_dst_name, "w")
+			file_dst.write("[ALARM]\n")
+			if self.error_count:
+				file_dst.write(self.name + "default (" + str(self.error_count) + ")\n")
+			if self.alarm_count:
+				file_dst.write(self.name + "alarm (" + str(self.alarm_count) + ")\n")
+			file_dst.close()
+
+
 # Create resources
 path = "./"
-technical_driver = DriverTechnical()
+technical_driver = DriverTechnicalSystem()
 
 
 # Manager

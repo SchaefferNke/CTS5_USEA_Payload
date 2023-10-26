@@ -5,14 +5,21 @@
 	"""
 
 # Standard libraries
+import os
 import sys
+import time
+import datetime
 import zipfile
+import traceback
 
 # Project libraries
-from system.io_lib import *
-from system.serial_lib import *
-from system.timer_lib import *
-from system.share_lib import *
+from system.io_lib import DriverIOOutput, DriverIOInput
+from system.serial_lib import DriverSerial
+from system.timer_lib import DriverTimer
+from system.share_lib import DataShare, FileShare, get_navigation, get_profile
+from system.technical import DriverTechnicalUser
+from system.trace_lib import trace_log
+from system.const import *
 
 # Versioning
 SENSO_VERSION = "v1.0.0"
@@ -51,8 +58,13 @@ def acquisition_process(self, string: str) -> bool:
 	else:
 		# Print
 		trace_log(path, "SENSO    > Time-out")
+		# Count error
+		self.error_count = self.error_count + 1
 		# Result
 		result = False
+	# Count alarm
+	if not self.io_alarm.is_on():
+		self.alarm_count = self.alarm_count + 1
 	# Power-off
 	self.io_power.set_off()
 	# Delay before new power-on (for proper operation of the sensor)
@@ -94,7 +106,7 @@ class DriverSenso:
 		self.step = USEA_PAYLOAD_STEP_IDLE
 		self.io_power = DriverIOOutput("GPIO_3_19")
 		self.io_alarm = DriverIOInput("GPIO_2_7")
-		self.serial = DriverSerial("COM5", 19200, 128, 0.15)
+		self.serial = DriverSerial("COM_5", 19200, 128, 0.15)
 		self.timer = DriverTimer(path, "senso")
 		self.share_data = FileShare(path, "senso.txt")
 		self.share_step = DataShare("senso_step")
@@ -104,6 +116,8 @@ class DriverSenso:
 		self.output.channel1 = 0.0
 		self.output.channel2 = 0.0
 		self.output.channel3 = 0.0
+		# Technical
+		self.tech = DriverTechnicalUser("SENSO")
 
 	# Get next task activity
 	def time_before_activity(self) -> float:
@@ -155,7 +169,8 @@ class TestSenso:
 	def __init__(self):
 		# Manager
 		self.io_power = DriverIOOutput("GPIO_3_19")
-		self.serial = DriverSerial("COM5", 19200, 128, 0.15)
+		self.io_alarm = DriverIOInput("GPIO_2_7")
+		self.serial = DriverSerial("COM_5", 19200, 128, 0.15)
 		# Output
 		self.output = DataSenso()
 		self.output.timestamp = 0.0
@@ -194,8 +209,8 @@ class TestSenso:
 			return "no reply"
 
 
-# Compression
-def compress():
+# Save data
+def save_data():
 	"""
 		Compress the data files
 		"""
@@ -281,6 +296,8 @@ def manager(self):
 					self.step = USEA_PAYLOAD_STEP_RECORD
 					# Share step
 					self.share_step.write(self.step)
+					# Reset error flags counters
+					self.tech.diagnosis_reset()
 				# Wait
 				else:
 					time.sleep(0.1)
@@ -347,8 +364,10 @@ def manager(self):
 					self.share_step.write(self.step)
 					# Simulate treatment delay
 					time.sleep(15.0)
-					# Compress
-					compress()
+					# Save errors
+					self.tech.diagnosis_save()
+					# Save data
+					save_data()
 					# Print
 					trace_log(path, "SENSO    > Stop processing")
 					# Stop processing

@@ -6,18 +6,18 @@
 
 # Standard libraries
 import os
-import time
 import threading
 import traceback
 
 # Project libraries
-from system.io_lib import *
+from system.io_lib import DriverIOOutput
 from system.technical import technical_driver
 from system.ctd import ctd_driver
 from system.emap import emap_driver
 from user.senso import senso_driver
 from user.silicate import silicate_driver
-from system.trace_lib import *
+from system.trace_lib import trace_log
+
 
 # Main function
 if __name__ == "__main__":
@@ -56,7 +56,7 @@ if __name__ == "__main__":
 	thread_senso.start()
 	thread_silicate.start()
 
-	# CPLD activity
+	# CPLD awake command
 	io_sleepn = DriverIOOutput("GPIO_3_27")
 
 	# Main loop
@@ -69,7 +69,7 @@ if __name__ == "__main__":
 			print("\t"+f"{activity_emap:+.3f}"+"\t"+f"{activity_senso:+.3f}")
 			time.sleep(0.450)"""
 
-			# CPLD activity
+			# Awake CPLD
 			io_sleepn.set_on()
 
 	# Error

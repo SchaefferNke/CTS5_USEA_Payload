@@ -5,29 +5,25 @@
 	"""
 
 # Standard libraries
+import os
 import sys
 import time
 
 # Project libraries
-from system.io_lib import *
-from system.serial_lib import *
+from system.io_lib import DriverIOOutput, DriverIOInput
+from system.serial_lib import DriverSerial
 
 
 # Class definition
 class DriverFactory:
 	"""
-		DriverFactory class
+		DriverFactory class: test hardware resources
 		"""
 
 	# Create resource
 	def __init__(self):
-		# Hardware resources
-		self.output = ""
-		self.input = ""
-		self.serial = ""
-		self.i2c = ""
-		self.spi = ""
-		self.sdcard = ""
+		# Hardware resource
+		self.resource = ""
 
 	# Test output
 	def test_output(self, name: str):
@@ -35,14 +31,14 @@ class DriverFactory:
 			Output test sequence
 
 			Parameters:
-				- name (str): IO name (eg: GPIO_3_8)
+				- name (str): IO name (eg: "GPIO_3_8")
 			"""
-		self.output = DriverIOOutput(name)
+		self.resource = DriverIOOutput(name)
 		print("Output\t" + name + "\t= on")
-		self.output.set_on()
+		self.resource.set_on()
 		time.sleep(0.5)
 		print("Output\t" + name + "\t= off")
-		self.output.set_off()
+		self.resource.set_off()
 
 	# Test input
 	def test_input(self, name: str):
@@ -50,10 +46,10 @@ class DriverFactory:
 			Input test sequence
 
 			Parameters:
-				- name (str): IO name (eg: GPIO_3_4)
+				- name (str): IO name (eg: "GPIO_3_4")
 			"""
-		self.input = DriverIOInput(name)
-		if self.input.is_on():
+		self.resource = DriverIOInput(name)
+		if self.resource.is_on():
 			print("Input\t" + name + "\t= on")
 		else:
 			print("Input\t" + name + "\t= off")
@@ -64,14 +60,14 @@ class DriverFactory:
 			Serial port test sequence
 
 			Parameters:
-				- name (str): Serial port name (eg: COM1)
+				- name (str): Serial port name (eg: "COM_1")
 			"""
 		try:
-			self.serial = DriverSerial(name, 9600, 32, 0.15)
-			self.serial.open()
-			self.serial.write("Test".encode("ascii"))
-			result = self.serial.read(32).decode()
-			self.serial.close()
+			self.resource = DriverSerial(name, 9600, 32, 0.15)
+			self.resource.open()
+			self.resource.write("Test".encode("ascii"))
+			result = self.resource.read(32).decode()
+			self.resource.close()
 			if result == "Test":
 				print("Serial\t" + name + "\t\t= success")
 			else:
@@ -86,7 +82,7 @@ class DriverFactory:
 			I2C port test sequence
 
 			Parameters:
-				- name (str): I2C port name (eg: I2C1)
+				- name (str): I2C port name (eg: "I2C_1")
 			"""
 		# TODO: to implement
 		print("I2C\t\t" + name + "\t\t= not implemented")
@@ -97,7 +93,7 @@ class DriverFactory:
 			SPI port test sequence
 
 			Parameters:
-				- name (str): SPI port name (eg: SPI4)
+				- name (str): SPI port name (eg: "SPI_4")
 			"""
 		# TODO: to implement
 		print("SPI\t\t" + name + "\t\t= not implemented")
@@ -108,10 +104,21 @@ class DriverFactory:
 			SD port test sequence
 
 			Parameters:
-				- name (str): SD port name (eg: SD1)
+				- name (str): SD port name (eg: "SD_1")
 			"""
 		# TODO: to implement
-		print("SD\t\t" + name + "\t\t\t= not implemented")
+		print("SD\t\t" + name + "\t\t= not implemented")
+
+	# Test RTC
+	def test_rtc(self, name: str):
+		"""
+			RTC test sequence
+
+			Parameters:
+				- name (str): RTC name (eg: "RTC_1")
+			"""
+		# TODO: to implement
+		print("RTC\t\t" + name + "\t\t= not implemented")
 
 
 # Test function
@@ -140,6 +147,8 @@ if __name__ == "__main__":
 	factory.test_output("GPIO_3_14")
 	# PPS
 	factory.test_input("GPIO_4_14")
+	# SD_CD (uSD card slot SD1)
+	factory.test_input("GPIO_1_19")
 	# CMDV2_1
 	factory.test_output("GPIO_3_8")
 	# CMDV2_2
@@ -169,24 +178,26 @@ if __name__ == "__main__":
 	# ALARMS_7 (expansion connector E2)
 	factory.test_input("GPIO_3_2")
 	# RXV2_1, TXV2_1
-	factory.test_serial("COM1")
+	factory.test_serial("COM_1")
 	# RXV2_2, TXV2_2
-	factory.test_serial("COM2")
+	factory.test_serial("COM_2")
 	# RXV2_3, TXV2_3
-	factory.test_serial("COM3")
+	factory.test_serial("COM_3")
 	# RXV2_4, TXV2_4
-	factory.test_serial("COM4")
+	factory.test_serial("COM_4")
 	# RXV2_5, TXV2_5
-	factory.test_serial("COM5")
+	factory.test_serial("COM_5")
 	# RXV2_6, TXV2_6
-	factory.test_serial("COM6")
+	factory.test_serial("COM_6")
 	# RXV2_7, TXV2_7 (expansion connector E2)
-	factory.test_serial("COM7")
+	factory.test_serial("COM_7")
 	# RXV2_8, TXV2_8
-	factory.test_serial("COM8")
+	factory.test_serial("COM_8")
 	# I2CV2 (expansion connector E2)
-	factory.test_i2c("I2C1")
+	factory.test_i2c("I2C_1")
 	# SPIV2 (expansion connector E2)
-	factory.test_spi("SPI4")
-	# SD card (uSD card slot SD1)
-	factory.test_sd("SD1")
+	factory.test_spi("SPI_4")
+	# SD card access (uSD card slot SD1)
+	factory.test_sd("USDHC_1")
+	# RTC
+	factory.test_rtc("RTC_1")

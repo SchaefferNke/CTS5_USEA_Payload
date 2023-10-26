@@ -5,15 +5,21 @@
 	"""
 
 # Standard libraries
+import os
 import sys
+import time
+import datetime
 import zipfile
+import traceback
 
 # Project libraries
-from system.serial_lib import *
-from system.timer_lib import *
-from system.share_lib import *
+from system.serial_lib import DriverSerial
+from system.timer_lib import DriverTimer
+from system.share_lib import DataShare, FileShare
 # TODO : pas d'import du code utilisateur
 from user.senso import TestSenso
+from system.trace_lib import trace_log
+from system.const import *
 
 
 # Compute NMEA checksum (receive)
@@ -86,7 +92,7 @@ class DriverEmap:
 	# Create resource
 	def __init__(self):
 		# Manager
-		self.serial = DriverSerial("COM1", 57600, len("DATA,xxx,xxxx,*CS\r\n") + 512, 0.15)
+		self.serial = DriverSerial("COM_1", 57600, len("DATA,xxx,xxxx,*CS\r\n") + 512, 0.15)
 		self.timer = DriverTimer(path, "emap")
 		# TODO: Isoler la classe capteur
 		self.payload_step = DataShare("senso_step")
@@ -152,6 +158,21 @@ class DriverEmap:
 path = "./"
 emap_driver = DriverEmap()
 
+
+# Cleanup folder
+def cleanup_folder(path_name: str):
+	"""
+		Cleanup a folder
+
+		Parameters:
+			- path_name (str): folder path
+		"""
+	# List files in folder
+	files = os.listdir(path_name)
+	# For all files
+	for file_name in files:
+		# Remove file
+		os.remove(path_name + "/" + file_name)
 
 # Logger extract
 def logger_extract(size: int):
@@ -360,6 +381,18 @@ def manager(self):
 						reply = self.payload.test()
 						# Reply
 						self.send_ascii(path, "COMMANDACK," + str(len(reply)) + "," + reply)
+					# Flush system
+					elif split[2] == "!payload-cleanup":
+						# Clear folders
+						# TODO:
+						# cleanup_folder("./config")
+						# cleanup_folder("./ctd")
+						# cleanup_folder("./log")
+						# cleanup_folder("./payload")
+						# cleanup_folder("./share")
+						cleanup_folder("./temp")
+						# Reply
+						self.send_ascii(path, "COMMANDACK")
 					# Update
 					elif split[2] == "!payload-update":
 						# Check if update file exists
