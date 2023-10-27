@@ -41,6 +41,8 @@ if __name__ == "__main__":
 		os.makedirs("temp")
 	if not os.path.exists("log"):
 		os.makedirs("log")
+	if not os.path.exists("trash"):
+		os.makedirs("trash")
 
 	# Create tasks
 	thread_technical = threading.Thread(target=technical_driver.run, name="task_technical")
@@ -54,7 +56,7 @@ if __name__ == "__main__":
 	thread_emap.start()
 	thread_ctd.start()
 	thread_senso.start()
-	thread_silicate.start()
+	#thread_silicate.start()
 
 	# CPLD awake command
 	io_sleepn = DriverIOOutput("GPIO_3_27")

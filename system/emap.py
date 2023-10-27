@@ -95,7 +95,7 @@ class DriverEmap:
 		self.serial = DriverSerial("COM_1", 57600, len("DATA,xxx,xxxx,*CS\r\n") + 512, 0.15)
 		self.timer = DriverTimer(path, "emap")
 		# TODO: Isoler la classe capteur
-		self.payload_step = DataShare("senso_step")
+		self.payload_step = DataShare("payload_step")
 		self.payload = TestSenso()
 
 	# Send frame over EMAP link
@@ -372,25 +372,32 @@ def manager(self):
 					# User version
 					if split[2] == "?payload-version":
 						# Get version
-						reply = self.payload.get_version()
+						reply = USEA_VERSION + "-" + self.payload.get_version()
 						# Reply
 						self.send_ascii(path, "COMMANDACK," + str(len(reply)) + "," + reply)
 					# Sensor test
 					elif split[2] == "?payload-data":
 						# Acquire data
-						reply = self.payload.test()
+						reply = self.payload.get_data()
+						# Reply
+						self.send_ascii(path, "COMMANDACK," + str(len(reply)) + "," + reply)
+					# Autotest
+					elif split[2] == "!payload-autotest":
+						# Test
+						reply = "payload : ok\r\n" + self.payload.test()
 						# Reply
 						self.send_ascii(path, "COMMANDACK," + str(len(reply)) + "," + reply)
 					# Flush system
 					elif split[2] == "!payload-cleanup":
-						# Clear folders
+						# Clean folders
 						# TODO:
 						# cleanup_folder("./config")
 						# cleanup_folder("./ctd")
 						# cleanup_folder("./log")
-						# cleanup_folder("./payload")
+						cleanup_folder("./payload")
 						# cleanup_folder("./share")
 						cleanup_folder("./temp")
+						cleanup_folder("./trash")
 						# Reply
 						self.send_ascii(path, "COMMANDACK")
 					# Update
@@ -463,7 +470,9 @@ def manager(self):
 							break
 						# File size error
 						else:
-							# Keep file in memory
+							# Move file
+							os.rename(path + "payload/" + list_name, path + "trash/" + list_name)
+							# Next
 							continue
 					# No file
 					if no_file:

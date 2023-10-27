@@ -20,6 +20,9 @@ from system.share_lib import DataShare, get_navigation, get_profile
 from system.trace_lib import trace_log
 from system.const import *
 
+# Versioning
+SILICATE_VERSION = "v1.0.0"
+
 
 # Compute NMEA checksum (receive)
 def nmea_checksum_check(frame: bytes) -> bool:
@@ -75,6 +78,17 @@ class DriverSilicate:
 		self.serial = DriverSerial("COM_5", 57600, len("DATA,xxx,xxxx,*CS\r\n") + 512, 0.15)
 		self.timer = DriverTimer(path, "silicate")
 		self.share_step = DataShare("silicate_step")
+
+	# Sensor version
+	@staticmethod
+	def get_version() -> str:
+		"""
+			Get version
+
+			Returns:
+				- str: version string
+			"""
+		return SILICATE_VERSION
 
 	# Send frame over EMAP link
 	def send_ascii(self, trace_path: str, frame: str):

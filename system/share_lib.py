@@ -245,7 +245,7 @@ def get_profile(path: str) -> str:
 		Read profile identification string
 
 		Returns:
-			- str: profile identification string ("CCC_PP" format)
+			- str: profile identification string (eg: "003_01", "CCC_PP" format)
 		"""
 	# Create resource
 	share = FileShare(path, "profile.txt")
@@ -261,7 +261,7 @@ def get_navigation(path: str) -> int:
 		Read navigation identification string
 
 		Returns:
-			- str: navigation identification string ("XX" format)
+			- str: navigation identification string (eg: "NA", "XX" format)
 		"""
 	# Create resource
 	share = FileShare(path, "navigation.txt")

@@ -52,6 +52,9 @@ def acquisition_process(self, string: str) -> bool:
 		self.output.channel1 = float(split[2])
 		self.output.channel2 = float(split[3])
 		self.output.channel3 = float(split[4])
+		# Count success
+		if string == "Acquire":
+			self.tech.diagnosis_count_success()
 		# Result
 		result = True
 	# Error
@@ -59,12 +62,14 @@ def acquisition_process(self, string: str) -> bool:
 		# Print
 		trace_log(path, "SENSO    > Time-out")
 		# Count error
-		self.error_count = self.error_count + 1
+		if string == "Acquire":
+			self.tech.diagnosis_count_error()
 		# Result
 		result = False
 	# Count alarm
-	if not self.io_alarm.is_on():
-		self.alarm_count = self.alarm_count + 1
+	if string == "Acquire":
+		if not self.io_alarm.is_on():
+			self.tech.diagnosis_count_alarm()
 	# Power-off
 	self.io_power.set_off()
 	# Delay before new power-on (for proper operation of the sensor)
@@ -109,15 +114,14 @@ class DriverSenso:
 		self.serial = DriverSerial("COM_5", 19200, 128, 0.15)
 		self.timer = DriverTimer(path, "senso")
 		self.share_data = FileShare(path, "senso.txt")
-		self.share_step = DataShare("senso_step")
+		self.share_step = DataShare("payload_step")
+		self.tech = DriverTechnicalUser("SENSO")
 		# Output
 		self.output = DataSenso()
 		self.output.timestamp = 0.0
 		self.output.channel1 = 0.0
 		self.output.channel2 = 0.0
 		self.output.channel3 = 0.0
-		# Technical
-		self.tech = DriverTechnicalUser("SENSO")
 
 	# Get next task activity
 	def time_before_activity(self) -> float:
@@ -189,13 +193,13 @@ class TestSenso:
 			"""
 		return SENSO_VERSION
 
-	# Test sensor
-	def test(self) -> str:
+	# Dummy measurement
+	def get_data(self) -> str:
 		"""
-			Test process
+			Dummy measurement
 
 			Returns:
-				- str: result string
+				- str: result string (eg: "c1=15.367", "no reply" if error)
 			"""
 		# Acquire
 		if acquisition_process(self, "Test"):
@@ -208,18 +212,35 @@ class TestSenso:
 			# Reply
 			return "no reply"
 
+	# Test sensor
+	def test(self) -> str:
+		"""
+			Test process
 
-# Save data
-def save_data():
+			Returns:
+				- str: result string (eg: "senso   : ok", xxxxxxxx: ok/error format)
+			"""
+		# Acquire
+		if acquisition_process(self, "Autotest"):
+			# Reply
+			return "senso   : ok"
+		# Error
+		else:
+			# Reply
+			return "senso   : error"
+
+
+# Compression
+def compress():
 	"""
 		Compress the data files
 		"""
 	# Create names
-	zip_src_name = path + "payload/"
+	zip_src_name = path + "payload/" + get_profile(path) + "_payload.csv"
 	zip_tmp_name = path + "temp/" + get_profile(path) + "_payload.zip"
 	zip_dst_name = path + "payload/" + get_profile(path) + "_payload.zip"
 	# No file to compress
-	if not os.listdir(zip_src_name):
+	if not os.path.isfile(zip_src_name):
 		return
 	# Remove src archive
 	if os.path.isfile(zip_tmp_name):
@@ -229,17 +250,10 @@ def save_data():
 		os.remove(zip_dst_name)
 	# Create archive
 	zip_file = zipfile.ZipFile(zip_tmp_name, "w")
-	# For files in folder
-	while True:
-		# Scan directory
-		if not os.listdir(zip_src_name):
-			break
-		# File name
-		file_name = os.listdir(zip_src_name)[0]
-		# Add file
-		zip_file.write(zip_src_name + file_name, file_name, compress_type=zipfile.ZIP_DEFLATED)
-		# Remove file
-		os.remove(zip_src_name + file_name)
+	# Add file
+	zip_file.write(zip_src_name, get_profile(path) + "_payload.csv", compress_type=zipfile.ZIP_DEFLATED)
+	# Remove file
+	os.remove(zip_src_name)
 	# Close archive
 	zip_file.close()
 	# Move archive
@@ -310,25 +324,38 @@ def manager(self):
 					(navigation == USEA_NAVIGATION_STATE_ASCENT_1) or
 					(navigation == USEA_NAVIGATION_STATE_ASCENT_2) or
 					(navigation == USEA_NAVIGATION_STATE_ASCENT_3)):
-					# Acquisition rate
-					if self.timer.is_tick():
-						# Acquire
-						if self.acquire_sample():
-							# Print
-							trace_log(path, "SENSO    > Record")
-							# Share data
-							self.share_data.write(
-								f"{self.output.channel1:.3f}" + "," +
-								f"{self.output.channel2:.3f}" + "," +
-								f"{self.output.channel3:.3f}")
-							# Store data
-							file = open(file_name, "a+")
-							file.write(
-								f"{self.output.timestamp:.3f}" + "," +
-								f"{self.output.channel1:.3f}" + "," +
-								f"{self.output.channel2:.3f}" + "," +
-								f"{self.output.channel3:.3f}" + "\n")
-							file.close()
+					# Sensor broken
+					if not self.tech.diagnosis_is_broken():
+						# Acquisition rate
+						if self.timer.is_tick():
+							# Acquire
+							if self.acquire_sample():
+								# Print
+								trace_log(path, "SENSO    > Record")
+								# Share data
+								self.share_data.write(
+									f"{self.output.channel1:.3f}" + "," +
+									f"{self.output.channel2:.3f}" + "," +
+									f"{self.output.channel3:.3f}")
+								# Store data
+								file = open(file_name, "a+")
+								file.write(
+									f"{self.output.timestamp:.3f}" + "," +
+									f"{self.output.channel1:.3f}" + "," +
+									f"{self.output.channel2:.3f}" + "," +
+									f"{self.output.channel3:.3f}" + "\n")
+								file.close()
+							# Failure
+							else:
+								# Too many successive errors
+								if self.tech.diagnosis_get_successive_failure() >= 3:
+									# Declare the sensor broken
+									self.tech.diagnosis_set_broken()
+									# Print
+									trace_log(path, "SENSO    > Broken")
+						# Wait
+						else:
+							time.sleep(0.1)
 					# Wait
 					else:
 						time.sleep(0.1)
@@ -363,11 +390,15 @@ def manager(self):
 					# Share step
 					self.share_step.write(self.step)
 					# Simulate treatment delay
-					time.sleep(15.0)
+					# TODO: for test
+					time.sleep(5.0)
 					# Save errors
 					self.tech.diagnosis_save()
-					# Save data
-					save_data()
+					# Compress files
+					compress()
+					# Simulate treatment delay
+					# TODO: for test
+					time.sleep(5.0)
 					# Print
 					trace_log(path, "SENSO    > Stop processing")
 					# Stop processing

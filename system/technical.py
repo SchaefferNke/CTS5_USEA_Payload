@@ -14,7 +14,7 @@ import traceback
 
 # Project libraries
 from system.timer_lib import DriverTimer
-from system.share_lib import get_navigation, get_profile
+from system.share_lib import DataShare, get_navigation, get_profile
 from system.trace_lib import trace_log
 from system.const import *
 
@@ -30,6 +30,7 @@ class DriverTechnicalSystem:
 		# Manager
 		self.step = USEA_PAYLOAD_STEP_IDLE
 		self.timer = DriverTimer(path, "technical")
+		self.payload_step = DataShare("payload_step")
 		# Counters
 		self.activity_start = 0.0
 		self.activity_run = 0.0
@@ -144,7 +145,7 @@ class DriverTechnicalSystem:
 		# Write power info
 		tech_file.write(
 			"[POWER]\n" +
-			"Payload=" + f"{activity_percent:.0f}" + " %\n")
+			"PAYLOAD=" + f"{activity_percent:.0f}" + " %\n")
 		# Write user info
 		if os.path.isfile(user_file):
 			# Read user info
@@ -183,31 +184,74 @@ class DriverTechnicalUser:
 		# Failure flags
 		self.error_count = 0
 		self.alarm_count = 0
+		self.successive_failure_count = 0
+		self.is_broken = False
 
-	# Reset diagnosis counters
+	# Reset diagnosis
 	def diagnosis_reset(self):
 		"""
-			Reset the diagnosis counters
+			Reset the diagnosis counters and flags
 			"""
 		# Reset
 		self.error_count = 0
 		self.alarm_count = 0
+		self.successive_failure_count = 0
+		self.is_broken = False
+
+	# Update success diagnosis
+	def diagnosis_count_success(self):
+		"""
+			Increment success counter
+			"""
+		# Reset counter
+		self.successive_failure_count = 0
 
 	# Update error diagnosis
-	def diagnosis_error(self):
+	def diagnosis_count_error(self):
 		"""
 			Increment error counter
 			"""
 		# Increment
 		self.error_count = self.error_count + 1
+		self.successive_failure_count = self.successive_failure_count + 1
 
 	# Update alarm diagnosis
-	def diagnosis_alarm(self):
+	def diagnosis_count_alarm(self):
 		"""
 			Increment alarm counter
 			"""
 		# Increment
 		self.alarm_count = self.alarm_count + 1
+
+	# Get successive errors number
+	def diagnosis_get_successive_failure(self) -> int:
+		"""
+			Get successive errors counter
+
+			Returns:
+				- int: number of successive errors
+			"""
+		# Result
+		return self.successive_failure_count
+
+	# Set broken diagnosis
+	def diagnosis_set_broken(self):
+		"""
+			Set broken flag
+			"""
+		# Set flag
+		self.is_broken = True
+
+	# Get broken diagnosis
+	def diagnosis_is_broken(self) -> bool:
+		"""
+			Get broken status
+
+			Returns:
+				- bool: True if sensor flag is set
+			"""
+		# Result
+		return self.is_broken
 
 	# Save diagnosis
 	def diagnosis_save(self):
@@ -215,19 +259,22 @@ class DriverTechnicalUser:
 			Save diagnosis into technical file
 			"""
 		# If errors
-		if self.error_count or self.alarm_count:
+		if self.error_count or self.alarm_count or self.is_broken:
 			# Create name
-			error_dst_name = path + "share/payload.txt"
+			error_dst_name = path + "share/technical.txt"
 			# Remove dst file
 			if os.path.isfile(error_dst_name):
 				os.remove(error_dst_name)
 			# Write content
 			file_dst = open(error_dst_name, "w")
 			file_dst.write("[ALARM]\n")
-			if self.error_count:
-				file_dst.write(self.name + "default (" + str(self.error_count) + ")\n")
+			if self.is_broken:
+				file_dst.write(self.name + " broken\n")
+			else:
+				if self.error_count:
+					file_dst.write(self.name + " default (" + str(self.error_count) + ")\n")
 			if self.alarm_count:
-				file_dst.write(self.name + "alarm (" + str(self.alarm_count) + ")\n")
+				file_dst.write(self.name + " alarm (" + str(self.alarm_count) + ")\n")
 			file_dst.close()
 
 
@@ -275,8 +322,8 @@ def manager(self):
 
 			# Treatment
 			elif self.step == USEA_PAYLOAD_STEP_TREAT:
-				# Processing in progress
-				if not navigation == USEA_NAVIGATION_STATE_DATA_PROCESSING:
+				# Sensor processing
+				if not self.payload_step.read() == USEA_PAYLOAD_STEP_TREAT:
 					# Trace
 					trace_log(path, "TECH     > Stop monitoring")
 					# Save diagnosis
@@ -315,6 +362,6 @@ if __name__ == "__main__":
 	sys.path.insert(1, "../")
 	path = "../"
 	# Allocate resource
-	technical = DriverTechnical()
+	technical = DriverTechnicalSystem()
 	# Run
 	technical.run()
