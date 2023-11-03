@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>config &#8212; USEA-Payload documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="_static/nature.css?v=2388c7e7" />
+    <script src="_static/documentation_options.js?v=8d563738"></script>
+    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="_static/Picto32x32.ico"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="io_lib" href="io_lib.html" />
+    <link rel="prev" title="technical" href="technical.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="io_lib.html" title="io_lib"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="technical.html" title="technical"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">USEA-Payload documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" accesskey="U">System tasks</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">config</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="config">
+<h1>config<a class="headerlink" href="#config" title="Link to this heading">¶</a></h1>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This module is used to interface user source code with the system</p>
+</div>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p id="module-config">config.py</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="config.UserConfig">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">config.</span></span><span class="sig-name descname"><span class="pre">UserConfig</span></span><a class="headerlink" href="#config.UserConfig" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>UserConfig class: user application configuration</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="config.UserConfig.get_data">
+<span class="sig-name descname"><span class="pre">get_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#config.UserConfig.get_data" title="Link to this definition">¶</a></dt>
+<dd><p>Dummy measurement</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><ul class="simple">
+<li><p>str: result string (eg: “c1=15.367”, “no reply” if error)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="config.UserConfig.get_time_before_activity">
+<span class="sig-name descname"><span class="pre">get_time_before_activity</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#config.UserConfig.get_time_before_activity" title="Link to this definition">¶</a></dt>
+<dd><p>Get the time remaining before the next activity</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><ul class="simple">
+<li><p>float: time remaining before the next activity (sec)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="config.UserConfig.get_version">
+<span class="sig-name descname"><span class="pre">get_version</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#config.UserConfig.get_version" title="Link to this definition">¶</a></dt>
+<dd><p>Get version</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><ul class="simple">
+<li><p>str: version string</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="config.UserConfig.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#config.UserConfig.run" title="Link to this definition">¶</a></dt>
+<dd><p>Working task</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="config.UserConfig.test">
+<span class="sig-name descname"><span class="pre">test</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#config.UserConfig.test" title="Link to this definition">¶</a></dt>
+<dd><p>Test process</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><ul class="simple">
+<li><p>str: result string (“xxxxxxxx: ok/error” format)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">config</a><ul>
+<li><a class="reference internal" href="#config.UserConfig"><code class="docutils literal notranslate"><span class="pre">UserConfig</span></code></a><ul>
+<li><a class="reference internal" href="#config.UserConfig.get_data"><code class="docutils literal notranslate"><span class="pre">UserConfig.get_data()</span></code></a></li>
+<li><a class="reference internal" href="#config.UserConfig.get_time_before_activity"><code class="docutils literal notranslate"><span class="pre">UserConfig.get_time_before_activity()</span></code></a></li>
+<li><a class="reference internal" href="#config.UserConfig.get_version"><code class="docutils literal notranslate"><span class="pre">UserConfig.get_version()</span></code></a></li>
+<li><a class="reference internal" href="#config.UserConfig.run"><code class="docutils literal notranslate"><span class="pre">UserConfig.run()</span></code></a></li>
+<li><a class="reference internal" href="#config.UserConfig.test"><code class="docutils literal notranslate"><span class="pre">UserConfig.test()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="io_lib.html" title="io_lib"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="technical.html" title="technical"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">USEA-Payload documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" >System tasks</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">config</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2023, nke Instrumentation.
+    </div>
+  </body>
+</html>

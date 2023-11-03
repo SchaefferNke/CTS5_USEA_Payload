@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 	timer_lib.py
-	"""
+"""
 
 # Standard libraries
 import time
@@ -32,15 +32,13 @@ class DriverTimer:
 	# Create resource
 	def __init__(self, path: str, name: str):
 		# Manager
-		self.path = path
-		self.name = name
-		self.active = False
-		self.one_shot = False
-		self.duration = 0.0
-		self.end = 0.0
-		if name in timer_locks:
-			return
-		else:
+		self._path = path
+		self._name = name
+		self._active = False
+		self._one_shot = False
+		self._duration = 0.0
+		self._end = 0.0
+		if not name in timer_locks:
 			timer_locks[name] = threading.Lock()
 
 	# Start (one-shot)
@@ -50,18 +48,18 @@ class DriverTimer:
 
 			Parameters:
 				- interval (float): interval of time (sec)
-			"""
+		"""
 		# Trace
-		trace_log(self.path, "TIMER    > Start tmr_" + self.name + " one-shot " + str(interval) + " sec")
+		trace_log(self._path, "TIMER    > Start tmr_" + self._name + " one-shot " + str(interval) + " sec")
 		# Wait for resource
-		timer_locks[self.name].acquire()
+		timer_locks[self._name].acquire()
 		# Configure
-		self.one_shot = True
-		self.end = datetime.datetime.now().timestamp() + interval
+		self._one_shot = True
+		self._end = datetime.datetime.now().timestamp() + interval
 		# Activate
-		self.active = True
+		self._active = True
 		# Release resource
-		timer_locks[self.name].release()
+		timer_locks[self._name].release()
 
 	# Start (base time)
 	def start_base_time(self, period: float):
@@ -70,33 +68,33 @@ class DriverTimer:
 
 			Parameters:
 				- period (float): base time (sec)
-			"""
+		"""
 		# Trace
-		trace_log(self.path, "TIMER    > Start tmr_" + self.name + " base time " + str(period) + " sec")
+		trace_log(self._path, "TIMER    > Start tmr_" + self._name + " base time " + str(period) + " sec")
 		# Wait for resource
-		timer_locks[self.name].acquire()
+		timer_locks[self._name].acquire()
 		# Configure
-		self.one_shot = False
-		self.duration = period
-		self.end = datetime.datetime.now().timestamp() + period
+		self._one_shot = False
+		self._duration = period
+		self._end = datetime.datetime.now().timestamp() + period
 		# Activate
-		self.active = True
+		self._active = True
 		# Release resource
-		timer_locks[self.name].release()
+		timer_locks[self._name].release()
 
 	# Stop
 	def stop(self):
 		"""
 			Stop a timer
-			"""
+		"""
 		# Trace
-		trace_log(self.path, "TIMER    > Stop tmr_" + self.name)
+		trace_log(self._path, "TIMER    > Stop tmr_" + self._name)
 		# Wait for resource
-		timer_locks[self.name].acquire()
+		timer_locks[self._name].acquire()
 		# Deactivate
-		self.active = False
+		self._active = False
 		# Release resource
-		timer_locks[self.name].release()
+		timer_locks[self._name].release()
 
 	# Test timer
 	def is_tick(self) -> bool:
@@ -105,25 +103,25 @@ class DriverTimer:
 
 			Returns:
 				- bool: True if the time period has elapsed
-			"""
+		"""
 		# Wait for resource
-		timer_locks[self.name].acquire()
+		timer_locks[self._name].acquire()
 		# Activated
-		if self.active:
+		if self._active:
 			# Get result
-			if datetime.datetime.now().timestamp() < self.end:
+			if datetime.datetime.now().timestamp() < self._end:
 				# Result
 				result = False
 			else:
 				# One-shot mode
-				if self.one_shot:
+				if self._one_shot:
 					# Deactivate
-					self.active = False
+					self._active = False
 				# Base-time mode
 				else:
 					# Compute next time
-					while datetime.datetime.now().timestamp() >= self.end:
-						self.end = self.end + self.duration
+					while datetime.datetime.now().timestamp() >= self._end:
+						self._end = self._end + self._duration
 				# Result
 				result = True
 		# Deactivated
@@ -131,7 +129,7 @@ class DriverTimer:
 			# Result
 			result = False
 		# Release resource
-		timer_locks[self.name].release()
+		timer_locks[self._name].release()
 		# Result
 		return result
 
@@ -142,19 +140,19 @@ class DriverTimer:
 
 			Parameters:
 				- duration (float): time duration (sec)
-			"""
+		"""
 		# Trace
-		trace_log(self.path, "TIMER    > Wait tmr_" + self.name + " " + str(duration) + " sec")
+		trace_log(self._path, "TIMER    > Wait tmr_" + self._name + " " + str(duration) + " sec")
 		# Wait for resource
-		timer_locks[self.name].acquire()
+		timer_locks[self._name].acquire()
 		# Activate
-		self.active = True
+		self._active = True
 		# Configure
-		self.end = datetime.datetime.now().timestamp() + duration
+		self._end = datetime.datetime.now().timestamp() + duration
 		# Wait loop
 		while True:
 			# Compute remaining time
-			remaining = self.end - datetime.datetime.now().timestamp()
+			remaining = self._end - datetime.datetime.now().timestamp()
 			# Close to the end ?
 			if remaining > 1.5:
 				time.sleep(1.0)
@@ -162,9 +160,9 @@ class DriverTimer:
 			if remaining <= 0.0:
 				break
 		# Deactivate
-		self.active = False
+		self._active = False
 		# Release resource
-		timer_locks[self.name].release()
+		timer_locks[self._name].release()
 
 	# Wait for a date
 	def wait_until_date(self, date: str):
@@ -173,21 +171,21 @@ class DriverTimer:
 
 			Parameters:
 				- date (str): date and time ("YY-MM-DD HH:MM:SS" format)
-			"""
+		"""
 		# Trace
-		trace_log(self.path, "TIMER    > Wait tmr_" + self.name + " " + date)
+		trace_log(self._path, "TIMER    > Wait tmr_" + self._name + " " + date)
 		# Wait for resource
-		timer_locks[self.name].acquire()
+		timer_locks[self._name].acquire()
 		# Extract date
 		date_time = datetime.datetime.strptime(date, "%y-%m-%d %H:%M:%S")
 		# Activate
-		self.active = True
+		self._active = True
 		# Configure
-		self.end = date_time.timestamp()
+		self._end = date_time.timestamp()
 		# Wait loop
 		while True:
 			# Compute remaining time
-			remaining = self.end - datetime.datetime.now().timestamp()
+			remaining = self._end - datetime.datetime.now().timestamp()
 			# Close to the end ?
 			if remaining > 1.5:
 				time.sleep(1.0)
@@ -195,30 +193,30 @@ class DriverTimer:
 			if remaining <= 0.0:
 				break
 		# Deactivate
-		self.active = False
+		self._active = False
 		# Release resource
-		timer_locks[self.name].release()
+		timer_locks[self._name].release()
 
 	# Wait synchronization
 	def wait_until_synchro(self):
 		"""
 			Wait until the current second to change
-			"""
+		"""
 		# Trace
-		trace_log(self.path, "TIMER    > Synchro tmr_" + self.name)
+		trace_log(self._path, "TIMER    > Synchro tmr_" + self._name)
 		# Wait for resource
-		timer_locks[self.name].acquire()
+		timer_locks[self._name].acquire()
 		# Activate
-		self.active = True
+		self._active = True
 		# Configure
 		end = datetime.datetime.now()
 		# Wait loop
 		while end.second == datetime.datetime.now().second:
 			continue
 		# Deactivate
-		self.active = False
+		self._active = False
 		# Release resource
-		timer_locks[self.name].release()
+		timer_locks[self._name].release()
 
 	# Get remaining time
 	def remaining_time(self) -> float:
@@ -227,22 +225,22 @@ class DriverTimer:
 
 			Returns:
 				- float: remaining time (sec)
-			"""
+		"""
 		# Wait for resource
-		timer_locks[self.name].acquire()
+		timer_locks[self._name].acquire()
 		# Compute remaining time
-		remaining = self.end - datetime.datetime.now().timestamp()
+		remaining = self._end - datetime.datetime.now().timestamp()
 		# Integrity test
 		if remaining < 0.0:
 			# Elapsed
 			remaining = 0
 			# Deactivate
-			if self.one_shot:
-				self.active = False
+			if self._one_shot:
+				self._active = False
 		# Activated ?
-		if not self.active:
+		if not self._active:
 			remaining = -1
 		# Release resource
-		timer_locks[self.name].release()
+		timer_locks[self._name].release()
 		# Result
 		return remaining

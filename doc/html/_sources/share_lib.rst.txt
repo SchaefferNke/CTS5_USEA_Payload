@@ -7,5 +7,5 @@ share\_lib
 
 .. automodule:: share_lib
    :members:
-   :undoc-members:
+   :no-undoc-members:
    :show-inheritance:

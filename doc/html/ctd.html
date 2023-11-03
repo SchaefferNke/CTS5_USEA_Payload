@@ -7,7 +7,7 @@
 
     <title>ctd &#8212; USEA-Payload documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
-    <link rel="stylesheet" type="text/css" href="_static/nature.css?v=5788fb53" />
+    <link rel="stylesheet" type="text/css" href="_static/nature.css?v=2388c7e7" />
     <script src="_static/documentation_options.js?v=8d563738"></script>
     <script src="_static/doctools.js?v=888ff710"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
@@ -15,7 +15,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="emap" href="emap.html" />
-    <link rel="prev" title="system" href="modules.html" /> 
+    <link rel="prev" title="System tasks" href="modules.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -30,10 +30,10 @@
           <a href="emap.html" title="emap"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="modules.html" title="system"
+          <a href="modules.html" title="System tasks"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">USEA-Payload documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="modules.html" accesskey="U">system</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" accesskey="U">System tasks</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">ctd</a></li> 
       </ul>
     </div>  
@@ -54,23 +54,10 @@
 </div>
 <p id="module-ctd">ctd.py</p>
 <dl class="py class">
-<dt class="sig sig-object py" id="ctd.DriverCtd">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ctd.</span></span><span class="sig-name descname"><span class="pre">DriverCtd</span></span><a class="headerlink" href="#ctd.DriverCtd" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="ctd.DataCTD">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ctd.</span></span><span class="sig-name descname"><span class="pre">DataCTD</span></span><a class="headerlink" href="#ctd.DataCTD" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>DriverCtd class: store and share CTD triplet</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="ctd.DriverCtd.run">
-<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ctd.DriverCtd.run" title="Link to this definition">¶</a></dt>
-<dd><p>Working task</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="ctd.DriverCtdContent">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ctd.</span></span><span class="sig-name descname"><span class="pre">DriverCtdContent</span></span><a class="headerlink" href="#ctd.DriverCtdContent" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>DataCtd class: CTD sample</p>
+<p>DataCTD class: CTD data</p>
 <dl class="simple">
 <dt>Attributes:</dt><dd><ul class="simple">
 <li><p>timestamp (float): timestamp (Unix Epoch)</p></li>
@@ -82,10 +69,18 @@
 </dl>
 </dd></dl>
 
-<dl class="py function">
-<dt class="sig sig-object py" id="ctd.manager">
-<span class="sig-prename descclassname"><span class="pre">ctd.</span></span><span class="sig-name descname"><span class="pre">manager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ctd.manager" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="ctd.DriverCTD">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ctd.</span></span><span class="sig-name descname"><span class="pre">DriverCTD</span></span><a class="headerlink" href="#ctd.DriverCTD" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>DriverCTD class: store and share CTD triplet</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="ctd.DriverCTD.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ctd.DriverCTD.run" title="Link to this definition">¶</a></dt>
+<dd><p>Working task</p>
+</dd></dl>
+
+</dd></dl>
 
 </section>
 
@@ -100,12 +95,11 @@
     <h3><a href="index.html">Table of Contents</a></h3>
     <ul>
 <li><a class="reference internal" href="#">ctd</a><ul>
-<li><a class="reference internal" href="#ctd.DriverCtd"><code class="docutils literal notranslate"><span class="pre">DriverCtd</span></code></a><ul>
-<li><a class="reference internal" href="#ctd.DriverCtd.run"><code class="docutils literal notranslate"><span class="pre">DriverCtd.run()</span></code></a></li>
+<li><a class="reference internal" href="#ctd.DataCTD"><code class="docutils literal notranslate"><span class="pre">DataCTD</span></code></a></li>
+<li><a class="reference internal" href="#ctd.DriverCTD"><code class="docutils literal notranslate"><span class="pre">DriverCTD</span></code></a><ul>
+<li><a class="reference internal" href="#ctd.DriverCTD.run"><code class="docutils literal notranslate"><span class="pre">DriverCTD.run()</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#ctd.DriverCtdContent"><code class="docutils literal notranslate"><span class="pre">DriverCtdContent</span></code></a></li>
-<li><a class="reference internal" href="#ctd.manager"><code class="docutils literal notranslate"><span class="pre">manager()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -138,10 +132,10 @@
           <a href="emap.html" title="emap"
              >next</a> |</li>
         <li class="right" >
-          <a href="modules.html" title="system"
+          <a href="modules.html" title="System tasks"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">USEA-Payload documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="modules.html" >system</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" >System tasks</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">ctd</a></li> 
       </ul>
     </div>

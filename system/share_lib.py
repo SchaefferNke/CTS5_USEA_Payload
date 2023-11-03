@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 	share_lib.py
-	"""
+"""
 
 # Standard libraries
 import os
@@ -26,12 +26,12 @@ class EventShare:
 
 		Operations:
 			- Binary semaphore used for synchronization purpose
-		"""
+	"""
 
 	# Create resource
 	def __init__(self, name: str):
 		# Manager
-		self.name = name
+		self._name = name
 		if not name in events:
 			events[name] = threading.Event()
 
@@ -39,17 +39,17 @@ class EventShare:
 	def set(self):
 		"""
 			Set the event
-			"""
+		"""
 		# Set
-		events[self.name].set()
+		events[self._name].set()
 
 	# Reset event
 	def reset(self):
 		"""
 			Clear the event
-			"""
+		"""
 		# Reset
-		events[self.name].clear()
+		events[self._name].clear()
 
 	# Test event
 	def is_set(self):
@@ -58,17 +58,17 @@ class EventShare:
 
 			Returns:
 				- bool: True if the event is set
-			"""
+		"""
 		# Test
-		return events[self.name].is_set()
+		return events[self._name].is_set()
 
 	# Wait event
 	def wait(self):
 		"""
 			Wait until the event is set
-			"""
+		"""
 		# Wait
-		events[self.name].wait()
+		events[self._name].wait()
 
 
 # Lock list
@@ -82,7 +82,7 @@ class DataShareContent:
 
 		Attributes:
 			- value (object): variable object
-		"""
+	"""
 
 	# Variable
 	def __init__(self):
@@ -99,7 +99,7 @@ class DataShare:
 
 		Operations:
 			- Binary semaphore used for mutual exclusion on a resource variable
-		"""
+	"""
 
 	# Variable
 	variable = DataShareContent()
@@ -107,7 +107,7 @@ class DataShare:
 	# Create resource
 	def __init__(self, name: str):
 		# Manager
-		self.name = name
+		self._name = name
 		if not name in var_locks:
 			var_locks[name] = threading.Lock()
 
@@ -118,13 +118,13 @@ class DataShare:
 
 			Returns:
 				- object: data object
-			"""
+		"""
 		# Wait for resource
-		var_locks[self.name].acquire()
+		var_locks[self._name].acquire()
 		# Read value
 		value = self.variable.value
 		# Release resource
-		var_locks[self.name].release()
+		var_locks[self._name].release()
 		# Result
 		return value
 
@@ -135,13 +135,13 @@ class DataShare:
 
 			Parameters:
 				- value (object): data object
-			"""
+		"""
 		# Wait for resource
-		var_locks[self.name].acquire()
+		var_locks[self._name].acquire()
 		# Write value
 		self.variable.value = value
 		# Release resource
-		var_locks[self.name].release()
+		var_locks[self._name].release()
 
 
 # Lock list
@@ -156,7 +156,7 @@ class FileShareContent:
 		Attributes:
 			- timestamp (str): Unix Epoch timestamp
 			- string (str): event
-		"""
+	"""
 
 	# File content
 	def __init__(self):
@@ -174,13 +174,13 @@ class FileShare:
 
 		Operations:
 			- Binary semaphore used for mutual exclusion on a resource file
-		"""
+	"""
 
 	# Create resource
 	def __init__(self, path: str, filename: str):
 		# Manager
-		self.path = path
-		self.filename = filename
+		self._path = path
+		self._filename = filename
 		if not filename in file_locks:
 			file_locks[filename] = threading.Lock()
 		# File content
@@ -195,18 +195,18 @@ class FileShare:
 
 			Returns:
 				- object: content (timestamp and string)
-			"""
+		"""
 		# Resource doesn't exist
-		if not os.path.isfile(self.path + "share/" + self.filename):
+		if not os.path.isfile(self._path + "share/" + self._filename):
 			# Fill empty content
 			self.content.timestamp = 0.0
 			self.content.string = "?"
 			# Result
 			return str(self.content)
 		# Wait for resource
-		file_locks[self.filename].acquire()
+		file_locks[self._filename].acquire()
 		# Read file
-		file = open(self.path + "share/" + self.filename, "r")
+		file = open(self._path + "share/" + self._filename, "r")
 		info = file.read()
 		file.close()
 		# Parse
@@ -215,7 +215,7 @@ class FileShare:
 		self.content.timestamp = float(split[0])
 		self.content.string = split[1]
 		# Release resource
-		file_locks[self.filename].release()
+		file_locks[self._filename].release()
 		# Result
 		return str(self.content)
 
@@ -226,17 +226,17 @@ class FileShare:
 
 			Parameters:
 				- info (str): string to write
-			"""
+		"""
 		# Wait for resource
-		file_locks[self.filename].acquire()
+		file_locks[self._filename].acquire()
 		# Timestamp
 		now = datetime.datetime.now()
 		# Write file
-		file = open(self.path + "share/" + self.filename, "w")
+		file = open(self._path + "share/" + self._filename, "w")
 		file.write(f"{now.timestamp():.3f}" + ";" + info)
 		file.close()
 		# Release resource
-		file_locks[self.filename].release()
+		file_locks[self._filename].release()
 
 
 # Get current profile
@@ -246,7 +246,7 @@ def get_profile(path: str) -> str:
 
 		Returns:
 			- str: profile identification string (eg: "003_01", "CCC_PP" format)
-		"""
+	"""
 	# Create resource
 	share = FileShare(path, "profile.txt")
 	# Read resource
@@ -262,7 +262,7 @@ def get_navigation(path: str) -> int:
 
 		Returns:
 			- str: navigation identification string (eg: "NA", "XX" format)
-		"""
+	"""
 	# Create resource
 	share = FileShare(path, "navigation.txt")
 	# Read resource
@@ -313,7 +313,7 @@ def get_pressure(path: str) -> float:
 
 		Returns:
 			- float: pressure value (dbar)
-		"""
+	"""
 	# Create resource
 	share = FileShare(path, "pressure.txt")
 	# Read resource

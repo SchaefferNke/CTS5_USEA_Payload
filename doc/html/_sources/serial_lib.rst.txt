@@ -7,5 +7,6 @@ serial\_lib
 
 .. automodule:: serial_lib
    :members:
-   :undoc-members:
+   :no-undoc-members:
+   :exclude-members: name_to_serial_name
    :show-inheritance:

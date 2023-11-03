@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 	senso.py
-	"""
+"""
 
 # Standard libraries
 import os
@@ -32,15 +32,15 @@ def acquisition_process(self, string: str) -> bool:
 
 		Returns:
 			- bool: True if the acquisition process is successful
-		"""
+	"""
 	# Print
 	trace_log(path, "SENSO    > " + string)
 	# Power-on
-	self.io_power.set_on()
+	self._io_power.set_on()
 	# Warm-up
-	time.sleep(3.5)
+	time.sleep(1.5)
 	# Acquisition
-	frame_data = self.serial.receive_ascii(3.0)
+	frame_data = self._serial.receive_ascii(3.0)
 	# Treatment
 	if "SENSO,D," in frame_data[0:8]:
 		# Parse
@@ -54,7 +54,7 @@ def acquisition_process(self, string: str) -> bool:
 		self.output.channel3 = float(split[4])
 		# Count success
 		if string == "Acquire":
-			self.tech.diagnosis_count_success()
+			self._tech.diagnosis_count_success()
 		# Result
 		result = True
 	# Error
@@ -63,15 +63,15 @@ def acquisition_process(self, string: str) -> bool:
 		trace_log(path, "SENSO    > Time-out")
 		# Count error
 		if string == "Acquire":
-			self.tech.diagnosis_count_error()
+			self._tech.diagnosis_count_error()
 		# Result
 		result = False
 	# Count alarm
 	if string == "Acquire":
-		if not self.io_alarm.is_on():
-			self.tech.diagnosis_count_alarm()
+		if not self._io_alarm.is_on():
+			self._tech.diagnosis_count_alarm()
 	# Power-off
-	self.io_power.set_off()
+	self._io_power.set_off()
 	# Delay before new power-on (for proper operation of the sensor)
 	time.sleep(0.5)
 	# Result
@@ -79,16 +79,16 @@ def acquisition_process(self, string: str) -> bool:
 
 
 # Class definition
-class DataSenso:
+class DataSENSO:
 	"""
-		DataSenso class: sensor sample
+		DataSENSO class: sensor data
 
 		Attributes:
 			- timestamp (float): timestamp
 			- channel1 (float): channel 1 raw value
 			- channel2 (float): channel 2 raw value
 			- channel3 (float): channel 3 raw value
-		"""
+	"""
 
 	# Output
 	def __init__(self):
@@ -99,24 +99,24 @@ class DataSenso:
 
 
 # Class definition
-class DriverSenso:
+class DriverSENSO:
 	"""
-		DriverSenso class: manage acquisition of sensor
-		"""
+		DriverSENSO class: manage acquisition of sensor
+	"""
 
 	# Create resource
 	def __init__(self):
 		# Manager
-		self.active = False
-		self.step = USEA_PAYLOAD_STEP_IDLE
-		self.io_power = DriverIOOutput("GPIO_3_19")
-		self.io_alarm = DriverIOInput("GPIO_2_7")
-		self.serial = DriverSerial("COM_5", 19200, 128, 0.15)
-		self.timer = DriverTimer(path, "senso")
-		self.share_step = DataShare("payload_step")
-		self.tech = DriverTechnicalUser("SENSO")
+		self._active = False
+		self._step = USEA_PAYLOAD_STEP_IDLE
+		self._io_power = DriverIOOutput("GPIO_3_19")
+		self._io_alarm = DriverIOInput("GPIO_2_7")
+		self._serial = DriverSerial("COM_5", 19200, 128, 0.15)
+		self._timer = DriverTimer(path, "senso")
+		self._share_step = DataShare("payload_step")
+		self._tech = DriverTechnicalUser("SENSO")
 		# Output
-		self.output = DataSenso()
+		self.output = DataSENSO()
 		self.output.timestamp = 0.0
 		self.output.channel1 = 0.0
 		self.output.channel2 = 0.0
@@ -129,14 +129,14 @@ class DriverSenso:
 
 			Returns:
 				- float: time remaining before the next activity (sec)
-			"""
+		"""
 		# Waiting for the next measurement
-		if not self.active:
+		if not self._active:
 			result = 3600.0
-		elif self.step == USEA_PAYLOAD_STEP_IDLE:
+		elif self._step == USEA_PAYLOAD_STEP_IDLE:
 			result = 3600.0
-		elif self.step == USEA_PAYLOAD_STEP_RECORD:
-			result = self.timer.remaining_time()
+		elif self._step == USEA_PAYLOAD_STEP_RECORD:
+			result = self._timer.remaining_time()
 		else:
 			result = 0.0
 		# Result
@@ -146,7 +146,7 @@ class DriverSenso:
 	def run(self):
 		"""
 			Working task
-			"""
+		"""
 		# Scheduler
 		manager(self)
 
@@ -157,25 +157,25 @@ class DriverSenso:
 
 			Returns:
 				- bool: True if the acquisition process is successful
-			"""
+		"""
 		# Acquire
 		return acquisition_process(self, "Acquire")
 
 
 # Class definition
-class TestSenso:
+class TestSENSO:
 	"""
-		TestSenso class: manage test commands with sensor
-		"""
+		TestSENSO class: manage test commands with sensor
+	"""
 
 	# Create resource
 	def __init__(self):
 		# Manager
-		self.io_power = DriverIOOutput("GPIO_3_19")
-		self.io_alarm = DriverIOInput("GPIO_2_7")
-		self.serial = DriverSerial("COM_5", 19200, 128, 0.15)
+		self._io_power = DriverIOOutput("GPIO_3_19")
+		self._io_alarm = DriverIOInput("GPIO_2_7")
+		self._serial = DriverSerial("COM_5", 19200, 128, 0.15)
 		# Output
-		self.output = DataSenso()
+		self.output = DataSENSO()
 		self.output.timestamp = 0.0
 		self.output.channel1 = 0.0
 		self.output.channel2 = 0.0
@@ -192,7 +192,7 @@ class TestSenso:
 
 			Returns:
 				- str: result string (eg: "c1=15.367", "no reply" if error)
-			"""
+		"""
 		# Acquire
 		if acquisition_process(self, "Test"):
 			# Reply
@@ -211,7 +211,7 @@ class TestSenso:
 
 			Returns:
 				- str: result string (eg: "senso   : ok", xxxxxxxx: ok/error format)
-			"""
+		"""
 		# Acquire
 		if acquisition_process(self, "Autotest"):
 			# Reply
@@ -226,7 +226,7 @@ class TestSenso:
 def compress():
 	"""
 		Compress the data files
-		"""
+	"""
 	# Create names
 	zip_src_name = path + "payload/" + get_profile(path) + "_payload.csv"
 	zip_tmp_name = path + "temp/" + get_profile(path) + "_payload.zip"
@@ -254,11 +254,15 @@ def compress():
 
 # Create resources
 path = "./"
-senso_driver = DriverSenso()
+senso_driver = DriverSENSO()
 
 
 # Manager
 def manager(self):
+	"""
+		Running task
+	"""
+
 	global path
 	file_name = ""
 
@@ -266,20 +270,20 @@ def manager(self):
 	trace_log(path, "SENSO    > Activate")
 
 	# Activate task
-	self.active = True
+	self._active = True
 	# Synchronize timer
-	self.timer.wait_until_synchro()
+	self._timer.wait_until_synchro()
 	# Start timer
-	self.timer.start_base_time(10.0)
+	self._timer.start_base_time(10.0)
 	# Share step
-	self.share_step.write(self.step)
+	self._share_step.write(self._step)
 
 	# Loop
 	try:
 		while True:
 
 			# Sensor activated ?
-			if not self.active:
+			if not self._active:
 				time.sleep(0.1)
 				continue
 
@@ -287,7 +291,7 @@ def manager(self):
 			navigation = get_navigation(path)
 
 			# Wait
-			if self.step == USEA_PAYLOAD_STEP_IDLE:
+			if self._step == USEA_PAYLOAD_STEP_IDLE:
 				# Ascent step
 				if (
 					(navigation == USEA_NAVIGATION_STATE_ASCENT) or
@@ -299,17 +303,17 @@ def manager(self):
 					# Print
 					trace_log(path, "SENSO    > Start acquisition")
 					# Start recording
-					self.step = USEA_PAYLOAD_STEP_RECORD
+					self._step = USEA_PAYLOAD_STEP_RECORD
 					# Share step
-					self.share_step.write(self.step)
+					self._share_step.write(self._step)
 					# Reset error flags counters
-					self.tech.diagnosis_reset()
+					self._tech.diagnosis_reset()
 				# Wait
 				else:
 					time.sleep(0.1)
 
 			# Record
-			elif self.step == USEA_PAYLOAD_STEP_RECORD:
+			elif self._step == USEA_PAYLOAD_STEP_RECORD:
 				# Ascent step
 				if (
 					(navigation == USEA_NAVIGATION_STATE_ASCENT) or
@@ -317,18 +321,13 @@ def manager(self):
 					(navigation == USEA_NAVIGATION_STATE_ASCENT_2) or
 					(navigation == USEA_NAVIGATION_STATE_ASCENT_3)):
 					# Sensor broken
-					if not self.tech.diagnosis_is_broken():
+					if not self._tech.diagnosis_is_broken():
 						# Acquisition rate
-						if self.timer.is_tick():
+						if self._timer.is_tick():
 							# Acquire
 							if self.acquire_sample():
 								# Print
 								trace_log(path, "SENSO    > Record")
-								# Share data
-								self.share_data.write(
-									f"{self.output.channel1:.3f}" + "," +
-									f"{self.output.channel2:.3f}" + "," +
-									f"{self.output.channel3:.3f}")
 								# Store data
 								file = open(file_name, "a+")
 								file.write(
@@ -340,9 +339,9 @@ def manager(self):
 							# Failure
 							else:
 								# Too many successive errors
-								if self.tech.diagnosis_get_successive_failure() >= 3:
+								if self._tech.diagnosis_get_successive_failure() >= 3:
 									# Declare the sensor broken
-									self.tech.diagnosis_set_broken()
+									self._tech.diagnosis_count_broken()
 									# Print
 									trace_log(path, "SENSO    > Broken")
 						# Wait
@@ -359,33 +358,33 @@ def manager(self):
 					# Print
 					trace_log(path, "SENSO    > Stop acquisition")
 					# Stop recording
-					self.step = USEA_PAYLOAD_STEP_SURFACE
+					self._step = USEA_PAYLOAD_STEP_SURFACE
 					# Share step
-					self.share_step.write(self.step)
+					self._share_step.write(self._step)
 				# Other
 				else:
 					# Print
 					trace_log(path, "SENSO    > Stop acquisition")
 					# Stop recording
-					self.step = USEA_PAYLOAD_STEP_IDLE
+					self._step = USEA_PAYLOAD_STEP_IDLE
 					# Share step
-					self.share_step.write(self.step)
+					self._share_step.write(self._step)
 
 			# Surface
-			elif self.step == USEA_PAYLOAD_STEP_SURFACE:
+			elif self._step == USEA_PAYLOAD_STEP_SURFACE:
 				# Treatment step
 				if navigation == USEA_NAVIGATION_STATE_DATA_PROCESSING:
 					# Print
 					trace_log(path, "SENSO    > Start processing")
 					# Start processing
-					self.step = USEA_PAYLOAD_STEP_TREAT
+					self._step = USEA_PAYLOAD_STEP_TREAT
 					# Share step
-					self.share_step.write(self.step)
+					self._share_step.write(self._step)
 					# Simulate treatment delay
 					# TODO: for test
 					time.sleep(5.0)
 					# Save errors
-					self.tech.diagnosis_save()
+					self._tech.diagnosis_save()
 					# Compress files
 					compress()
 					# Simulate treatment delay
@@ -394,9 +393,9 @@ def manager(self):
 					# Print
 					trace_log(path, "SENSO    > Stop processing")
 					# Stop processing
-					self.step = USEA_PAYLOAD_STEP_IDLE
+					self._step = USEA_PAYLOAD_STEP_IDLE
 					# Share step
-					self.share_step.write(self.step)
+					self._share_step.write(self._step)
 				# Surface step
 				elif (
 					(navigation == USEA_NAVIGATION_STATE_SUB_SURFACE) or
@@ -407,9 +406,9 @@ def manager(self):
 				# Other
 				else:
 					# Stop recording
-					self.step = USEA_PAYLOAD_STEP_IDLE
+					self._step = USEA_PAYLOAD_STEP_IDLE
 					# Share step
-					self.share_step.write(self.step)
+					self._share_step.write(self._step)
 
 			# Other
 			else:
@@ -426,14 +425,11 @@ def manager(self):
 
 # Test function
 if __name__ == "__main__":
-	"""
-		Module test function
-		"""
 	# Process launched outside main
 	sys.path.insert(1, os.getcwd())
 	sys.path.insert(1, "../")
 	path = "../"
 	# Allocate resource
-	senso = DriverSenso()
+	senso = DriverSENSO()
 	# Run
 	senso.run()

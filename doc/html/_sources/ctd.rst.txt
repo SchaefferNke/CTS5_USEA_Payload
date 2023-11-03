@@ -7,5 +7,6 @@ ctd
 
 .. automodule:: ctd
    :members:
-   :undoc-members:
+   :no-undoc-members:
+   :exclude-members: manager
    :show-inheritance:

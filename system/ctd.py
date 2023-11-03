@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 	ctd.py
-	"""
+"""
 
 # Standard libraries
 import os
@@ -16,16 +16,16 @@ from system.trace_lib import trace_log
 
 
 # Class definition
-class DriverCtdContent:
+class DataCTD:
 	"""
-		DataCtd class: CTD sample
+		DataCTD class: CTD data
 
 		Attributes:
 			- timestamp (float): timestamp (Unix Epoch)
 			- pressure (float): pressure value (dbar)
 			- temperature (float): temperature value (degC)
 			- salinity (float): salinity value (PSU)
-		"""
+	"""
 
 	# Output
 	def __init__(self):
@@ -36,17 +36,17 @@ class DriverCtdContent:
 
 
 # Class definition
-class DriverCtd:
+class DriverCTD:
 	"""
-		DriverCtd class: store and share CTD triplet
-		"""
+		DriverCTD class: store and share CTD triplet
+	"""
 
 	# Create resource
 	def __init__(self):
 		# Manager
-		self.share_data = FileShare(path, "ctd.txt")
+		self._share_data = FileShare(path, "ctd.txt")
 		# Output
-		self.output = DriverCtdContent()
+		self.output = DataCTD()
 		self.output.timestamp = 0.0
 		self.output.pressure = 0.0
 		self.output.temperature = 0.0
@@ -56,18 +56,22 @@ class DriverCtd:
 	def run(self):
 		"""
 			Working task
-			"""
+		"""
 		# Scheduler
 		manager(self)
 
 
 # Create resources
 path = "./"
-ctd_driver = DriverCtd()
+ctd_driver = DriverCTD()
 
 
 # Manager
 def manager(self):
+	"""
+		Running task
+	"""
+
 	global path
 
 	# Trace
@@ -78,14 +82,14 @@ def manager(self):
 		while True:
 
 			# Read resource
-			self.share_data.read()
+			self._share_data.read()
 
 			# New ctd sample
-			if self.share_data.content.timestamp > self.output.timestamp:
+			if self._share_data.content.timestamp > self.output.timestamp:
 				# Parse
-				split = self.share_data.content.string.split(",")
+				split = self._share_data.content.string.split(",")
 				# Extract
-				self.output.timestamp = self.share_data.content.timestamp
+				self.output.timestamp = self._share_data.content.timestamp
 				self.output.pressure = float(split[0])
 				self.output.temperature = float(split[1])
 				self.output.salinity = float(split[2])
@@ -113,14 +117,11 @@ def manager(self):
 
 # Test function
 if __name__ == "__main__":
-	"""
-		Module test function
-		"""
 	# Process launched outside main
 	sys.path.insert(1, os.getcwd())
 	sys.path.insert(1, "../")
 	path = "../"
 	# Allocate resource
-	ctd = DriverCtd()
+	ctd = DriverCTD()
 	# Run
 	ctd.run()

@@ -7,5 +7,6 @@ io\_lib
 
 .. automodule:: io_lib
    :members:
-   :undoc-members:
+   :no-undoc-members:
+   :exclude-members: name_to_gpio_name
    :show-inheritance:

@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 	main.py
-	"""
+"""
 
 # Standard libraries
 import os
@@ -21,9 +21,6 @@ from system.trace_lib import trace_log
 
 # Main function
 if __name__ == "__main__":
-	"""
-		Application main function
-		"""
 
 	# Trace
 	trace_log("./", "MAIN     > Launch application")
@@ -46,15 +43,15 @@ if __name__ == "__main__":
 
 	# Create tasks
 	thread_technical = threading.Thread(target=technical_driver.run, name="task_technical")
-	thread_emap = threading.Thread(target=emap_driver.run, name="task_emap")
 	thread_ctd = threading.Thread(target=ctd_driver.run, name="task_ctd")
 	thread_user = threading.Thread(target=user_driver.run, name="task_user")
+	thread_emap = threading.Thread(target=emap_driver.run, name="task_emap")
 
 	# Launch tasks
 	thread_technical.start()
-	thread_emap.start()
 	thread_ctd.start()
 	thread_user.start()
+	thread_emap.start()
 
 	# CPLD awake command
 	io_sleepn = DriverIOOutput("GPIO_3_27")
@@ -66,7 +63,7 @@ if __name__ == "__main__":
 			# Activity management
 			activity_emap = emap_driver.get_time_before_activity()
 			activity_user = user_driver.get_time_before_activity()
-			#print("\t" + f"{activity_emap:.3f}" + "\t" + f"{activity_user:.3f}")
+			# print("\t" + f"{activity_emap:.3f}" + "\t" + f"{activity_user:.3f}")
 			time.sleep(0.450)
 
 			# Awake CPLD

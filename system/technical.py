@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 	technical.py
-	"""
+"""
 
 # Standard libraries
 import os
@@ -23,7 +23,7 @@ from system.const import *
 class DriverTechnicalSystem:
 	"""
 		DriverTechnicalSystem class: system monitoring
-		"""
+	"""
 
 	# Create resource
 	def __init__(self):
@@ -51,7 +51,7 @@ class DriverTechnicalSystem:
 	def diagnosis_reset(self):
 		"""
 			Reset the diagnosis counters
-			"""
+		"""
 		# Reset
 		self.activity_start = datetime.datetime.now().timestamp()
 		self.activity_run = 0.0
@@ -68,7 +68,7 @@ class DriverTechnicalSystem:
 	def diagnosis_run(self):
 		"""
 			Make an instantaneous diagnosis
-			"""
+		"""
 		# System activity
 		self.activity_run += 1.0
 		# CPU frequency
@@ -99,7 +99,7 @@ class DriverTechnicalSystem:
 	def diagnosis_save(self):
 		"""
 			Save diagnosis into technical file
-			"""
+		"""
 		# System activity
 		activity_duration = datetime.datetime.now().timestamp() - self.activity_start
 		activity_percent = 100.0 * self.activity_run / activity_duration
@@ -163,7 +163,7 @@ class DriverTechnicalSystem:
 	def run(self):
 		"""
 			Working task
-			"""
+		"""
 		# Scheduler
 		manager(self)
 
@@ -175,53 +175,61 @@ class DriverTechnicalUser:
 
 		Parameters:
 			- name (str): user identification string (eg: "SENSO")
-		"""
+	"""
 
 	# Create resource
 	def __init__(self, name):
 		# Manager
-		self.name = name
+		self._name = name
 		# Failure flags
-		self.error_count = 0
-		self.alarm_count = 0
-		self.successive_failure_count = 0
-		self.is_broken = False
+		self._error_count = 0
+		self._alarm_count = 0
+		self._successive_failure_count = 0
+		self._is_broken = False
 
 	# Reset diagnosis
 	def diagnosis_reset(self):
 		"""
 			Reset the diagnosis counters and flags
-			"""
+		"""
 		# Reset
-		self.error_count = 0
-		self.alarm_count = 0
-		self.successive_failure_count = 0
-		self.is_broken = False
+		self._error_count = 0
+		self._alarm_count = 0
+		self._successive_failure_count = 0
+		self._is_broken = False
 
 	# Update success diagnosis
 	def diagnosis_count_success(self):
 		"""
 			Increment success counter
-			"""
+		"""
 		# Reset counter
-		self.successive_failure_count = 0
+		self._successive_failure_count = 0
 
 	# Update error diagnosis
 	def diagnosis_count_error(self):
 		"""
 			Increment error counter
-			"""
+		"""
 		# Increment
-		self.error_count += 1
-		self.successive_failure_count += 1
+		self._error_count += 1
+		self._successive_failure_count += 1
 
 	# Update alarm diagnosis
 	def diagnosis_count_alarm(self):
 		"""
 			Increment alarm counter
-			"""
+		"""
 		# Increment
-		self.alarm_count += 1
+		self._alarm_count += 1
+
+	# Update broken diagnosis
+	def diagnosis_count_broken(self):
+		"""
+			Set broken flag
+		"""
+		# Set flag
+		self._is_broken = True
 
 	# Get successive errors number
 	def diagnosis_get_successive_failure(self) -> int:
@@ -230,17 +238,9 @@ class DriverTechnicalUser:
 
 			Returns:
 				- int: number of successive errors
-			"""
-		# Result
-		return self.successive_failure_count
-
-	# Set broken diagnosis
-	def diagnosis_set_broken(self):
 		"""
-			Set broken flag
-			"""
-		# Set flag
-		self.is_broken = True
+		# Result
+		return self._successive_failure_count
 
 	# Get broken diagnosis
 	def diagnosis_is_broken(self) -> bool:
@@ -249,17 +249,17 @@ class DriverTechnicalUser:
 
 			Returns:
 				- bool: True if sensor flag is set
-			"""
+		"""
 		# Result
-		return self.is_broken
+		return self._is_broken
 
 	# Save diagnosis
 	def diagnosis_save(self):
 		"""
 			Save diagnosis into technical file
-			"""
+		"""
 		# If errors
-		if self.error_count or self.alarm_count or self.is_broken:
+		if self._error_count or self._alarm_count or self._is_broken:
 			# Create name
 			error_dst_name = path + "share/technical.txt"
 			# Remove dst file
@@ -268,13 +268,13 @@ class DriverTechnicalUser:
 			# Write content
 			file_dst = open(error_dst_name, "w")
 			file_dst.write("[ALARM]\n")
-			if self.is_broken:
-				file_dst.write(self.name + " broken\n")
+			if self._is_broken:
+				file_dst.write(self._name + " broken\n")
 			else:
-				if self.error_count:
-					file_dst.write(self.name + " default (" + str(self.error_count) + ")\n")
-			if self.alarm_count:
-				file_dst.write(self.name + " alarm (" + str(self.alarm_count) + ")\n")
+				if self._error_count:
+					file_dst.write(self._name + " default (" + str(self._error_count) + ")\n")
+			if self._alarm_count:
+				file_dst.write(self._name + " alarm (" + str(self._alarm_count) + ")\n")
 			file_dst.close()
 
 
@@ -285,6 +285,10 @@ technical_driver = DriverTechnicalSystem()
 
 # Manager
 def manager(self):
+	"""
+		Running task
+	"""
+
 	global path
 
 	# Trace
@@ -354,9 +358,6 @@ def manager(self):
 
 # Test function
 if __name__ == "__main__":
-	"""
-		Module test function
-		"""
 	# Process launched outside main
 	sys.path.insert(1, os.getcwd())
 	sys.path.insert(1, "../")

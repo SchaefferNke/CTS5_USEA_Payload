@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 	const.py
-	"""
+"""
 
 # Versioning
 USEA_VERSION = "v1.0.0"

@@ -5,9 +5,9 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>system &#8212; USEA-Payload documentation</title>
+    <title>System tasks &#8212; USEA-Payload documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
-    <link rel="stylesheet" type="text/css" href="_static/nature.css?v=5788fb53" />
+    <link rel="stylesheet" type="text/css" href="_static/nature.css?v=2388c7e7" />
     <script src="_static/documentation_options.js?v=8d563738"></script>
     <script src="_static/doctools.js?v=888ff710"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
@@ -33,7 +33,7 @@
           <a href="index.html" title="USEA-Payload"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">USEA-Payload documentation</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">system</a></li> 
+        <li class="nav-item nav-item-this"><a href="">System tasks</a></li> 
       </ul>
     </div>  
 
@@ -42,20 +42,65 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="system">
-<h1>system<a class="headerlink" href="#system" title="Link to this heading">¶</a></h1>
+  <section id="system-tasks">
+<h1>System tasks<a class="headerlink" href="#system-tasks" title="Link to this heading">¶</a></h1>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="ctd.html">ctd</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="ctd.html#ctd.DriverCtd"><code class="docutils literal notranslate"><span class="pre">DriverCtd</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="ctd.html#ctd.DriverCtd.run"><code class="docutils literal notranslate"><span class="pre">DriverCtd.run()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="ctd.html#ctd.DataCTD"><code class="docutils literal notranslate"><span class="pre">DataCTD</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="ctd.html#ctd.DriverCTD"><code class="docutils literal notranslate"><span class="pre">DriverCTD</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="ctd.html#ctd.DriverCTD.run"><code class="docutils literal notranslate"><span class="pre">DriverCTD.run()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="ctd.html#ctd.DriverCtdContent"><code class="docutils literal notranslate"><span class="pre">DriverCtdContent</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="ctd.html#ctd.manager"><code class="docutils literal notranslate"><span class="pre">manager()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="emap.html">emap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="emap.html">emap</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="emap.html#emap.DriverEMAP"><code class="docutils literal notranslate"><span class="pre">DriverEMAP</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="emap.html#emap.DriverEMAP.get_time_before_activity"><code class="docutils literal notranslate"><span class="pre">DriverEMAP.get_time_before_activity()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="emap.html#emap.DriverEMAP.run"><code class="docutils literal notranslate"><span class="pre">DriverEMAP.run()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="technical.html">technical</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="technical.html#technical.DriverTechnicalUser"><code class="docutils literal notranslate"><span class="pre">DriverTechnicalUser</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="technical.html#technical.DriverTechnicalUser.diagnosis_count_alarm"><code class="docutils literal notranslate"><span class="pre">DriverTechnicalUser.diagnosis_count_alarm()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="technical.html#technical.DriverTechnicalUser.diagnosis_count_broken"><code class="docutils literal notranslate"><span class="pre">DriverTechnicalUser.diagnosis_count_broken()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="technical.html#technical.DriverTechnicalUser.diagnosis_count_error"><code class="docutils literal notranslate"><span class="pre">DriverTechnicalUser.diagnosis_count_error()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="technical.html#technical.DriverTechnicalUser.diagnosis_count_success"><code class="docutils literal notranslate"><span class="pre">DriverTechnicalUser.diagnosis_count_success()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="technical.html#technical.DriverTechnicalUser.diagnosis_get_successive_failure"><code class="docutils literal notranslate"><span class="pre">DriverTechnicalUser.diagnosis_get_successive_failure()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="technical.html#technical.DriverTechnicalUser.diagnosis_is_broken"><code class="docutils literal notranslate"><span class="pre">DriverTechnicalUser.diagnosis_is_broken()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="technical.html#technical.DriverTechnicalUser.diagnosis_reset"><code class="docutils literal notranslate"><span class="pre">DriverTechnicalUser.diagnosis_reset()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="technical.html#technical.DriverTechnicalUser.diagnosis_save"><code class="docutils literal notranslate"><span class="pre">DriverTechnicalUser.diagnosis_save()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="user-task">
+<h1>User task<a class="headerlink" href="#user-task" title="Link to this heading">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="config.html">config</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="config.html#config.UserConfig"><code class="docutils literal notranslate"><span class="pre">UserConfig</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="config.html#config.UserConfig.get_data"><code class="docutils literal notranslate"><span class="pre">UserConfig.get_data()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="config.html#config.UserConfig.get_time_before_activity"><code class="docutils literal notranslate"><span class="pre">UserConfig.get_time_before_activity()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="config.html#config.UserConfig.get_version"><code class="docutils literal notranslate"><span class="pre">UserConfig.get_version()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="config.html#config.UserConfig.run"><code class="docutils literal notranslate"><span class="pre">UserConfig.run()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="config.html#config.UserConfig.test"><code class="docutils literal notranslate"><span class="pre">UserConfig.test()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="libraries">
+<h1>Libraries<a class="headerlink" href="#libraries" title="Link to this heading">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="io_lib.html">io_lib</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="io_lib.html#io_lib.DriverIOInput"><code class="docutils literal notranslate"><span class="pre">DriverIOInput</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="io_lib.html#io_lib.DriverIOInput.is_on"><code class="docutils literal notranslate"><span class="pre">DriverIOInput.is_on()</span></code></a></li>
@@ -67,7 +112,6 @@
 <li class="toctree-l3"><a class="reference internal" href="io_lib.html#io_lib.DriverIOOutput.set_on"><code class="docutils literal notranslate"><span class="pre">DriverIOOutput.set_on()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="io_lib.html#io_lib.name_to_gpio_name"><code class="docutils literal notranslate"><span class="pre">name_to_gpio_name()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="serial_lib.html">serial_lib</a><ul>
@@ -80,13 +124,25 @@
 <li class="toctree-l3"><a class="reference internal" href="serial_lib.html#serial_lib.DriverSerial.write"><code class="docutils literal notranslate"><span class="pre">DriverSerial.write()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="serial_lib.html#serial_lib.name_to_serial_name"><code class="docutils literal notranslate"><span class="pre">name_to_serial_name()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="timer_lib.html">timer_lib</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="timer_lib.html#timer_lib.DriverTimer"><code class="docutils literal notranslate"><span class="pre">DriverTimer</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="timer_lib.html#timer_lib.DriverTimer.is_tick"><code class="docutils literal notranslate"><span class="pre">DriverTimer.is_tick()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="timer_lib.html#timer_lib.DriverTimer.remaining_time"><code class="docutils literal notranslate"><span class="pre">DriverTimer.remaining_time()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="timer_lib.html#timer_lib.DriverTimer.start_base_time"><code class="docutils literal notranslate"><span class="pre">DriverTimer.start_base_time()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="timer_lib.html#timer_lib.DriverTimer.start_one_shot"><code class="docutils literal notranslate"><span class="pre">DriverTimer.start_one_shot()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="timer_lib.html#timer_lib.DriverTimer.stop"><code class="docutils literal notranslate"><span class="pre">DriverTimer.stop()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="timer_lib.html#timer_lib.DriverTimer.wait_until_date"><code class="docutils literal notranslate"><span class="pre">DriverTimer.wait_until_date()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="timer_lib.html#timer_lib.DriverTimer.wait_until_duration"><code class="docutils literal notranslate"><span class="pre">DriverTimer.wait_until_duration()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="timer_lib.html#timer_lib.DriverTimer.wait_until_synchro"><code class="docutils literal notranslate"><span class="pre">DriverTimer.wait_until_synchro()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="share_lib.html">share_lib</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="share_lib.html#share_lib.DataShare"><code class="docutils literal notranslate"><span class="pre">DataShare</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="share_lib.html#share_lib.DataShare.read"><code class="docutils literal notranslate"><span class="pre">DataShare.read()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="share_lib.html#share_lib.DataShare.variable"><code class="docutils literal notranslate"><span class="pre">DataShare.variable</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="share_lib.html#share_lib.DataShare.write"><code class="docutils literal notranslate"><span class="pre">DataShare.write()</span></code></a></li>
 </ul>
 </li>
@@ -109,20 +165,6 @@
 <li class="toctree-l2"><a class="reference internal" href="share_lib.html#share_lib.get_profile"><code class="docutils literal notranslate"><span class="pre">get_profile()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="timer_lib.html">timer_lib</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="timer_lib.html#timer_lib.DriverTimer"><code class="docutils literal notranslate"><span class="pre">DriverTimer</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="timer_lib.html#timer_lib.DriverTimer.is_tick"><code class="docutils literal notranslate"><span class="pre">DriverTimer.is_tick()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="timer_lib.html#timer_lib.DriverTimer.remaining_time"><code class="docutils literal notranslate"><span class="pre">DriverTimer.remaining_time()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="timer_lib.html#timer_lib.DriverTimer.start_base_time"><code class="docutils literal notranslate"><span class="pre">DriverTimer.start_base_time()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="timer_lib.html#timer_lib.DriverTimer.start_one_shot"><code class="docutils literal notranslate"><span class="pre">DriverTimer.start_one_shot()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="timer_lib.html#timer_lib.DriverTimer.stop"><code class="docutils literal notranslate"><span class="pre">DriverTimer.stop()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="timer_lib.html#timer_lib.DriverTimer.wait_until_date"><code class="docutils literal notranslate"><span class="pre">DriverTimer.wait_until_date()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="timer_lib.html#timer_lib.DriverTimer.wait_until_duration"><code class="docutils literal notranslate"><span class="pre">DriverTimer.wait_until_duration()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="timer_lib.html#timer_lib.DriverTimer.wait_until_synchro"><code class="docutils literal notranslate"><span class="pre">DriverTimer.wait_until_synchro()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
 <li class="toctree-l1"><a class="reference internal" href="trace_lib.html">trace_lib</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="trace_lib.html#trace_lib.trace_log"><code class="docutils literal notranslate"><span class="pre">trace_log()</span></code></a></li>
 </ul>
@@ -138,6 +180,15 @@
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">System tasks</a></li>
+<li><a class="reference internal" href="#user-task">User task</a></li>
+<li><a class="reference internal" href="#libraries">Libraries</a></li>
+</ul>
+
+  </div>
 <div id="searchbox" style="display: none" role="search">
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
@@ -168,7 +219,7 @@
           <a href="index.html" title="USEA-Payload"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">USEA-Payload documentation</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">system</a></li> 
+        <li class="nav-item nav-item-this"><a href="">System tasks</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

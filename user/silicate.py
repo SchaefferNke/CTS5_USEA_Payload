@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 	silicate.py
-	"""
+"""
 
 # Standard libraries
 import os
@@ -34,7 +34,7 @@ def nmea_checksum_check(frame: bytes) -> bool:
 
 		Returns:
 			- bool: True if the frame is correct
-		"""
+	"""
 	if chr(frame[-3]) != "*":
 		return False
 	checksum = 0
@@ -56,7 +56,7 @@ def nmea_checksum_compute_ascii(frame: str, count: int) -> int:
 
 		Returns:
 			- int: computed checksum
-		"""
+	"""
 	checksum = 0
 	for c in frame[0:count]:
 		checksum ^= ord(c)
@@ -67,17 +67,17 @@ def nmea_checksum_compute_ascii(frame: str, count: int) -> int:
 class DriverSilicate:
 	"""
 		DriverSilicate class: manage acquisition and communication with sensor
-		"""
+	"""
 
 	# Create resource
 	def __init__(self):
 		# Manager
-		self.step = USEA_PAYLOAD_STEP_SURFACE
-		self.io_power = DriverIOOutput("GPIO_3_20")
-		self.io_alarm = DriverIOInput("GPIO_2_0")
-		self.serial = DriverSerial("COM_5", 57600, len("DATA,xxx,xxxx,*CS\r\n") + 512, 0.15)
-		self.timer = DriverTimer(path, "silicate")
-		self.share_step = DataShare("silicate_step")
+		self._step = USEA_PAYLOAD_STEP_SURFACE
+		self._io_power = DriverIOOutput("GPIO_3_20")
+		self._io_alarm = DriverIOInput("GPIO_2_0")
+		self._serial = DriverSerial("COM_5", 57600, len("DATA,xxx,xxxx,*CS\r\n") + 512, 0.15)
+		self._timer = DriverTimer(path, "silicate")
+		self._share_step = DataShare("silicate_step")
 
 	# Get version
 	@staticmethod
@@ -91,18 +91,18 @@ class DriverSilicate:
 			Parameters:
 				- trace_path (str): ...
 				- frame (str): frame to send
-			"""
+		"""
 		checksum = nmea_checksum_compute_ascii(frame, len(frame))
 		frame_ascii = "$" + frame + "*%0*X" % (2, checksum)
 		time.sleep(0.05)
-		self.serial.write(frame_ascii.encode("ascii"))
+		self._serial.write(frame_ascii.encode("ascii"))
 		trace_log(trace_path, "SILICATE > Tx=" + frame_ascii)
 
 	# Run task
 	def run(self):
 		"""
 			Working task
-			"""
+		"""
 		# Scheduler
 		manager(self)
 
@@ -110,17 +110,18 @@ class DriverSilicate:
 # EMAP
 def emap(self):
 	"""
-		Manage communication process with silicate sensor
-		"""
+		Running task
+	"""
+
 	global path
 	file_name = ""
 	index_cpt = 0
 
 	# Start timer
-	self.timer.start_one_shot(60.0)
+	self._timer.start_one_shot(60.0)
 
 	# Open serial port
-	if self.serial.open():
+	if self._serial.open():
 		try:
 
 			# Timestamp
@@ -129,18 +130,18 @@ def emap(self):
 			self.send_ascii(path, now.strftime("GPS,20%y%m%d,%H%M%S"))
 
 			# Loop
-			while not self.timer.is_tick():
+			while not self._timer.is_tick():
 
 				# New character ?
-				if self.serial.in_waiting() == 0:
+				if self._serial.in_waiting() == 0:
 					time.sleep(0.1)
 					continue
 				# Wait start of frame
-				if self.serial.read(1).decode() != "$":
+				if self._serial.read(1).decode() != "$":
 					continue
 
 				# Read frame
-				frame_rx = self.serial.read(len("DATA,xxx,xxxx,*CS\r\n") + 512)
+				frame_rx = self._serial.read(len("DATA,xxx,xxxx,*CS\r\n") + 512)
 				# End of line sequence (optional)
 				if chr(frame_rx[-2]) == "\r" and chr(frame_rx[-1]) == "\n":
 					frame_rx = frame_rx[0:-2]
@@ -242,7 +243,7 @@ def emap(self):
 			trace_log(path, "SILICATE > [ERROR]")
 
 	# Close serial port
-	self.serial.close()
+	self._serial.close()
 
 
 # Compression
@@ -294,7 +295,7 @@ def manager(self):
 	# Trace
 	trace_log(path, "SILICATE > Activate")
 	# Share step
-	self.share_step.write(self.step)
+	self._share_step.write(self._step)
 
 	# Loop
 	try:
@@ -304,39 +305,39 @@ def manager(self):
 			navigation = get_navigation(path)
 
 			# Wait
-			if self.step == USEA_PAYLOAD_STEP_IDLE:
+			if self._step == USEA_PAYLOAD_STEP_IDLE:
 				# Parking step
 				if navigation == USEA_NAVIGATION_STATE_PARK:
 					# Print
 					trace_log(path, "SILICATE > Start acquisition")
 					# Power-on
-					self.io_power.set_on()
+					self._io_power.set_on()
 					# Start recording
-					self.step = USEA_PAYLOAD_STEP_RECORD
+					self._step = USEA_PAYLOAD_STEP_RECORD
 					# Share step
-					self.share_step.write(self.step)
+					self._share_step.write(self._step)
 				# Wait
 				else:
 					time.sleep(0.1)
 
 			# Record
-			elif self.step == USEA_PAYLOAD_STEP_RECORD:
+			elif self._step == USEA_PAYLOAD_STEP_RECORD:
 				# Ascent
 				if navigation == USEA_NAVIGATION_STATE_ASCENT:
 					# Print
 					trace_log(path, "SILICATE > Stop acquisition")
 					# Power-on
-					self.io_power.set_off()
+					self._io_power.set_off()
 					# Stop recording
-					self.step = USEA_PAYLOAD_STEP_SURFACE
+					self._step = USEA_PAYLOAD_STEP_SURFACE
 					# Share step
-					self.share_step.write(self.step)
+					self._share_step.write(self._step)
 				# Wait
 				else:
 					time.sleep(0.1)
 
 			# Surface
-			elif self.step == USEA_PAYLOAD_STEP_SURFACE:
+			elif self._step == USEA_PAYLOAD_STEP_SURFACE:
 				# Treatment step
 				if navigation == USEA_NAVIGATION_STATE_DATA_PROCESSING:
 					# Print
@@ -346,9 +347,9 @@ def manager(self):
 					# Print
 					trace_log(path, "SILICATE > Stop download")
 					# Idle
-					self.step = USEA_PAYLOAD_STEP_IDLE
+					self._step = USEA_PAYLOAD_STEP_IDLE
 					# Share step
-					self.share_step.write(self.step)
+					self._share_step.write(self._step)
 					# Compress files
 					compress()
 
@@ -371,9 +372,6 @@ def manager(self):
 
 # Test function
 if __name__ == "__main__":
-	"""
-		Module test function
-		"""
 	# Process launched outside main
 	sys.path.insert(1, os.getcwd())
 	sys.path.insert(1, "../")

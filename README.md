@@ -28,15 +28,18 @@ It enables third-party Python programming in USEA-Payload acquisition board.
 
 ```
 +-- system
-|   +-- emap.py
+|   +-- config.py
 |   +-- const.py
 |   +-- ctd.py
+|   +-- emap.py
+|   +-- technical.py
 |   +-- io_lib.py
 |   +-- serial_lib.py
-|   +-- share_lib.py
 |   +-- timer_lib.py
+|   +-- share_lib.py
 |   +-- trace_lib.py
 +-- user
+|   +-- user.ini
 |   +-- user_driver.py
 main.py
 ```

@@ -7,5 +7,5 @@ trace\_lib
 
 .. automodule:: trace_lib
    :members:
-   :undoc-members:
+   :no-undoc-members:
    :show-inheritance:

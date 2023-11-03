@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 	factory.py
-	"""
+"""
 
 # Standard libraries
 import os
@@ -18,12 +18,12 @@ from system.serial_lib import DriverSerial
 class DriverFactory:
 	"""
 		DriverFactory class: test hardware resources
-		"""
+	"""
 
 	# Create resource
 	def __init__(self):
 		# Hardware resource
-		self.resource = ""
+		self._resource = ""
 
 	# Test output
 	def test_output(self, name: str):
@@ -32,13 +32,13 @@ class DriverFactory:
 
 			Parameters:
 				- name (str): IO name (eg: "GPIO_3_8")
-			"""
-		self.resource = DriverIOOutput(name)
+		"""
+		self._resource = DriverIOOutput(name)
 		print("Output\t" + name + "\t= on")
-		self.resource.set_on()
+		self._resource.set_on()
 		time.sleep(0.5)
 		print("Output\t" + name + "\t= off")
-		self.resource.set_off()
+		self._resource.set_off()
 
 	# Test input
 	def test_input(self, name: str):
@@ -47,9 +47,9 @@ class DriverFactory:
 
 			Parameters:
 				- name (str): IO name (eg: "GPIO_3_4")
-			"""
-		self.resource = DriverIOInput(name)
-		if self.resource.is_on():
+		"""
+		self._resource = DriverIOInput(name)
+		if self._resource.is_on():
 			print("Input\t" + name + "\t= on")
 		else:
 			print("Input\t" + name + "\t= off")
@@ -61,13 +61,13 @@ class DriverFactory:
 
 			Parameters:
 				- name (str): Serial port name (eg: "COM_1")
-			"""
+		"""
 		try:
-			self.resource = DriverSerial(name, 9600, 32, 0.15)
-			self.resource.open()
-			self.resource.write("Test".encode("ascii"))
-			result = self.resource.read(32).decode()
-			self.resource.close()
+			self._resource = DriverSerial(name, 9600, 32, 0.15)
+			self._resource.open()
+			self._resource.write("Test".encode("ascii"))
+			result = self._resource.read(32).decode()
+			self._resource.close()
 			if result == "Test":
 				print("Serial\t" + name + "\t\t= success")
 			else:
@@ -83,7 +83,7 @@ class DriverFactory:
 
 			Parameters:
 				- name (str): I2C port name (eg: "I2C_1")
-			"""
+		"""
 		# TODO: to implement
 		print("I2C\t\t" + name + "\t\t= not implemented")
 
@@ -94,7 +94,7 @@ class DriverFactory:
 
 			Parameters:
 				- name (str): SPI port name (eg: "SPI_4")
-			"""
+		"""
 		# TODO: to implement
 		print("SPI\t\t" + name + "\t\t= not implemented")
 
@@ -105,7 +105,7 @@ class DriverFactory:
 
 			Parameters:
 				- name (str): SD port name (eg: "SD_1")
-			"""
+		"""
 		# TODO: to implement
 		print("SD\t\t" + name + "\t\t= not implemented")
 
@@ -116,16 +116,13 @@ class DriverFactory:
 
 			Parameters:
 				- name (str): RTC name (eg: "RTC_1")
-			"""
+		"""
 		# TODO: to implement
 		print("RTC\t\t" + name + "\t\t= not implemented")
 
 
 # Test function
 if __name__ == "__main__":
-	"""
-		Module test function
-		"""
 	# Process launched outside main
 	sys.path.insert(1, os.getcwd())
 	sys.path.insert(1, "../")

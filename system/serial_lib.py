@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 	serial_lib.py
-	"""
+"""
 
 # Standard libraries
 import os
@@ -25,7 +25,7 @@ def name_to_serial_name(name: str) -> str:
 
 		Returns:
 			- str: system serial name for system access (eg: "/dev/tty0")
-		"""
+	"""
 	# Format
 	split = name.split("_")
 	if not os.name == "nt":
@@ -46,20 +46,18 @@ class DriverSerial:
 			- speed (int): baud rate (eg: 57600 bauds)
 			- size (int): read buffer size
 			- timeout (float): reading timeout (sec)
-		"""
+	"""
 
 	# Create resource
 	def __init__(self, name: str, speed: int, size: int, timeout: float):
 		# Manager
-		self.name = name_to_serial_name(name)
-		self.speed = speed
-		self.size = size
-		self.timeout = timeout
-		self.serial = None
-		if self.name in serial_locks:
-			return
-		else:
-			serial_locks[self.name] = threading.Lock()
+		self._name = name_to_serial_name(name)
+		self._speed = speed
+		self._size = size
+		self._timeout = timeout
+		self._serial = None
+		if not self._name in serial_locks:
+			serial_locks[self._name] = threading.Lock()
 
 	# Open serial port
 	def open(self) -> bool:
@@ -68,19 +66,19 @@ class DriverSerial:
 
 			Returns:
 				- bool: True if the port is open
-			"""
+		"""
 		# Wait for resource
-		serial_locks[self.name].acquire()
+		serial_locks[self._name].acquire()
 		# Open
-		self.serial = serial.Serial(self.name, self.speed, timeout=self.timeout)
+		self._serial = serial.Serial(self._name, self._speed, timeout=self._timeout)
 		# Flush serial port
-		self.serial.flushInput()
-		self.serial.flushOutput()
+		self._serial.flushInput()
+		self._serial.flushOutput()
 		# Open
-		if self.serial.isOpen():
+		if self._serial.isOpen():
 			return True
 		# Release resource
-		serial_locks[self.name].release()
+		serial_locks[self._name].release()
 		# Error
 		return False
 
@@ -88,11 +86,11 @@ class DriverSerial:
 	def close(self):
 		"""
 			Close the serial port
-			"""
+		"""
 		# Close serial port
-		self.serial.close()
+		self._serial.close()
 		# Release resource
-		serial_locks[self.name].release()
+		serial_locks[self._name].release()
 
 	# Get the number of bytes in the input buffer
 	def in_waiting(self) -> int:
@@ -101,9 +99,9 @@ class DriverSerial:
 
 			Returns:
 				- int: number of bytes in the reception buffer
-			"""
+		"""
 		# Result
-		return self.serial.in_waiting
+		return self._serial.in_waiting
 
 	# Read size bytes from the serial port
 	def read(self, size: int) -> bytes:
@@ -115,9 +113,9 @@ class DriverSerial:
 
 			Returns:
 				- int: bytes read from the serial port
-			"""
+		"""
 		# Result
-		return self.serial.read(size)
+		return self._serial.read(size)
 
 	# Write the bytes data to the port
 	def write(self, data: bytes) -> int:
@@ -129,9 +127,9 @@ class DriverSerial:
 
 			Returns:
 				- int: number of bytes written
-			"""
+		"""
 		# Result
-		return self.serial.write(data)
+		return self._serial.write(data)
 
 	# Receive frame
 	def receive_ascii(self, timeout: float) -> str:
@@ -143,36 +141,36 @@ class DriverSerial:
 
 			Returns:
 				- str: bytes read from the serial port
-			"""
+		"""
 		# Initialize
 		frame_rx = ""
 		# Wait for resource
-		serial_locks[self.name].acquire()
+		serial_locks[self._name].acquire()
 		# Open
-		self.serial = serial.Serial(self.name, self.speed, timeout=self.timeout)
+		self._serial = serial.Serial(self._name, self._speed, timeout=self._timeout)
 		# Flush serial port
-		self.serial.flushInput()
-		self.serial.flushOutput()
+		self._serial.flushInput()
+		self._serial.flushOutput()
 		# Initialize time-out
 		timeout = datetime.datetime.now().timestamp() + timeout
 		# Acquisition loop
-		if self.serial.isOpen():
+		if self._serial.isOpen():
 			try:
 				# Reception process
 				while True:
 					# Time out
 					if datetime.datetime.now().timestamp() >= timeout:
 						# Close serial port
-						self.serial.close()
+						self._serial.close()
 						# Release resource
-						serial_locks[self.name].release()
+						serial_locks[self._name].release()
 						# Exit
 						return ""
 					# Wait character
-					if self.serial.in_waiting == 0:
+					if self._serial.in_waiting == 0:
 						continue
 					# Read frame
-					frame_rx = self.serial.read(self.size).decode()
+					frame_rx = self._serial.read(self._size).decode()
 					# Check end of line
 					if frame_rx[-2] != "\r":
 						continue
@@ -186,8 +184,8 @@ class DriverSerial:
 				print(err)
 				print(traceback.format_exc())
 		# Close serial port
-		self.serial.close()
+		self._serial.close()
 		# Release resource
-		serial_locks[self.name].release()
+		serial_locks[self._name].release()
 		# Result
 		return frame_rx

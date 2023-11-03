@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 	trace_lib.py
-	"""
+"""
 
 # Standard libraries
 import datetime
@@ -16,7 +16,7 @@ def trace_log(trace_path: str, event: str):
 		Parameters:
 			- trace_path (str): ...
 			- event (str): event to trace
-		"""
+	"""
 	# Format
 	utc = datetime.datetime.now()
 	string = utc.strftime("%y-%m-%d %H:%M:%S : ") + event
