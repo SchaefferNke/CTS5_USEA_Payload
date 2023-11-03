@@ -70,7 +70,7 @@ class DriverTechnicalSystem:
 			Make an instantaneous diagnosis
 			"""
 		# System activity
-		self.activity_run = self.activity_run + 1.0
+		self.activity_run += 1.0
 		# CPU frequency
 		cpu_freq = psutil.cpu_freq().current
 		self.cpu_freq_sum = self.cpu_freq_sum + cpu_freq
@@ -171,10 +171,10 @@ class DriverTechnicalSystem:
 # Class definition
 class DriverTechnicalUser:
 	"""
-		DriverTechnicalUser class: sensor monitoring
+		DriverTechnicalUser class: user monitoring
 
 		Parameters:
-			- name (str): sensor identification string (eg: "SENSO")
+			- name (str): user identification string (eg: "SENSO")
 		"""
 
 	# Create resource
@@ -212,8 +212,8 @@ class DriverTechnicalUser:
 			Increment error counter
 			"""
 		# Increment
-		self.error_count = self.error_count + 1
-		self.successive_failure_count = self.successive_failure_count + 1
+		self.error_count += 1
+		self.successive_failure_count += 1
 
 	# Update alarm diagnosis
 	def diagnosis_count_alarm(self):
@@ -221,7 +221,7 @@ class DriverTechnicalUser:
 			Increment alarm counter
 			"""
 		# Increment
-		self.alarm_count = self.alarm_count + 1
+		self.alarm_count += 1
 
 	# Get successive errors number
 	def diagnosis_get_successive_failure(self) -> int:

@@ -15,7 +15,7 @@ from system.share_lib import FileShare, get_profile
 from system.trace_lib import trace_log
 
 
-# Output definition
+# Class definition
 class DriverCtdContent:
 	"""
 		DataCtd class: CTD sample

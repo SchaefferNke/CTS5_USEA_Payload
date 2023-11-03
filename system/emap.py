@@ -16,8 +16,7 @@ import traceback
 from system.serial_lib import DriverSerial
 from system.timer_lib import DriverTimer
 from system.share_lib import DataShare, FileShare
-# TODO : pas d'import du code utilisateur
-from user.senso import TestSenso
+from system.config import user_driver
 from system.trace_lib import trace_log
 from system.const import *
 
@@ -94,9 +93,8 @@ class DriverEmap:
 		# Manager
 		self.serial = DriverSerial("COM_1", 57600, len("DATA,xxx,xxxx,*CS\r\n") + 512, 0.15)
 		self.timer = DriverTimer(path, "emap")
-		# TODO: Isoler la classe capteur
 		self.payload_step = DataShare("payload_step")
-		self.payload = TestSenso()
+		self.payload = user_driver
 
 	# Send frame over EMAP link
 	def send_ascii(self, trace_path: str, frame: str):
@@ -132,13 +130,13 @@ class DriverEmap:
 		self.serial.write(string.encode("ascii"))
 		trace_log(trace_path, "EMAP     > Tx=" + frame_ascii)
 
-	# Get next task activity
-	def time_before_activity(self) -> float:
+	# Get time before next activity
+	def get_time_before_activity(self) -> float:
 		"""
-			Get the time remaining before the next task activity
+			Get the time remaining before the next activity
 
 			Returns:
-				- float: time remaining before the next task activity (sec)
+				- float: time remaining before the next activity (sec)
 			"""
 		# Waiting for the next command
 		if self.timer.remaining_time() > 0.0:
@@ -173,6 +171,7 @@ def cleanup_folder(path_name: str):
 	for file_name in files:
 		# Remove file
 		os.remove(path_name + "/" + file_name)
+
 
 # Logger extract
 def logger_extract(size: int):
@@ -390,12 +389,11 @@ def manager(self):
 					# Flush system
 					elif split[2] == "!payload-cleanup":
 						# Clean folders
-						# TODO:
-						# cleanup_folder("./config")
-						# cleanup_folder("./ctd")
-						# cleanup_folder("./log")
+						cleanup_folder("./config")
+						cleanup_folder("./ctd")
+						cleanup_folder("./log")
 						cleanup_folder("./payload")
-						# cleanup_folder("./share")
+						cleanup_folder("./share")
 						cleanup_folder("./temp")
 						cleanup_folder("./trash")
 						# Reply

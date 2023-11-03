@@ -205,7 +205,7 @@ class DriverTimer:
 			Wait until the current second to change
 			"""
 		# Trace
-		trace_log(self.path, "TIMER    > Synchro tmr_" + self.name + " ")
+		trace_log(self.path, "TIMER    > Synchro tmr_" + self.name)
 		# Wait for resource
 		timer_locks[self.name].acquire()
 		# Activate

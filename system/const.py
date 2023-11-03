@@ -5,7 +5,7 @@
 	"""
 
 # Versioning
-USEA_VERSION = "v1.00.000"
+USEA_VERSION = "v1.0.0"
 
 # Navigation stages
 USEA_NAVIGATION_STATE_UNDEFINED = 0

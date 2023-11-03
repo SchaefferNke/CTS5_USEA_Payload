@@ -66,7 +66,7 @@ def nmea_checksum_compute_ascii(frame: str, count: int) -> int:
 # Class definition
 class DriverSilicate:
 	"""
-		DriverSilicate class: manage acquisition and communication with silicate sensor
+		DriverSilicate class: manage acquisition and communication with sensor
 		"""
 
 	# Create resource
@@ -79,16 +79,9 @@ class DriverSilicate:
 		self.timer = DriverTimer(path, "silicate")
 		self.share_step = DataShare("silicate_step")
 
-	# Sensor version
+	# Get version
 	@staticmethod
-	def get_version() -> str:
-		"""
-			Get version
-
-			Returns:
-				- str: version string
-			"""
-		return SILICATE_VERSION
+	def get_version(self) -> str: return SILICATE_VERSION
 
 	# Send frame over EMAP link
 	def send_ascii(self, trace_path: str, frame: str):

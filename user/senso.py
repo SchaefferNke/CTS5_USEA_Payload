@@ -16,7 +16,7 @@ import traceback
 from system.io_lib import DriverIOOutput, DriverIOInput
 from system.serial_lib import DriverSerial
 from system.timer_lib import DriverTimer
-from system.share_lib import DataShare, FileShare, get_navigation, get_profile
+from system.share_lib import DataShare, get_navigation, get_profile
 from system.technical import DriverTechnicalUser
 from system.trace_lib import trace_log
 from system.const import *
@@ -78,7 +78,7 @@ def acquisition_process(self, string: str) -> bool:
 	return result
 
 
-# Output definition
+# Class definition
 class DataSenso:
 	"""
 		DataSenso class: sensor sample
@@ -101,7 +101,7 @@ class DataSenso:
 # Class definition
 class DriverSenso:
 	"""
-		DriverSenso class
+		DriverSenso class: manage acquisition of sensor
 		"""
 
 	# Create resource
@@ -113,7 +113,6 @@ class DriverSenso:
 		self.io_alarm = DriverIOInput("GPIO_2_7")
 		self.serial = DriverSerial("COM_5", 19200, 128, 0.15)
 		self.timer = DriverTimer(path, "senso")
-		self.share_data = FileShare(path, "senso.txt")
 		self.share_step = DataShare("payload_step")
 		self.tech = DriverTechnicalUser("SENSO")
 		# Output
@@ -123,13 +122,13 @@ class DriverSenso:
 		self.output.channel2 = 0.0
 		self.output.channel3 = 0.0
 
-	# Get next task activity
-	def time_before_activity(self) -> float:
+	# Get time before next activity
+	def get_time_before_activity(self) -> float:
 		"""
-			Get the time remaining before the next task activity
+			Get the time remaining before the next activity
 
 			Returns:
-				- float: time remaining before the next task activity (sec)
+				- float: time remaining before the next activity (sec)
 			"""
 		# Waiting for the next measurement
 		if not self.active:
@@ -166,7 +165,7 @@ class DriverSenso:
 # Class definition
 class TestSenso:
 	"""
-		TestSenso class
+		TestSenso class: manage test commands with sensor
 		"""
 
 	# Create resource
@@ -182,16 +181,9 @@ class TestSenso:
 		self.output.channel2 = 0.0
 		self.output.channel3 = 0.0
 
-	# Sensor version
+	# Get version
 	@staticmethod
-	def get_version() -> str:
-		"""
-			Get version
-
-			Returns:
-				- str: version string
-			"""
-		return SENSO_VERSION
+	def get_version(self) -> str: return SENSO_VERSION
 
 	# Dummy measurement
 	def get_data(self) -> str:
