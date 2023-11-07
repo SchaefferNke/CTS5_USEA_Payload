@@ -4,6 +4,11 @@
 	emap.py
 """
 
+__authors__ = "Christophe SCHAEFFER"
+__copyright__ = "nke Instrumentation"
+__date__ = "2023-11-06"
+__version__ = "1.0.0"
+
 # Standard libraries
 import os
 import sys
@@ -13,12 +18,16 @@ import zipfile
 import traceback
 
 # Project libraries
+from system.rtc import rtc_driver
 from system.serial_lib import DriverSerial
 from system.timer_lib import DriverTimer
 from system.share_lib import DataShare, FileShare
 from system.config import user_driver
 from system.trace_lib import trace_log
 from system.const import *
+
+# Versioning
+USEA_VERSION = "v1.0.0"
 
 
 # Compute NMEA checksum (receive)
@@ -230,6 +239,9 @@ def manager(self):
 	# Trace
 	trace_log(path, "EMAP     > Activate")
 
+	# Start timer
+	self._timer.start_one_shot(10.0)
+
 	# Loop
 	if self._serial.open():
 		try:
@@ -348,13 +360,12 @@ def manager(self):
 					# share information
 					share = FileShare(path, "synchro.txt")
 					share.write(f"{drift:.3f}")
+					# Synchronize system clock
+					rtc_driver.synchronize(utc)
 					# Reply
 					self._send_ascii(path, "GPSACK")
 					# Wait
 					time.sleep(0.5)
-					# Synchronize system clock
-					if not os.name == "nt":
-						os.system("sudo date -u --set=%s" % utc.strftime("20%y-%m-%dT%H:%M:%S"))
 
 				# PING processing
 				elif "PING" in frame_string[0:4]:

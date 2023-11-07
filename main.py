@@ -4,6 +4,11 @@
 	main.py
 """
 
+__authors__ = "Christophe SCHAEFFER"
+__copyright__ = "nke Instrumentation"
+__date__ = "2023-11-07"
+__version__ = "1.0.0"
+
 # Standard libraries
 import os
 import time
@@ -11,6 +16,7 @@ import threading
 import traceback
 
 # Project libraries
+from system.rtc import rtc_driver
 from system.io_lib import DriverIOOutput
 from system.technical import technical_driver
 from system.ctd import ctd_driver
@@ -21,6 +27,12 @@ from system.trace_lib import trace_log
 
 # Main function
 if __name__ == "__main__":
+
+	# Restore system clock
+	rtc_driver.restore()
+	# CPLD awake command
+	io_sleepn = DriverIOOutput("GPIO_3_27")
+	io_sleepn.set_on()
 
 	# Trace
 	trace_log("./", "MAIN     > Launch application")
@@ -53,9 +65,6 @@ if __name__ == "__main__":
 	thread_user.start()
 	thread_emap.start()
 
-	# CPLD awake command
-	io_sleepn = DriverIOOutput("GPIO_3_27")
-
 	# Main loop
 	try:
 		while True:
@@ -63,11 +72,23 @@ if __name__ == "__main__":
 			# Activity management
 			activity_emap = emap_driver.get_time_before_activity()
 			activity_user = user_driver.get_time_before_activity()
-			# print("\t" + f"{activity_emap:.3f}" + "\t" + f"{activity_user:.3f}")
+			print("\t" + f"{activity_emap:.3f}" + "\t" + f"{activity_user:.3f}")
 			time.sleep(0.450)
 
-			# Awake CPLD
-			io_sleepn.set_on()
+			# Suspend
+			if (activity_emap > 3600.0) and (activity_user > 3600.0):
+				# Sleep CPLD
+				io_sleepn.set_off()
+				# Suspend system
+				rtc_driver.program_wakealarm("2 minutes")
+				# Suspend system
+				if not os.name == "nt":
+					# Suspend
+					os.system("sudo pm-suspend")
+			# Run
+			else:
+				# Awake CPLD
+				io_sleepn.set_on()
 
 	# Error
 	except Exception as err:

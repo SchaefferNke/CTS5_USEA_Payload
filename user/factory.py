@@ -4,12 +4,18 @@
 	factory.py
 """
 
+__authors__ = "Christophe SCHAEFFER"
+__copyright__ = "nke Instrumentation"
+__date__ = "2023-11-06"
+__version__ = "1.0.0"
+
 # Standard libraries
 import os
 import sys
 import time
 
 # Project libraries
+from system.rtc import DriverRTC
 from system.io_lib import DriverIOOutput, DriverIOInput
 from system.serial_lib import DriverSerial
 
@@ -115,10 +121,15 @@ class DriverFactory:
 			RTC test sequence
 
 			Parameters:
-				- name (str): RTC name (eg: "RTC_1")
+				- name (str): RTC name (eg: "RTC_0")
 		"""
-		# TODO: to implement
-		print("RTC\t\t" + name + "\t\t= not implemented")
+		try:
+			self._resource = DriverRTC()
+			self._resource.restore()
+			print("RTC\t\t" + name + "\t\t= success")
+
+		except Exception:
+			print("RTC\t\t" + name + "\t\t= not available")
 
 
 # Test function
@@ -197,4 +208,4 @@ if __name__ == "__main__":
 	# SD card access (uSD card slot SD1)
 	factory.test_sd("USDHC_1")
 	# RTC
-	factory.test_rtc("RTC_1")
+	factory.test_rtc("RTC_0")

@@ -4,8 +4,10 @@
 	const.py
 """
 
-# Versioning
-USEA_VERSION = "v1.0.0"
+__authors__ = "Christophe SCHAEFFER"
+__copyright__ = "nke Instrumentation"
+__date__ = "2023-11-06"
+__version__ = "1.0.0"
 
 # Navigation stages
 USEA_NAVIGATION_STATE_UNDEFINED = 0

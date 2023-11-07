@@ -4,6 +4,11 @@
 	technical.py
 """
 
+__authors__ = "Christophe SCHAEFFER"
+__copyright__ = "nke Instrumentation"
+__date__ = "2023-11-06"
+__version__ = "1.0.0"
+
 # Standard libraries
 import os
 import sys
@@ -130,18 +135,18 @@ class DriverTechnicalSystem:
 		if self.sd_card:
 			tech_file.write(
 				"[PAYLOAD]\n" +
-				"CPU frequency=" + f"{cpu_freq:.0f}" + "/" + f"{self.cpu_freq_max:.0f}" + " MHz\n" +
-				"CPU usage=" + f"{cpu_usage:.0f}" + "/" + f"{self.cpu_usage_max:.0f}" + " %\n" +
+				"CPU speed=" + f"{cpu_freq:.0f}" + "/" + f"{self.cpu_freq_max:.0f}" + " MHz\n" +
+				"CPU utilization=" + f"{cpu_usage:.0f}" + "/" + f"{self.cpu_usage_max:.0f}" + " %\n" +
 				"CPU temperature=" + f"{cpu_temp:.1f}" + "/" + f"{self.cpu_temp_max:.1f}" + " degC\n" +
-				"RAM usage=" + f"{mem_usage:.0f}" + "/" + f"{self.mem_usage_max:.0f}" + " %\n" +
+				"Memory utilization=" + f"{mem_usage:.0f}" + "/" + f"{self.mem_usage_max:.0f}" + " %\n" +
 				"Available space=" + f"{disk_free:.1f}" + " GB\n")
 		else:
 			tech_file.write(
 				"[PAYLOAD]\n" +
-				"CPU frequency=" + f"{cpu_freq:.0f}" + "/" + f"{self.cpu_freq_max:.0f}" + " MHz\n" +
-				"CPU usage=" + f"{cpu_usage:.0f}" + "/" + f"{self.cpu_usage_max:.0f}" + " %\n" +
+				"CPU speed=" + f"{cpu_freq:.0f}" + "/" + f"{self.cpu_freq_max:.0f}" + " MHz\n" +
+				"CPU utilization=" + f"{cpu_usage:.0f}" + "/" + f"{self.cpu_usage_max:.0f}" + " %\n" +
 				"CPU temperature=" + f"{cpu_temp:.1f}" + "/" + f"{self.cpu_temp_max:.1f}" + " degC\n" +
-				"RAM usage=" + f"{mem_usage:.0f}" + "/" + f"{self.mem_usage_max:.0f}" + " %\n")
+				"Memory utilization=" + f"{mem_usage:.0f}" + "/" + f"{self.mem_usage_max:.0f}" + " %\n")
 		# Write power info
 		tech_file.write(
 			"[POWER]\n" +
