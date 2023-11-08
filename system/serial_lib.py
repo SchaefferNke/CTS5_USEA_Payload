@@ -6,39 +6,20 @@
 
 __authors__ = "Christophe SCHAEFFER"
 __copyright__ = "nke Instrumentation"
-__date__ = "2023-11-06"
+__date__ = "2023-11-08"
 __version__ = "1.0.0"
 
 # Standard libraries
-import os
 import datetime
 import serial
 import threading
 import traceback
 
+# Project libraries
+from system.system import system_driver
+
 # Lock list
 serial_locks = {}
-
-
-# Format serial string for system access
-def name_to_serial_name(name: str) -> str:
-	"""
-		Translates serial name into system serial name
-
-		Parameters:
-			- name (str): serial name (eg: "COM_1")
-
-		Returns:
-			- str: system serial name for system access (eg: "/dev/tty0")
-	"""
-	# Format
-	split = name.split("_")
-	if not os.name == "nt":
-		result = "/dev/tty" + str(int(split[1])-1)
-	else:
-		result = "COM" + split[1]
-	# Result
-	return result
 
 
 # Class definition
@@ -56,7 +37,7 @@ class DriverSerial:
 	# Create resource
 	def __init__(self, name: str, speed: int, size: int, timeout: float):
 		# Manager
-		self._name = name_to_serial_name(name)
+		self._name = system_driver.format_serial_name(name)
 		self._speed = speed
 		self._size = size
 		self._timeout = timeout

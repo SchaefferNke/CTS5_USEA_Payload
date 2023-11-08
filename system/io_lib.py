@@ -6,33 +6,17 @@
 
 __authors__ = "Christophe SCHAEFFER"
 __copyright__ = "nke Instrumentation"
-__date__ = "2023-11-06"
+__date__ = "2023-11-08"
 __version__ = "1.0.0"
 
 # Standard libraries
-import os
 import threading
+
+# Project libraries
+from system.system import system_driver
 
 # Lock list
 io_locks = {}
-
-
-# Format GPIO string for system access
-def name_to_gpio_name(name: str) -> str:
-	"""
-		Translates IO name into system GPIO name
-
-		Parameters:
-			- name (str): IO name (eg: "GPIO_3_8")
-
-		Returns:
-			- str: GPIO name for system access (eg: "gpiochip3 8")
-	"""
-	# Format
-	split = name.split("_")
-	result = "gpiochip" + str(int(split[1])-1) + " " + split[2]
-	# Result
-	return result
 
 
 # Class definition
@@ -47,7 +31,7 @@ class DriverIOOutput:
 	# Create resource
 	def __init__(self, name: str):
 		# Manager
-		self._name = name_to_gpio_name(name)
+		self._name = system_driver.format_gpio_name(name)
 		self._is_on = False
 		if not self._name in io_locks:
 			io_locks[self._name] = threading.Lock()
@@ -60,8 +44,7 @@ class DriverIOOutput:
 		# Wait for resource
 		io_locks[self._name].acquire()
 		# Set output on
-		if not os.name == "nt":
-			os.system("gpioset " + self._name + "=1")
+		system_driver.output_set_on(self._name)
 		# Save state
 		self._is_on = True
 		# Release resource
@@ -75,8 +58,7 @@ class DriverIOOutput:
 		# Wait for resource
 		io_locks[self._name].acquire()
 		# Set output off
-		if not os.name == "nt":
-			os.system("gpioset " + self._name + "=0")
+		system_driver.output_set_off(self._name)
 		# Save state
 		self._is_on = False
 		# Release resource
@@ -112,7 +94,7 @@ class DriverIOInput:
 	# Create resource
 	def __init__(self, name: str):
 		# Manager
-		self._name = name_to_gpio_name(name)
+		self._name = system_driver.format_gpio_name(name)
 		if not self._name in io_locks:
 			io_locks[self._name] = threading.Lock()
 
@@ -126,14 +108,9 @@ class DriverIOInput:
 		"""
 		# Wait for resource
 		io_locks[self._name].acquire()
-		# Test
-		if not os.name == "nt":
-			result = os.system("gpioget " + self._name)
-		else:
-			result = "0"
+		# Read
+		result = system_driver.input_is_on(self._name)
 		# Release resource
 		io_locks[self._name].release()
 		# Result
-		if result == "1":
-			return True
-		return False
+		return result

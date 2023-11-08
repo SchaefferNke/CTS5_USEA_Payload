@@ -6,7 +6,7 @@
 
 __authors__ = "Christophe SCHAEFFER"
 __copyright__ = "nke Instrumentation"
-__date__ = "2023-11-06"
+__date__ = "2023-11-08"
 __version__ = "1.0.0"
 
 # Standard libraries
@@ -18,6 +18,7 @@ import zipfile
 import traceback
 
 # Project libraries
+from system.system import system_driver
 from system.rtc import rtc_driver
 from system.serial_lib import DriverSerial
 from system.timer_lib import DriverTimer
@@ -28,6 +29,8 @@ from system.const import *
 
 # Versioning
 USEA_VERSION = "v1.0.0"
+# EMAP wake-up duration
+EMAP_WAKEUP_DURATION = 30.0
 
 
 # Compute NMEA checksum (receive)
@@ -149,7 +152,7 @@ class DriverEMAP:
 		"""
 		# Waiting for the next command
 		if self._timer.remaining_time() > 0.0:
-			return 0.0
+			return EMAP_WAKEUP_DURATION - self._timer.remaining_time()
 		return 3600.0
 
 	# Run task
@@ -240,7 +243,7 @@ def manager(self):
 	trace_log(path, "EMAP     > Activate")
 
 	# Start timer
-	self._timer.start_one_shot(10.0)
+	self._timer.start_one_shot(EMAP_WAKEUP_DURATION)
 
 	# Loop
 	if self._serial.open():
@@ -252,7 +255,7 @@ def manager(self):
 					time.sleep(0.1)
 					continue
 				# Start timer
-				self._timer.start_one_shot(2.5)
+				self._timer.start_one_shot(EMAP_WAKEUP_DURATION)
 				# Wait start of frame
 				if self._serial.read(1).decode() != "$":
 					continue
@@ -434,8 +437,7 @@ def manager(self):
 						# Delay
 						time.sleep(0.5)
 						# Restart
-						if not os.name == "nt":
-							os.system("sudo reboot")
+						system_driver.reboot()
 					# Logger request on
 					elif split[2] == "!payload-logger:1":
 						# Test request

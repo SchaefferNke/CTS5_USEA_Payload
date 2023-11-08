@@ -6,12 +6,15 @@
 
 __authors__ = "Christophe SCHAEFFER"
 __copyright__ = "nke Instrumentation"
-__date__ = "2023-11-07"
+__date__ = "2023-11-08"
 __version__ = "1.0.0"
 
 # Standard libraries
-import os
 import datetime
+
+# Project libraries
+from system.system import system_driver
+from system.trace_lib import trace_log
 
 
 # Class definition
@@ -26,9 +29,10 @@ class DriverRTC:
 		"""
 			Restore system clock from hardware RTC
 		"""
-		if not os.name == "nt":
-			# Synchronize system clock to hardware RTC
-			os.system("sudo hwclock --hctosys --utc")
+		# Synchronize system clock to hardware RTC
+		system_driver.clock_restore()
+		# Trace
+		trace_log("./", "RTC      > Restore=" + datetime.datetime.now().strftime("20%y-%m-%d %H:%M:%S"))
 
 	# Synchronize system clock
 	@staticmethod
@@ -39,11 +43,10 @@ class DriverRTC:
 			Parameters:
 				- utc (datetime): new date/time
 		"""
-		if not os.name == "nt":
-			# Set system clock
-			os.system("sudo date -u --set=%s" % utc.strftime("20%y-%m-%dT%H:%M:%S"))
-			# Synchronize hardware RTC to system clock
-			os.system("sudo hwclock --systohc --utc")
+		# Synchronize system clock and hardware RTC to external clock
+		system_driver.clock_synchronize(utc)
+		# Trace
+		trace_log("./", "RTC      > Synchronize=" + datetime.datetime.now().strftime("20%y-%m-%d %H:%M:%S"))
 
 	# Program wakealarm
 	@staticmethod
@@ -54,12 +57,12 @@ class DriverRTC:
 			Parameters:
 				- delay (str): delay time from now
 		"""
-		# Suspend system
-		if not os.name == "nt":
-			# Compute awake date
-			utc = datetime.datetime.now()
-			# Program wakeup
-			os.system("sudo date " + str(utc) + " -d " + delay + " > /sys/class/rtc/rtc0/wakealarm")
+		# Compute awake date
+		utc = datetime.datetime.now()
+		# Program wakeup
+		system_driver.program_wakealarm(utc, delay)
+		# Trace
+		trace_log("./", "RTC      > wakealarm=" + utc.strftime("20%y-%m-%d %H:%M:%S") + " + " + delay)
 
 
 # Create resources

@@ -114,8 +114,8 @@ class DriverSENSO:
 		# Manager
 		self._active = False
 		self._step = USEA_PAYLOAD_STEP_IDLE
-		self._io_power = DriverIOOutput("GPIO_3_19")
-		self._io_alarm = DriverIOInput("GPIO_2_7")
+		self._io_power = DriverIOOutput("GPIO_3_20")
+		self._io_alarm = DriverIOInput("GPIO_2_0")
 		self._serial = DriverSerial("COM_5", 19200, 128, 0.15)
 		self._timer = DriverTimer(path, "senso")
 		self._share_step = DataShare("payload_step")
@@ -176,8 +176,8 @@ class TestSENSO:
 	# Create resource
 	def __init__(self):
 		# Manager
-		self._io_power = DriverIOOutput("GPIO_3_19")
-		self._io_alarm = DriverIOInput("GPIO_2_7")
+		self._io_power = DriverIOOutput("GPIO_3_20")
+		self._io_alarm = DriverIOInput("GPIO_2_0")
 		self._serial = DriverSerial("COM_5", 19200, 128, 0.15)
 		# Output
 		self.output = DataSENSO()
