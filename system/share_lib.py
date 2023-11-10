@@ -6,7 +6,7 @@
 
 __authors__ = "Christophe SCHAEFFER"
 __copyright__ = "nke Instrumentation"
-__date__ = "2023-11-06"
+__date__ = "2023-11-10"
 __version__ = "1.0.0"
 
 # Standard libraries
@@ -125,7 +125,9 @@ class DataShare:
 				- object: data object
 		"""
 		# Wait for resource
-		var_locks[self._name].acquire()
+		if not var_locks[self._name].acquire(timeout=60.0):
+			# Result
+			return 0
 		# Read value
 		value = self.variable.value
 		# Release resource
@@ -209,7 +211,12 @@ class FileShare:
 			# Result
 			return str(self.content)
 		# Wait for resource
-		file_locks[self._filename].acquire()
+		if not file_locks[self._filename].acquire(timeout=60.0):
+			# Fill empty content
+			self.content.timestamp = 0.0
+			self.content.string = "?"
+			# Result
+			return str(self.content)
 		# Read file
 		file = open(self._path + "share/" + self._filename, "r")
 		info = file.read()
