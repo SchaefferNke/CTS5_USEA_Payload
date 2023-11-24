@@ -234,8 +234,8 @@ def compress():
 	"""
 	# Create names
 	zip_src_name = path + "payload/" + get_profile(path) + "_payload.csv"
-	zip_tmp_name = path + "temp/" + get_profile(path) + "_payload.zip"
-	zip_dst_name = path + "payload/" + get_profile(path) + "_payload.zip"
+	zip_tmp_name = path + "temp/" + get_profile(path) + "_payload.hex"
+	zip_dst_name = path + "payload/" + get_profile(path) + "_payload.hex"
 	# No file to compress
 	if not os.path.isfile(zip_src_name):
 		return

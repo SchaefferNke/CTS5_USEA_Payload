@@ -527,6 +527,17 @@ def manager(self):
 						index_cpt = 1
 						# Reply
 						self._send_ascii(path, "PUTACK,512")
+					# Configuration update file
+					elif split[1] == "payload_config.cfg":
+						# Filename
+						file_name = path + "temp/payload_config.cfg"
+						# Remove file
+						if os.path.isfile(file_name):
+							os.remove(file_name)
+						# Initialize data block
+						index_cpt = 1
+						# Reply
+						self._send_ascii(path, "PUTACK,512")
 					# Update file
 					elif split[1] == "payload_update.zip":
 						# Filename

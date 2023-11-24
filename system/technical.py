@@ -19,7 +19,7 @@ import traceback
 
 # Project libraries
 from system.timer_lib import DriverTimer
-from system.share_lib import DataShare, get_navigation, get_profile
+from system.share_lib import FileShare, DataShare, get_navigation, get_profile
 from system.trace_lib import trace_log
 from system.const import *
 
@@ -33,24 +33,24 @@ class DriverTechnicalSystem:
 	# Create resource
 	def __init__(self):
 		# Manager
-		self.step = USEA_PAYLOAD_STEP_IDLE
-		self.timer = DriverTimer(path, "technical")
-		self.payload_step = DataShare("payload_step")
+		self._step = USEA_PAYLOAD_STEP_IDLE
+		self._timer = DriverTimer(path, "technical")
+		self._payload_step = DataShare("payload_step")
 		# Counters
-		self.activity_start = 0.0
-		self.activity_run = 0.0
-		self.cpu_freq_max = 0.0
-		self.cpu_freq_sum = 0.0
-		self.cpu_usage_max = 0.0
-		self.cpu_usage_sum = 0.0
-		self.cpu_temp_max = 0.0
-		self.cpu_temp_sum = 0.0
-		self.mem_usage_max = 0.0
-		self.mem_usage_sum = 0.0
+		self._activity_start = 0.0
+		self._activity_run = 0.0
+		self._cpu_freq_max = 0.0
+		self._cpu_freq_sum = 0.0
+		self._cpu_usage_max = 0.0
+		self._cpu_usage_sum = 0.0
+		self._cpu_temp_max = 0.0
+		self._cpu_temp_sum = 0.0
+		self._mem_usage_max = 0.0
+		self._mem_usage_sum = 0.0
+		self._boot_count = FileShare(path, "boot.txt")
 		# Check SD card
 		# TODO: stratégie détection carte mémoire (démarrage, permanent, ... ?)
-		print(psutil.disk_partitions(all=False))
-		self.sd_card = False
+		self._sd_card = False
 
 	# Reset diagnosis counters
 	def diagnosis_reset(self):
@@ -58,16 +58,16 @@ class DriverTechnicalSystem:
 			Reset the diagnosis counters
 		"""
 		# Reset
-		self.activity_start = datetime.datetime.now().timestamp()
-		self.activity_run = 0.0
-		self.cpu_freq_max = 0.0
-		self.cpu_freq_sum = 0.0
-		self.cpu_usage_max = 0.0
-		self.cpu_usage_sum = 0.0
-		self.cpu_temp_max = 0.0
-		self.cpu_temp_sum = 0.0
-		self.mem_usage_max = 0.0
-		self.mem_usage_sum = 0.0
+		self._activity_start = datetime.datetime.now().timestamp()
+		self._activity_run = 0.0
+		self._cpu_freq_max = 0.0
+		self._cpu_freq_sum = 0.0
+		self._cpu_usage_max = 0.0
+		self._cpu_usage_sum = 0.0
+		self._cpu_temp_max = 0.0
+		self._cpu_temp_sum = 0.0
+		self._mem_usage_max = 0.0
+		self._mem_usage_sum = 0.0
 
 	# Make a diagnosis
 	def diagnosis_run(self):
@@ -75,30 +75,30 @@ class DriverTechnicalSystem:
 			Make an instantaneous diagnosis
 		"""
 		# System activity
-		self.activity_run += 1.0
+		self._activity_run += 1.0
 		# CPU frequency
 		cpu_freq = psutil.cpu_freq().current
-		self.cpu_freq_sum = self.cpu_freq_sum + cpu_freq
-		if cpu_freq > self.cpu_freq_max:
-			self.cpu_freq_max = cpu_freq
+		self._cpu_freq_sum = self._cpu_freq_sum + cpu_freq
+		if cpu_freq > self._cpu_freq_max:
+			self._cpu_freq_max = cpu_freq
 		# CPU usage
 		cpu_usage = psutil.cpu_percent(interval=None)
-		self.cpu_usage_sum = self.cpu_usage_sum + cpu_usage
-		if cpu_usage > self.cpu_usage_max:
-			self.cpu_usage_max = cpu_usage
+		self._cpu_usage_sum = self._cpu_usage_sum + cpu_usage
+		if cpu_usage > self._cpu_usage_max:
+			self._cpu_usage_max = cpu_usage
 		# CPU temperature
 		if not os.name == "nt":
 			cpu_temp = psutil.sensors_temperatures(fahrenheit=False)
 		else:
 			cpu_temp = 15.3
-		self.cpu_temp_sum = self.cpu_temp_sum + cpu_temp
-		if cpu_temp > self.cpu_temp_max:
-			self.cpu_temp_max = cpu_temp
+		self._cpu_temp_sum = self._cpu_temp_sum + cpu_temp
+		if cpu_temp > self._cpu_temp_max:
+			self._cpu_temp_max = cpu_temp
 		# Memory usage
 		mem_usage = 100.0 * psutil.virtual_memory().used / psutil.virtual_memory().total
-		self.mem_usage_sum = self.mem_usage_sum + mem_usage
-		if mem_usage > self.mem_usage_max:
-			self.mem_usage_max = mem_usage
+		self._mem_usage_sum = self._mem_usage_sum + mem_usage
+		if mem_usage > self._mem_usage_max:
+			self._mem_usage_max = mem_usage
 
 	# Save diagnosis
 	def diagnosis_save(self):
@@ -106,23 +106,25 @@ class DriverTechnicalSystem:
 			Save diagnosis into technical file
 		"""
 		# System activity
-		activity_duration = datetime.datetime.now().timestamp() - self.activity_start
-		activity_percent = 100.0 * self.activity_run / activity_duration
+		activity_duration = datetime.datetime.now().timestamp() - self._activity_start
+		activity_percent = 100.0 * self._activity_run / activity_duration
 		if activity_percent > 100.0:
 			activity_percent = 100.0
 		# CPU frequency
-		cpu_freq = self.cpu_freq_sum / self.activity_run
+		cpu_freq = self._cpu_freq_sum / self._activity_run
 		# CPU usage
-		cpu_usage = self.cpu_usage_sum / self.activity_run
+		cpu_usage = self._cpu_usage_sum / self._activity_run
 		# CPU temperature
-		cpu_temp = self.cpu_temp_sum / self.activity_run
+		cpu_temp = self._cpu_temp_sum / self._activity_run
 		# Memory usage
-		mem_usage = self.mem_usage_sum / self.activity_run
+		mem_usage = self._mem_usage_sum / self._activity_run
 		# Disk free
 		disk_free = 0.0
-		if self.sd_card:
+		if self._sd_card:
 			if not os.name == "nt":
 				disk_free = (psutil.disk_usage("/dev/sda1").total - psutil.disk_usage("/dev/sda1").used) / 1073741824.0
+		# Boot counter
+		self._boot_count.read()
 		# Create names
 		dest_file = path + "payload/" + get_profile(path) + "_payload.txt"
 		user_file = path + "share/technical.txt"
@@ -132,21 +134,23 @@ class DriverTechnicalSystem:
 		# Open file
 		tech_file = open(dest_file, "w")
 		# Write system info
-		if self.sd_card:
+		if self._sd_card:
 			tech_file.write(
 				"[PAYLOAD]\n" +
-				"CPU speed=" + f"{cpu_freq:.0f}" + "/" + f"{self.cpu_freq_max:.0f}" + " MHz\n" +
-				"CPU utilization=" + f"{cpu_usage:.0f}" + "/" + f"{self.cpu_usage_max:.0f}" + " %\n" +
-				"CPU temperature=" + f"{cpu_temp:.1f}" + "/" + f"{self.cpu_temp_max:.1f}" + " degC\n" +
-				"Memory utilization=" + f"{mem_usage:.0f}" + "/" + f"{self.mem_usage_max:.0f}" + " %\n" +
-				"Available space=" + f"{disk_free:.1f}" + " GB\n")
+				"CPU speed=" + f"{cpu_freq:.0f}" + "/" + f"{self._cpu_freq_max:.0f}" + " MHz\n" +
+				"CPU utilization=" + f"{cpu_usage:.0f}" + "/" + f"{self._cpu_usage_max:.0f}" + " %\n" +
+				"CPU temperature=" + f"{cpu_temp:.1f}" + "/" + f"{self._cpu_temp_max:.1f}" + " degC\n" +
+				"Memory utilization=" + f"{mem_usage:.0f}" + "/" + f"{self._mem_usage_max:.0f}" + " %\n" +
+				"Available space=" + f"{disk_free:.1f}" + " GB\n" +
+				"Boot count=" + self._boot_count.content.string + "\n")
 		else:
 			tech_file.write(
 				"[PAYLOAD]\n" +
-				"CPU speed=" + f"{cpu_freq:.0f}" + "/" + f"{self.cpu_freq_max:.0f}" + " MHz\n" +
-				"CPU utilization=" + f"{cpu_usage:.0f}" + "/" + f"{self.cpu_usage_max:.0f}" + " %\n" +
-				"CPU temperature=" + f"{cpu_temp:.1f}" + "/" + f"{self.cpu_temp_max:.1f}" + " degC\n" +
-				"Memory utilization=" + f"{mem_usage:.0f}" + "/" + f"{self.mem_usage_max:.0f}" + " %\n")
+				"CPU speed=" + f"{cpu_freq:.0f}" + "/" + f"{self._cpu_freq_max:.0f}" + " MHz\n" +
+				"CPU utilization=" + f"{cpu_usage:.0f}" + "/" + f"{self._cpu_usage_max:.0f}" + " %\n" +
+				"CPU temperature=" + f"{cpu_temp:.1f}" + "/" + f"{self._cpu_temp_max:.1f}" + " degC\n" +
+				"Memory utilization=" + f"{mem_usage:.0f}" + "/" + f"{self._mem_usage_max:.0f}" + " %\n" +
+				"Boot count=" + self._boot_count.content.string + "\n")
 		# Write power info
 		tech_file.write(
 			"[POWER]\n" +
@@ -163,6 +167,8 @@ class DriverTechnicalSystem:
 			os.remove(user_file)
 		# Close file
 		tech_file.close()
+		# Clear boot counter
+		self._boot_count.write("?")
 
 	# Run task
 	def run(self):
@@ -299,8 +305,18 @@ def manager(self):
 	# Trace
 	trace_log(path, "TECH     > Activate")
 
+	# Read boot counter
+	self._boot_count.read()
+	# Counter is empty?
+	if self._boot_count.content.string == "?":
+		# Initialize boot counter
+		self._boot_count.write("1")
+	else:
+		# Increment boot counter
+		self._boot_count.write(str(int(self._boot_count.content.string) + 1))
+
 	# Start timer
-	self.timer.start_base_time(1.0)
+	self._timer.start_base_time(1.0)
 
 	# Loop
 	try:
@@ -310,7 +326,7 @@ def manager(self):
 			navigation = get_navigation(path)
 
 			# Wait
-			if self.step == USEA_PAYLOAD_STEP_IDLE:
+			if self._step == USEA_PAYLOAD_STEP_IDLE:
 				# Initiating descent
 				if (
 					(navigation == USEA_NAVIGATION_STATE_BUOYANCY_DECREASE) or
@@ -320,32 +336,32 @@ def manager(self):
 					# Reset counters
 					self.diagnosis_reset()
 					# Start recording
-					self.step = USEA_PAYLOAD_STEP_RECORD
+					self._step = USEA_PAYLOAD_STEP_RECORD
 
 			# Navigation
-			elif self.step == USEA_PAYLOAD_STEP_RECORD:
+			elif self._step == USEA_PAYLOAD_STEP_RECORD:
 				# Navigation in progress
 				if navigation == USEA_NAVIGATION_STATE_DATA_PROCESSING:
 					# Start treatment
-					self.step = USEA_PAYLOAD_STEP_TREAT
+					self._step = USEA_PAYLOAD_STEP_TREAT
 
 			# Treatment
-			elif self.step == USEA_PAYLOAD_STEP_TREAT:
+			elif self._step == USEA_PAYLOAD_STEP_TREAT:
 				# Sensor processing
-				if not self.payload_step.read() == USEA_PAYLOAD_STEP_TREAT:
+				if not self._payload_step.read() == USEA_PAYLOAD_STEP_TREAT:
 					# Trace
 					trace_log(path, "TECH     > Stop monitoring")
 					# Save diagnosis
 					self.diagnosis_save()
 					# Stop treatment
-					self.step = USEA_PAYLOAD_STEP_IDLE
+					self._step = USEA_PAYLOAD_STEP_IDLE
 
 			# Wait
 			else:
 				time.sleep(0.1)
 
 			# Monitoring rate
-			if self.timer.is_tick():
+			if self._timer.is_tick():
 				# Diagnosis
 				self.diagnosis_run()
 			# Wait
