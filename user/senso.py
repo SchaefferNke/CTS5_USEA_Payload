@@ -27,7 +27,7 @@ from system.trace_lib import trace_log
 from system.const import *
 
 # Versioning
-SENSO_VERSION = "v1.0.0"
+SENSO_VERSION = "1.0.0"
 
 
 # Acquisition process

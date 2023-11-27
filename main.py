@@ -73,7 +73,7 @@ if __name__ == "__main__":
 			# Wait
 			time.sleep(1.0)
 
-			# Activity management
+			"""# Activity management
 			activity_emap = emap_driver.get_time_before_activity()
 			activity_user = user_driver.get_time_before_activity()
 			print("\t" + f"{activity_emap:.3f}" + "\t" + f"{activity_user:.3f}")
@@ -85,7 +85,7 @@ if __name__ == "__main__":
 				# Trace
 				trace_log("./", "MAIN     > Suspend system")
 				# Suspend
-				system_driver.suspend()
+				system_driver.suspend()"""
 
 	# Error
 	except Exception as err:

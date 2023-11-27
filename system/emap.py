@@ -28,7 +28,7 @@ from system.trace_lib import trace_log
 from system.const import *
 
 # Versioning
-USEA_VERSION = "v1.0.0"
+USEA_VERSION = "1.0.0"
 # EMAP wake-up duration
 EMAP_WAKEUP_DURATION = 30.0
 
@@ -285,7 +285,7 @@ def manager(self):
 					# Print
 					trace_log(path, "EMAP     > Rx=$" + frame_string)
 					# Reply
-					self._send_ascii(path, "VERSIONACK," + USEA_VERSION)
+					self._send_ascii(path, "VERSIONACK," + USEA_VERSION + "-" + self._payload.get_version())
 
 				# NAV processing
 				elif "NAV," in frame_string[0:4]:
@@ -389,7 +389,7 @@ def manager(self):
 					# User version
 					if split[2] == "?payload-version":
 						# Get version
-						reply = USEA_VERSION + "-" + self._payload.get_version()
+						reply = "Version " + USEA_VERSION + "-" + self._payload.get_version()
 						# Reply
 						self._send_ascii(path, "COMMANDACK," + str(len(reply)) + "," + reply)
 					# Sensor test
@@ -415,13 +415,13 @@ def manager(self):
 						cleanup_folder("./temp")
 						cleanup_folder("./trash")
 						# Reply
-						self._send_ascii(path, "COMMANDACK")
+						self._send_ascii(path, "COMMANDACK,12,Command okay")
 					# Update
 					elif split[2] == "!payload-update":
 						# Check if update file exists
 						if os.path.isfile(path + "temp/payload_update.zip"):
 							# Reply
-							self._send_ascii(path, "COMMANDACK")
+							self._send_ascii(path, "COMMANDACK,12,Command okay")
 							# Wait
 							time.sleep(0.5)
 							# Interpret script
@@ -433,7 +433,7 @@ def manager(self):
 					# Application reset
 					elif split[2] == "!payload-reset":
 						# Reply
-						self._send_ascii(path, "COMMANDACK")
+						self._send_ascii(path, "COMMANDACK,12,Command okay")
 						# Delay
 						time.sleep(0.5)
 						# Restart
@@ -445,17 +445,17 @@ def manager(self):
 							file_request = open(path + "temp/logger.txt", "w")
 							file_request.close()
 						# Reply
-						self._send_ascii(path, "COMMANDACK")
+						self._send_ascii(path, "COMMANDACK,12,Command okay")
 					# Logger request off
 					elif split[2] == "!payload-logger:0":
 						# Test request
 						if os.path.isfile(path + "temp/logger.txt"):
 							os.remove(path + "temp/logger.txt")
 						# Reply
-						self._send_ascii(path, "COMMANDACK")
+						self._send_ascii(path, "COMMANDACK,12,Command okay")
 					# Error
 					else:
-						self._send_ascii(path, "COMMANDNACK")
+						self._send_ascii(path, "COMMANDACK,15,Unknown command")
 
 				# LIST processing
 				elif "LIST" in frame_string[0:4]:
@@ -530,7 +530,7 @@ def manager(self):
 					# Configuration update file
 					elif split[1] == "payload_config.cfg":
 						# Filename
-						file_name = path + "temp/payload_config.cfg"
+						file_name = path + "temp/payload.cfg"
 						# Remove file
 						if os.path.isfile(file_name):
 							os.remove(file_name)

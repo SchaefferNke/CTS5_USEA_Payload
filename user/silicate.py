@@ -26,7 +26,7 @@ from system.trace_lib import trace_log
 from system.const import *
 
 # Versioning
-SILICATE_VERSION = "v1.0.0"
+SILICATE_VERSION = "1.0.0"
 
 
 # Compute NMEA checksum (receive)

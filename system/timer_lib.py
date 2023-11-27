@@ -55,7 +55,7 @@ class DriverTimer:
 				- interval (float): interval of time (sec)
 		"""
 		# Trace
-		trace_log(self._path, "TIMER    > Start tmr_" + self._name + " one-shot " + str(interval) + " sec")
+		#trace_log(self._path, "TIMER    > Start tmr_" + self._name + " one-shot " + str(interval) + " sec")
 		# Wait for resource
 		timer_locks[self._name].acquire()
 		# Configure
@@ -75,7 +75,7 @@ class DriverTimer:
 				- period (float): base time (sec)
 		"""
 		# Trace
-		trace_log(self._path, "TIMER    > Start tmr_" + self._name + " base time " + str(period) + " sec")
+		#trace_log(self._path, "TIMER    > Start tmr_" + self._name + " base time " + str(period) + " sec")
 		# Wait for resource
 		timer_locks[self._name].acquire()
 		# Configure
