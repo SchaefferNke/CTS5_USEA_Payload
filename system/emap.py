@@ -339,8 +339,8 @@ def manager(self):
 					# share information
 					share = FileShare(path, "pressure.txt")
 					share.write(split[1])
-					# Reply
-					self._send_ascii(path, "CTDACK")
+					# No reply
+					# self._send_ascii(path, "CTDACK")
 
 				# GPS processing
 				elif "GPS," in frame_string[0:4]:
@@ -429,7 +429,7 @@ def manager(self):
 						# Error
 						else:
 							# Reply
-							self._send_ascii(path, "COMMANDNACK")
+							self._send_ascii(path, "COMMANDACK,13,Command error")
 					# Application reset
 					elif split[2] == "!payload-reset":
 						# Reply
@@ -438,19 +438,12 @@ def manager(self):
 						time.sleep(0.5)
 						# Restart
 						system_driver.reboot()
-					# Logger request on
-					elif split[2] == "!payload-logger:1":
+					# Logger request
+					elif split[2] == "!payload-logger":
 						# Test request
 						if not os.path.isfile(path + "temp/logger.txt"):
 							file_request = open(path + "temp/logger.txt", "w")
 							file_request.close()
-						# Reply
-						self._send_ascii(path, "COMMANDACK,12,Command okay")
-					# Logger request off
-					elif split[2] == "!payload-logger:0":
-						# Test request
-						if os.path.isfile(path + "temp/logger.txt"):
-							os.remove(path + "temp/logger.txt")
 						# Reply
 						self._send_ascii(path, "COMMANDACK,12,Command okay")
 					# Error
@@ -520,17 +513,6 @@ def manager(self):
 					if split[1] == "payload.cfg":
 						# Filename
 						file_name = path + "config/payload.cfg"
-						# Remove file
-						if os.path.isfile(file_name):
-							os.remove(file_name)
-						# Initialize data block
-						index_cpt = 1
-						# Reply
-						self._send_ascii(path, "PUTACK,512")
-					# Configuration update file
-					elif split[1] == "payload_config.cfg":
-						# Filename
-						file_name = path + "temp/payload.cfg"
 						# Remove file
 						if os.path.isfile(file_name):
 							os.remove(file_name)

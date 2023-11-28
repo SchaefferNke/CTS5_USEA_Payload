@@ -154,7 +154,7 @@ class DriverTechnicalSystem:
 		# Write power info
 		tech_file.write(
 			"[POWER]\n" +
-			"PAYLOAD=" + f"{activity_percent:.0f}" + " %\n")
+			"Payload=" + f"{activity_percent:.0f}" + " %\n")
 		# Write user info
 		if os.path.isfile(user_file):
 			# Read user info
