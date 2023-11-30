@@ -122,6 +122,7 @@ class UserConfig:
 	# Create resource
 	def __init__(self):
 		# Manager
+		self.source_code = "none"
 		self._class_mission = None
 		self._ptr_run = None
 		self._ptr_next_activity = None
@@ -144,6 +145,7 @@ class UserConfig:
 		str_function_version = read_configuration("COMMAND", "function_version")
 		str_function_measurement = read_configuration("COMMAND", "function_measurement")
 		str_function_test = read_configuration("COMMAND", "function_test")
+		self.source_code = str_source_code
 		# Load mission configuration
 		user_class_mission = load_class(str_source_code, str_class_mission, DefaultConfig)
 		self._ptr_run = load_function(user_class_mission, str_function_run, default_driver.run)

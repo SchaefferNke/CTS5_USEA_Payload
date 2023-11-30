@@ -392,6 +392,12 @@ def manager(self):
 						reply = "Version " + USEA_VERSION + "-" + self._payload.get_version()
 						# Reply
 						self._send_ascii(path, "COMMANDACK," + str(len(reply)) + "," + reply)
+					# Configuration
+					elif split[2] == "?payload-configuration":
+						# Acquire data
+						reply = user_driver.source_code
+						# Reply
+						self._send_ascii(path, "COMMANDACK," + str(len(reply)) + "," + reply)
 					# Sensor test
 					elif split[2] == "?payload-data":
 						# Acquire data
