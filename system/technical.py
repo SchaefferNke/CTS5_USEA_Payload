@@ -6,14 +6,13 @@
 
 __authors__ = "Christophe SCHAEFFER"
 __copyright__ = "nke Instrumentation"
-__date__ = "2023-11-06"
+__date__ = "2023-12-01"
 __version__ = "1.0.0"
 
 # Standard libraries
 import os
 import sys
 import time
-import datetime
 import psutil
 import traceback
 
@@ -37,7 +36,6 @@ class DriverTechnicalSystem:
 		self._timer = DriverTimer(path, "technical")
 		self._payload_step = DataShare("payload_step")
 		# Counters
-		self._activity_start = 0.0
 		self._activity_run = 0.0
 		self._cpu_freq_max = 0.0
 		self._cpu_freq_sum = 0.0
@@ -58,7 +56,6 @@ class DriverTechnicalSystem:
 			Reset the diagnosis counters
 		"""
 		# Reset
-		self._activity_start = datetime.datetime.now().timestamp()
 		self._activity_run = 0.0
 		self._cpu_freq_max = 0.0
 		self._cpu_freq_sum = 0.0
@@ -106,10 +103,7 @@ class DriverTechnicalSystem:
 			Save diagnosis into technical file
 		"""
 		# System activity
-		activity_duration = datetime.datetime.now().timestamp() - self._activity_start
-		activity_percent = 100.0 * self._activity_run / activity_duration
-		if activity_percent > 100.0:
-			activity_percent = 100.0
+		activity_run = self._activity_run / 60.0
 		# CPU frequency
 		cpu_freq = self._cpu_freq_sum / self._activity_run
 		# CPU usage
@@ -154,7 +148,7 @@ class DriverTechnicalSystem:
 		# Write power info
 		tech_file.write(
 			"[POWER]\n" +
-			"Payload=" + f"{activity_percent:.0f}" + " %\n")
+			"Payload=" + f"{activity_run:.0f}" + " min\n")
 		# Write user info
 		if os.path.isfile(user_file):
 			# Read user info
