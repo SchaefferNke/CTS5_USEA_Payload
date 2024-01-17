@@ -55,12 +55,12 @@ class DriverRTC:
 			Program wakealarm
 
 			Parameters:
-				- delay (str): delay time from now
+				- delay (str): delay time from now (seconds)
 		"""
 		# Compute awake date
 		utc = datetime.datetime.now()
 		# Program wakeup
-		system_driver.program_wakealarm(utc, delay)
+		system_driver.program_wakealarm(delay)
 		# Trace
 		trace_log("./", "RTC      > wakealarm=" + utc.strftime("20%y-%m-%d %H:%M:%S") + " + " + delay)
 

@@ -36,7 +36,6 @@ if __name__ == "__main__":
 	rtc_driver.restore()
 	# CPLD awake command
 	io_sleepn = DriverIOOutput("GPIO_3_27")
-	io_sleepn.set_on()
 
 	# Create paths
 	if not os.path.exists("config"):
@@ -73,19 +72,18 @@ if __name__ == "__main__":
 			# Wait
 			time.sleep(1.0)
 
-			"""# Activity management
-			activity_emap = emap_driver.get_time_before_activity()
+			# Activity management
+			"""activity_emap = emap_driver.get_time_before_activity()
 			activity_user = user_driver.get_time_before_activity()
 			print("\t" + f"{activity_emap:.3f}" + "\t" + f"{activity_user:.3f}")
 
 			# CPU power management
 			if (activity_emap >= 300.0) and (activity_user >= 300.0):
-				# Suspend system
-				rtc_driver.program_wakealarm("5 minutes")
 				# Trace
 				trace_log("./", "MAIN     > Suspend system")
-				# Suspend
-				system_driver.suspend()"""
+				# Suspend system
+				rtc_driver.program_wakealarm("300")
+				#system_driver.suspend()"""
 
 	# Error
 	except Exception as err:

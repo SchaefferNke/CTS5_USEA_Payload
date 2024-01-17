@@ -38,7 +38,7 @@ class DriverSystem:
 		"""
 		if not os.name == "nt":
 			# Suspend
-			os.system("sudo pm-suspend")
+			os.system("sudo suspend")
 
 	# Restore system clock
 	@staticmethod
@@ -67,17 +67,16 @@ class DriverSystem:
 
 	# Program wakealarm
 	@staticmethod
-	def program_wakealarm(utc: datetime, delay: str):
+	def program_wakealarm(delay: str):
 		"""
 			Program wakealarm
 
 			Parameters:
-				- utc (datetime): current date/time
-				- delay (str): delay time from now
+				- delay (str): delay time from now (seconds)
 		"""
 		if not os.name == "nt":
 			# Program wakeup
-			os.system("sudo date " + str(utc) + " -d " + delay + " > /sys/class/rtc/rtc0/wakealarm")
+			os.system("sudo rtcwake -d /dev/rtc0 -m mem -s " + delay)
 
 	# Set output on
 	@staticmethod
@@ -103,7 +102,7 @@ class DriverSystem:
 		"""
 		if not os.name == "nt":
 			# Set output off
-			os.system("gpioset " + name + "=1")
+			os.system("gpioset " + name + "=0")
 
 	# Test input state
 	@staticmethod
@@ -159,7 +158,7 @@ class DriverSystem:
 		# Format
 		split = name.split("_")
 		if not os.name == "nt":
-			result = "/dev/tty" + str(int(split[1])-1)
+			result = "/dev/ttymxc" + str(int(split[1])-1)
 		else:
 			result = "COM" + split[1]
 		# Result
