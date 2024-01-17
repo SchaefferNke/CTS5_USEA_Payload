@@ -29,6 +29,9 @@ from system.trace_lib import trace_log
 # Main function
 if __name__ == "__main__":
 
+	if not os.path.exists("log"):
+		os.makedirs("log")
+
 	# Trace
 	trace_log("./", "MAIN     > Launch application")
 
@@ -48,8 +51,6 @@ if __name__ == "__main__":
 		os.makedirs("payload")
 	if not os.path.exists("temp"):
 		os.makedirs("temp")
-	if not os.path.exists("log"):
-		os.makedirs("log")
 	if not os.path.exists("trash"):
 		os.makedirs("trash")
 

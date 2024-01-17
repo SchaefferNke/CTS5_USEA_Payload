@@ -85,7 +85,12 @@ class DriverTechnicalSystem:
 			self._cpu_usage_max = cpu_usage
 		# CPU temperature
 		if not os.name == "nt":
-			cpu_temp = psutil.sensors_temperatures(fahrenheit=False)
+			temps = psutil.sensors_temperatures(fahrenheit=False)
+			if 'coretemp' in temps:
+				cpu_temp = temps['coretemp'][0].current
+			elif 'imx_thermal_zone' in temps:
+				cpu_temp = temps['imx_thermal_zone'][0].current
+
 		else:
 			cpu_temp = 15.3
 		self._cpu_temp_sum = self._cpu_temp_sum + cpu_temp
