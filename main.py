@@ -55,10 +55,10 @@ if __name__ == "__main__":
 		os.makedirs("trash")
 
 	# Create tasks
-	thread_technical = threading.Thread(target=technical_driver.run, name="task_technical")
-	thread_ctd = threading.Thread(target=ctd_driver.run, name="task_ctd")
-	thread_user = threading.Thread(target=user_driver.run, name="task_user")
-	thread_emap = threading.Thread(target=emap_driver.run, name="task_emap")
+	thread_technical = threading.Thread(target=technical_driver.run, name="task_technical", daemon=True)
+	thread_ctd = threading.Thread(target=ctd_driver.run, name="task_ctd", daemon=True)
+	thread_user = threading.Thread(target=user_driver.run, name="task_user", daemon=True)
+	thread_emap = threading.Thread(target=emap_driver.run, name="task_emap", daemon=True)
 
 	# Launch tasks
 	thread_technical.start()
