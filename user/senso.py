@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/bin/python
 # -*- coding: utf-8 -*-
 """
 	senso.py
@@ -6,7 +6,7 @@
 
 __authors__ = "Christophe SCHAEFFER"
 __copyright__ = "nke Instrumentation"
-__date__ = "2023-11-06"
+__date__ = "2024-01-29"
 __version__ = "1.0.0"
 
 # Standard libraries

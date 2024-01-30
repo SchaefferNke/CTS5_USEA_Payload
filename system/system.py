@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/bin/python
 # -*- coding: utf-8 -*-
 """
 	system.py
@@ -6,12 +6,13 @@
 
 __authors__ = "Christophe SCHAEFFER"
 __copyright__ = "nke Instrumentation"
-__date__ = "2023-12-01"
+__date__ = "2024-01-30"
 __version__ = "1.0.0"
 
 # Standard libraries
 import os
 import datetime
+import subprocess
 
 
 # Class definition
@@ -19,6 +20,34 @@ class DriverSystem:
 	"""
 		DriverSystem class: manage system commands
 	"""
+
+	# Create resource
+	def __init__(self):
+		# Watchdog
+		self._watchdog_cpt = 0
+
+	# Feed watchdog daemon
+	def watchdog_feed(self):
+		"""
+			Refresh watchdog daemon
+		"""
+		if not os.name == "nt":
+			# Refresh watchdog counter
+			self._watchdog_cpt += 1
+			file_watchdog = open("/tmp/_watchdog", "w")
+			file_watchdog.write(str(self._watchdog_cpt))
+			file_watchdog.close()
+
+	# System boot validation
+	@staticmethod
+	def boot_ok():
+		"""
+			Validate system boot
+		"""
+		if not os.name == "nt":
+			# Save
+			subprocess.run(["fw_setenv", "bootcount", "0"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+			subprocess.run(["fw_setenv", "upgrade_available", "0"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
 	# Reboot system
 	@staticmethod
@@ -48,7 +77,7 @@ class DriverSystem:
 		"""
 		if not os.name == "nt":
 			# Synchronize system clock to hardware RTC
-			os.system("sudo hwclock --hctosys --utc")
+			os.system("sudo hwclock -s")
 
 	# Synchronize system clock
 	@staticmethod
@@ -61,9 +90,9 @@ class DriverSystem:
 		"""
 		if not os.name == "nt":
 			# Set system clock
-			os.system("sudo date -u --set=%s" % utc.strftime("20%y-%m-%dT%H:%M:%S"))
+			os.system("sudo date -s '%s'" % utc.strftime("20%y-%m-%dT%H:%M:%S"))
 			# Synchronize hardware RTC to system clock
-			os.system("sudo hwclock --systohc --utc")
+			os.system("sudo hwclock -w")
 
 	# Program wakealarm
 	@staticmethod

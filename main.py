@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/bin/python
 # -*- coding: utf-8 -*-
 """
 	main.py
@@ -6,7 +6,7 @@
 
 __authors__ = "Christophe SCHAEFFER"
 __copyright__ = "nke Instrumentation"
-__date__ = "2023-11-08"
+__date__ = "2024-01-30"
 __version__ = "1.0.0"
 
 # Standard libraries
@@ -29,18 +29,12 @@ from system.trace_lib import trace_log
 # Main function
 if __name__ == "__main__":
 
-	if not os.path.exists("log"):
-		os.makedirs("log")
-
-	# Trace
-	trace_log("./", "MAIN     > Launch application")
-
-	# Restore system clock
-	rtc_driver.restore()
-	# CPLD awake command
-	io_sleepn = DriverIOOutput("GPIO_3_27")
+	# Validate booting process
+	system_driver.boot_ok()
 
 	# Create paths
+	if not os.path.exists("log"):
+		os.makedirs("log")
 	if not os.path.exists("config"):
 		os.makedirs("config")
 	if not os.path.exists("share"):
@@ -53,6 +47,14 @@ if __name__ == "__main__":
 		os.makedirs("temp")
 	if not os.path.exists("trash"):
 		os.makedirs("trash")
+
+	# Trace
+	trace_log("./", "MAIN     > Launch application")
+
+	# Restore system clock
+	rtc_driver.restore()
+	# CPLD awake command
+	io_sleepn = DriverIOOutput("GPIO_3_27")
 
 	# Create tasks
 	thread_technical = threading.Thread(target=technical_driver.run, name="task_technical", daemon=True)
@@ -72,6 +74,9 @@ if __name__ == "__main__":
 
 			# Wait
 			time.sleep(1.0)
+
+			# Watchdog
+			system_driver.watchdog_feed()
 
 			# Activity management
 			"""activity_emap = emap_driver.get_time_before_activity()

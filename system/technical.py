@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/bin/python
 # -*- coding: utf-8 -*-
 """
 	technical.py
@@ -6,7 +6,7 @@
 
 __authors__ = "Christophe SCHAEFFER"
 __copyright__ = "nke Instrumentation"
-__date__ = "2023-12-01"
+__date__ = "2024-01-30"
 __version__ = "1.0.0"
 
 # Standard libraries
@@ -72,33 +72,31 @@ class DriverTechnicalSystem:
 			Make an instantaneous diagnosis
 		"""
 		# System activity
-		self._activity_run += 1.0
+		self._activity_run += 1
 		# CPU frequency
 		cpu_freq = psutil.cpu_freq().current
-		self._cpu_freq_sum = self._cpu_freq_sum + cpu_freq
+		self._cpu_freq_sum += cpu_freq
 		if cpu_freq > self._cpu_freq_max:
 			self._cpu_freq_max = cpu_freq
 		# CPU usage
 		cpu_usage = psutil.cpu_percent(interval=None)
-		self._cpu_usage_sum = self._cpu_usage_sum + cpu_usage
+		self._cpu_usage_sum += cpu_usage
 		if cpu_usage > self._cpu_usage_max:
 			self._cpu_usage_max = cpu_usage
 		# CPU temperature
+		cpu_temp = 0.0
 		if not os.name == "nt":
 			temps = psutil.sensors_temperatures(fahrenheit=False)
 			if 'coretemp' in temps:
 				cpu_temp = temps['coretemp'][0].current
 			elif 'imx_thermal_zone' in temps:
 				cpu_temp = temps['imx_thermal_zone'][0].current
-
-		else:
-			cpu_temp = 15.3
-		self._cpu_temp_sum = self._cpu_temp_sum + cpu_temp
+		self._cpu_temp_sum += cpu_temp
 		if cpu_temp > self._cpu_temp_max:
 			self._cpu_temp_max = cpu_temp
 		# Memory usage
 		mem_usage = 100.0 * psutil.virtual_memory().used / psutil.virtual_memory().total
-		self._mem_usage_sum = self._mem_usage_sum + mem_usage
+		self._mem_usage_sum += mem_usage
 		if mem_usage > self._mem_usage_max:
 			self._mem_usage_max = mem_usage
 
