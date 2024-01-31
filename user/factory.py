@@ -6,13 +6,18 @@
 
 __authors__ = "Christophe SCHAEFFER"
 __copyright__ = "nke Instrumentation"
-__date__ = "2024-01-29"
+__date__ = "2024-01-31"
 __version__ = "1.0.0"
 
 # Standard libraries
 import os
 import sys
 import time
+
+if __name__ == "__main__":
+	# Process launched outside main
+	sys.path.insert(1, os.getcwd())
+	sys.path.insert(1, "../")
 
 # Project libraries
 from system.rtc import DriverRTC
@@ -134,9 +139,6 @@ class DriverFactory:
 
 # Test function
 if __name__ == "__main__":
-	# Process launched outside main
-	sys.path.insert(1, os.getcwd())
-	sys.path.insert(1, "../")
 	# Allocate resource
 	factory = DriverFactory()
 	# INTV2

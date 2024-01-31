@@ -6,7 +6,7 @@
 
 __authors__ = "Christophe SCHAEFFER"
 __copyright__ = "nke Instrumentation"
-__date__ = "2024-01-29"
+__date__ = "2024-01-31"
 __version__ = "1.0.0"
 
 # Standard libraries
@@ -16,6 +16,11 @@ import time
 import datetime
 import zipfile
 import traceback
+
+if __name__ == "__main__":
+	# Process launched outside main
+	sys.path.insert(1, os.getcwd())
+	sys.path.insert(1, "../")
 
 # Project libraries
 from system.io_lib import DriverIOOutput, DriverIOInput
@@ -81,7 +86,7 @@ class DriverSilicate:
 		self._io_power = DriverIOOutput("GPIO_3_20")
 		self._io_alarm = DriverIOInput("GPIO_2_0")
 		self._serial = DriverSerial("COM_5", 57600, len("DATA,xxx,xxxx,*CS\r\n") + 512, 0.15)
-		self._timer = DriverTimer(path, "silicate")
+		self._timer = DriverTimer("silicate")
 		self._share_step = DataShare("silicate_step")
 
 	# Get version
@@ -89,19 +94,18 @@ class DriverSilicate:
 	def get_version(self) -> str: return SILICATE_VERSION
 
 	# Send frame over EMAP link
-	def send_ascii(self, trace_path: str, frame: str):
+	def send_ascii(self, frame: str):
 		"""
 			Send a frame on the serial port
 
 			Parameters:
-				- trace_path (str): ...
 				- frame (str): frame to send
 		"""
 		checksum = nmea_checksum_compute_ascii(frame, len(frame))
 		frame_ascii = "$" + frame + "*%0*X" % (2, checksum)
 		time.sleep(0.05)
 		self._serial.write(frame_ascii.encode("ascii"))
-		trace_log(trace_path, "SILICATE > Tx=" + frame_ascii)
+		trace_log("SILICATE > Tx=" + frame_ascii)
 
 	# Run task
 	def run(self):
@@ -118,7 +122,6 @@ def emap(self):
 		Running task
 	"""
 
-	global path
 	file_name = ""
 	index_cpt = 0
 
@@ -132,7 +135,7 @@ def emap(self):
 			# Timestamp
 			now = datetime.datetime.now()
 			# Send request
-			self.send_ascii(path, now.strftime("GPS,20%y%m%d,%H%M%S"))
+			self.send_ascii(now.strftime("GPS,20%y%m%d,%H%M%S"))
 
 			# Loop
 			while not self._timer.is_tick():
@@ -157,7 +160,7 @@ def emap(self):
 				# Verify checksum
 				if not nmea_checksum_check(frame_rx):
 					# Print
-					trace_log(path, "SILICATE > [CHECKSUM]")
+					trace_log("SILICATE > [CHECKSUM]")
 					# Continue
 					continue
 				# Extract data
@@ -168,22 +171,22 @@ def emap(self):
 				# GPSACK processing
 				if "GPSACK" in frame_string[0:6]:
 					# Print
-					trace_log(path, "SILICATE > Rx=$" + frame_string)
+					trace_log("SILICATE > Rx=$" + frame_string)
 					# Send request
-					self.send_ascii(path, "LIST")
+					self.send_ascii("LIST")
 
 				# LISTACK processing
 				elif "LISTACK," in frame_string[0:8]:
 					# Print
-					trace_log(path, "SILICATE > Rx=$" + frame_string)
+					trace_log("SILICATE > Rx=$" + frame_string)
 					# Parse
 					split = data_string.split(",")
 					# Request file
 					if int(split[1]) > 0:
 						# Filename
-						file_name = path + "payload/" + split[2]
+						file_name = "payload/" + split[2]
 						# Reply
-						self.send_ascii(path, "GET," + split[2] + ",531")
+						self.send_ascii("GET," + split[2] + ",531")
 					# Exit
 					else:
 						return
@@ -191,14 +194,14 @@ def emap(self):
 				# GETACK processing
 				elif "GETACK" in frame_string[0:6]:
 					# Print
-					trace_log(path, "SILICATE > Rx=$" + frame_string)
+					trace_log("SILICATE > Rx=$" + frame_string)
 					# Remove file
 					if os.path.isfile(file_name):
 						os.remove(file_name)
 					# Initialize block
 					index_cpt = 1
 					# Reply
-					self.send_ascii(path, "GETDATA")
+					self.send_ascii("GETDATA")
 
 				# DATA processing
 				elif "DATA," in frame_string[0:5]:
@@ -206,13 +209,13 @@ def emap(self):
 					split = data_string.split(",")
 					# Print
 					if int(split[2]) > 0:
-						trace_log(path, "SILICATE > Rx=$" + split[0] + "," + split[1] + "," + split[2] + ",[...]*" + frame_string[-2:])
+						trace_log("SILICATE > Rx=$" + split[0] + "," + split[1] + "," + split[2] + ",[...]*" + frame_string[-2:])
 					else:
-						trace_log(path, "SILICATE > Rx=$" + split[0] + "," + split[1] + ",0*" + frame_string[-2:])
+						trace_log("SILICATE > Rx=$" + split[0] + "," + split[1] + ",0*" + frame_string[-2:])
 					# Check size
 					if split[2] == "0":
 						# Reply
-						self.send_ascii(path, "DATAACK," + split[1])
+						self.send_ascii("DATAACK," + split[1])
 					# Check index
 					elif index_cpt == int(split[1]):
 						# Next block
@@ -222,22 +225,22 @@ def emap(self):
 						file_handle.write(frame_data[len("DATA,,,") + len(split[1]) + len(split[2]):])
 						file_handle.close()
 						# Reply
-						self.send_ascii(path, "DATAACK," + split[1])
+						self.send_ascii("DATAACK," + split[1])
 					# Error
 					else:
-						self.send_ascii(path, "DATANACK")
+						self.send_ascii("DATANACK")
 
 				# EOF processing
 				elif "EOF" in frame_string[0:3]:
 					# Print
-					trace_log(path, "SILICATE > Rx=$" + frame_string)
+					trace_log("SILICATE > Rx=$" + frame_string)
 					# Send request
-					self.send_ascii(path, "LIST")
+					self.send_ascii("LIST")
 
 				# Unknown command
 				else:
 					# Print
-					trace_log(path, "SILICATE > Rx=" + frame_string + " [UNDEFINED]")
+					trace_log("SILICATE > Rx=" + frame_string + " [UNDEFINED]")
 
 		# Error
 		except Exception as err:
@@ -245,7 +248,7 @@ def emap(self):
 			print(err)
 			print(traceback.format_exc())
 			# Trace
-			trace_log(path, "SILICATE > [ERROR]")
+			trace_log("SILICATE > [ERROR]")
 
 	# Close serial port
 	self._serial.close()
@@ -257,9 +260,9 @@ def compress():
 		Compress the data files
 		"""
 	# Create names
-	zip_src_name = path + "payload/"
-	zip_tmp_name = path + "temp/" + get_profile(path) + "_payload.hex"
-	zip_dst_name = path + "payload/" + get_profile(path) + "_payload.hex"
+	zip_src_name = "payload/"
+	zip_tmp_name = "temp/" + get_profile() + "_payload.hex"
+	zip_dst_name = "payload/" + get_profile() + "_payload.hex"
 	# No file to compress
 	if not os.listdir(zip_src_name):
 		return
@@ -289,16 +292,14 @@ def compress():
 
 
 # Create resources
-path = "./"
 silicate_driver = DriverSilicate()
 
 
 # Manager
 def manager(self):
-	global path
 
 	# Trace
-	trace_log(path, "SILICATE > Activate")
+	trace_log("SILICATE > Activate")
 	# Share step
 	self._share_step.write(self._step)
 
@@ -307,14 +308,14 @@ def manager(self):
 		while True:
 
 			# Read resource
-			navigation = get_navigation(path)
+			navigation = get_navigation()
 
 			# Wait
 			if self._step == USEA_PAYLOAD_STEP_IDLE:
 				# Parking step
 				if navigation == USEA_NAVIGATION_STATE_PARK:
 					# Print
-					trace_log(path, "SILICATE > Start acquisition")
+					trace_log("SILICATE > Start acquisition")
 					# Power-on
 					self._io_power.set_on()
 					# Start recording
@@ -330,7 +331,7 @@ def manager(self):
 				# Ascent
 				if navigation == USEA_NAVIGATION_STATE_ASCENT:
 					# Print
-					trace_log(path, "SILICATE > Stop acquisition")
+					trace_log("SILICATE > Stop acquisition")
 					# Power-on
 					self._io_power.set_off()
 					# Stop recording
@@ -346,11 +347,11 @@ def manager(self):
 				# Treatment step
 				if navigation == USEA_NAVIGATION_STATE_DATA_PROCESSING:
 					# Print
-					trace_log(path, "SILICATE > Start download")
+					trace_log("SILICATE > Start download")
 					# Download files
 					emap(self)
 					# Print
-					trace_log(path, "SILICATE > Stop download")
+					trace_log("SILICATE > Stop download")
 					# Idle
 					self._step = USEA_PAYLOAD_STEP_IDLE
 					# Share step
@@ -372,16 +373,10 @@ def manager(self):
 		print(err)
 		print(traceback.format_exc())
 		# Trace
-		trace_log(path, "SILICATE > [ERROR]")
+		trace_log("SILICATE > [ERROR]")
 
 
 # Test function
 if __name__ == "__main__":
-	# Process launched outside main
-	sys.path.insert(1, os.getcwd())
-	sys.path.insert(1, "../")
-	path = "../"
-	# Allocate resource
-	silicate = DriverSilicate()
 	# Run
-	silicate.run()
+	silicate_driver.run()

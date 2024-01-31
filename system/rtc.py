@@ -6,14 +6,14 @@
 
 __authors__ = "Christophe SCHAEFFER"
 __copyright__ = "nke Instrumentation"
-__date__ = "2024-01-29"
+__date__ = "2024-01-31"
 __version__ = "1.0.0"
 
 # Standard libraries
 import datetime
 
 # Project libraries
-from system.system import system_driver
+from system.system_lib import system_driver
 from system.trace_lib import trace_log
 
 
@@ -32,7 +32,7 @@ class DriverRTC:
 		# Synchronize system clock to hardware RTC
 		system_driver.clock_restore()
 		# Trace
-		trace_log("./", "RTC      > Restore=" + datetime.datetime.now().strftime("20%y-%m-%d %H:%M:%S"))
+		trace_log("RTC      > Restore=" + datetime.datetime.now().strftime("20%y-%m-%d %H:%M:%S"))
 
 	# Synchronize system clock
 	@staticmethod
@@ -46,7 +46,7 @@ class DriverRTC:
 		# Synchronize system clock and hardware RTC to external clock
 		system_driver.clock_synchronize(utc)
 		# Trace
-		trace_log("./", "RTC      > Synchronize=" + datetime.datetime.now().strftime("20%y-%m-%d %H:%M:%S"))
+		trace_log("RTC      > Synchronize=" + datetime.datetime.now().strftime("20%y-%m-%d %H:%M:%S"))
 
 	# Program wakealarm
 	@staticmethod
@@ -62,7 +62,7 @@ class DriverRTC:
 		# Program wakeup
 		system_driver.program_wakealarm(delay)
 		# Trace
-		trace_log("./", "RTC      > wakealarm=" + utc.strftime("20%y-%m-%d %H:%M:%S") + " + " + delay)
+		trace_log("RTC      > wakealarm=" + utc.strftime("20%y-%m-%d %H:%M:%S") + " + " + delay)
 
 
 # Create resources

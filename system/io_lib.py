@@ -6,14 +6,14 @@
 
 __authors__ = "Christophe SCHAEFFER"
 __copyright__ = "nke Instrumentation"
-__date__ = "2024-01-29"
+__date__ = "2024-01-31"
 __version__ = "1.0.0"
 
 # Standard libraries
 import threading
 
 # Project libraries
-from system.system import system_driver
+from system.system_lib import system_driver
 
 # Lock list
 io_locks = {}

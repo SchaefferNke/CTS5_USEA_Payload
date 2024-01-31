@@ -6,20 +6,22 @@
 
 __authors__ = "Christophe SCHAEFFER"
 __copyright__ = "nke Instrumentation"
-__date__ = "2024-01-29"
+__date__ = "2024-01-31"
 __version__ = "1.0.0"
 
 # Standard libraries
 import datetime
 
+# Project libraries
+from system.web_socket import web_socket
+
 
 # Print event
-def trace_log(trace_path: str, event: str):
+def trace_log(event: str):
 	"""
 		Print on console and save event in logger file
 
 		Parameters:
-			- trace_path (str): ...
 			- event (str): event to trace
 	"""
 	# Format
@@ -27,7 +29,9 @@ def trace_log(trace_path: str, event: str):
 	string = utc.strftime("%y-%m-%d %H:%M:%S : ") + event
 	# Print to terminal
 	print(string)
+	# Send to websocket
+	web_socket.send(event)
 	# Save in logger
-	log = open(trace_path + "log/payload.log", "a+")
+	log = open("log/payload.log", "a+")
 	log.write(string + "\r")
 	log.close()

@@ -1,12 +1,12 @@
 #!/bin/python
 # -*- coding: utf-8 -*-
 """
-	system.py
+	system_lib.py
 """
 
 __authors__ = "Christophe SCHAEFFER"
 __copyright__ = "nke Instrumentation"
-__date__ = "2024-01-30"
+__date__ = "2024-01-31"
 __version__ = "1.0.0"
 
 # Standard libraries
@@ -34,7 +34,7 @@ class DriverSystem:
 		if not os.name == "nt":
 			# Refresh watchdog counter
 			self._watchdog_cpt += 1
-			file_watchdog = open("/tmp/_watchdog", "w")
+			file_watchdog = open("tmp/_watchdog", "w")
 			file_watchdog.write(str(self._watchdog_cpt))
 			file_watchdog.close()
 
@@ -46,7 +46,7 @@ class DriverSystem:
 		"""
 		if not os.name == "nt":
 			# Save
-			subprocess.run(["fw_setenv", "bootcount", "0"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+			subprocess.run(["fw_setenv", "bootcount",         "0"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 			subprocess.run(["fw_setenv", "upgrade_available", "0"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
 	# Reboot system
@@ -107,6 +107,25 @@ class DriverSystem:
 			# Program wakeup
 			os.system("sudo rtcwake -d /dev/rtc0 -m mem -s " + delay)
 
+	# Get disk status
+	@staticmethod
+	def disk_is_present() -> bool:
+		"""
+			Disk detection
+
+			Returns:
+				- bool: True if the SD card is mounted
+		"""
+		if not os.name == "nt":
+			# Program wakeup
+			result = os.system("sudo ls /dev/mmcblk0")
+		else:
+			result = "0"
+		# Result
+		if result == "/dev/mmcblk0":
+			return True
+		return False
+
 	# Set output on
 	@staticmethod
 	def output_set_on(name: str):
@@ -114,7 +133,7 @@ class DriverSystem:
 			Set the output on
 
 			Parameters:
-				- name (str): GPIO name (eg: "gpiochip3 8")
+				- name (str): GPIO name (eg: "gpiochip2 8")
 		"""
 		if not os.name == "nt":
 			# Set output on
@@ -127,7 +146,7 @@ class DriverSystem:
 			Set the output off
 
 			Parameters:
-				- name (str): GPIO name (eg: "gpiochip3 8")
+				- name (str): GPIO name (eg: "gpiochip2 8")
 		"""
 		if not os.name == "nt":
 			# Set output off
@@ -140,7 +159,7 @@ class DriverSystem:
 			Test the input state
 
 			Parameters:
-				- name (str): GPIO name (eg: "gpiochip3 8")
+				- name (str): GPIO name (eg: "gpiochip2 8")
 
 			Returns:
 				- bool: True if the input is on
@@ -165,7 +184,7 @@ class DriverSystem:
 				- name (str): IO name (eg: "GPIO_3_8")
 
 			Returns:
-				- str: GPIO name (eg: "gpiochip3 8")
+				- str: GPIO name (eg: "gpiochip2 8")
 		"""
 		# Format
 		split = name.split("_")
@@ -182,7 +201,7 @@ class DriverSystem:
 				- name (str): serial name (eg: "COM_1")
 
 			Returns:
-				- str: system serial name for system access (eg: "/dev/tty0")
+				- str: system serial name for system access (eg: "/dev/ttymxc0")
 		"""
 		# Format
 		split = name.split("_")

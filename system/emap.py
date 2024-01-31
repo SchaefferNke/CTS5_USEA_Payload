@@ -6,7 +6,7 @@
 
 __authors__ = "Christophe SCHAEFFER"
 __copyright__ = "nke Instrumentation"
-__date__ = "2024-01-29"
+__date__ = "2024-01-31"
 __version__ = "1.0.0"
 
 # Standard libraries
@@ -17,8 +17,13 @@ import datetime
 import zipfile
 import traceback
 
+if __name__ == "__main__":
+	# Process launched outside main
+	sys.path.insert(1, os.getcwd())
+	sys.path.insert(1, "../")
+
 # Project libraries
-from system.system import system_driver
+from system.system_lib import system_driver
 from system.rtc import rtc_driver
 from system.serial_lib import DriverSerial
 from system.timer_lib import DriverTimer
@@ -27,8 +32,6 @@ from system.config import user_driver
 from system.trace_lib import trace_log
 from system.const import *
 
-# Versioning
-USEA_VERSION = "1.0.0"
 # EMAP wake-up duration
 EMAP_WAKEUP_DURATION = 30.0
 
@@ -104,31 +107,29 @@ class DriverEMAP:
 	def __init__(self):
 		# Manager
 		self._serial = DriverSerial("COM_1", 57600, len("DATA,xxx,xxxx,*CS\r\n") + 512, 0.15)
-		self._timer = DriverTimer(path, "emap")
+		self._timer = DriverTimer("emap")
 		self._payload_step = DataShare("payload_step")
 		self._payload = user_driver
 
 	# Send frame over EMAP link
-	def _send_ascii(self, trace_path: str, frame: str):
+	def _send_ascii(self, frame: str):
 		"""
 			Send a frame on the serial port
 
 			Parameters:
-				- trace_path (str): ...
 				- frame (str): frame to send
 		"""
 		checksum = nmea_checksum_compute_ascii(frame, len(frame))
 		frame_ascii = "$" + frame + "*%0*X" % (2, checksum)
 		time.sleep(0.05)
 		self._serial.write(frame_ascii.encode("ascii"))
-		trace_log(trace_path, "EMAP     > Tx=" + frame_ascii)
+		trace_log("EMAP     > Tx=" + frame_ascii)
 
-	def _send_binary(self, trace_path: str, frame: str, content: bytes):
+	def _send_binary(self, frame: str, content: bytes):
 		"""
 			Send a frame on the serial port (without data detail on debug)
 
 			Parameters:
-				- trace_path (str): ...
 				- frame (str): frame to send
 				- content (bytes): frame content
 		"""
@@ -140,7 +141,7 @@ class DriverEMAP:
 		self._serial.write(content)
 		string = "*%0*X" % (2, checksum)
 		self._serial.write(string.encode("ascii"))
-		trace_log(trace_path, "EMAP     > Tx=" + frame_ascii)
+		trace_log("EMAP     > Tx=" + frame_ascii)
 
 	# Get time before next activity
 	def get_time_before_activity(self) -> float:
@@ -165,7 +166,6 @@ class DriverEMAP:
 
 
 # Create resources
-path = "./"
 emap_driver = DriverEMAP()
 
 
@@ -194,9 +194,9 @@ def logger_extract(size: int):
 			- size (int): extract size (in bytes)
 	"""
 	# Create names
-	log_src_name = path + "log/payload.log"
-	log_dst_name = path + "temp/payload.log"
-	zip_dst_name = path + "payload/payload_logger.zip"
+	log_src_name = "log/payload.log"
+	log_dst_name = "temp/payload.log"
+	zip_dst_name = "payload/payload_logger.zip"
 	# Remove dst logger
 	if os.path.isfile(log_dst_name):
 		os.remove(log_dst_name)
@@ -233,14 +233,13 @@ def manager(self):
 		Running task
 	"""
 
-	global path
 	file_name = ""
 	index_cpt = 0
 	index_max = 0
 	emap_buffer_size = 128
 
 	# Trace
-	trace_log(path, "EMAP     > Activate")
+	trace_log("EMAP     > Activate")
 
 	# Start timer
 	self._timer.start_one_shot(EMAP_WAKEUP_DURATION)
@@ -272,7 +271,7 @@ def manager(self):
 				# Verify checksum
 				if not nmea_checksum_check(frame_rx):
 					# Print
-					trace_log(path, "EMAP     > [CHECKSUM]")
+					trace_log("EMAP     > [CHECKSUM]")
 					# Continue
 					continue
 				# Extract data
@@ -283,69 +282,69 @@ def manager(self):
 				# VERSION processing
 				if "VERSION" in frame_string[0:7]:
 					# Print
-					trace_log(path, "EMAP     > Rx=$" + frame_string)
+					trace_log("EMAP     > Rx=$" + frame_string)
 					# Reply
-					self._send_ascii(path, "VERSIONACK," + USEA_VERSION + "-" + self._payload.get_version())
+					self._send_ascii("VERSIONACK," + USEA_VERSION + "-" + self._payload.get_version())
 
 				# NAV processing
 				elif "NAV," in frame_string[0:4]:
 					# Print
-					trace_log(path, "EMAP     > Rx=$" + frame_string)
+					trace_log("EMAP     > Rx=$" + frame_string)
 					# Parse
 					split = data_string.split(",")
 					# share information
-					share = FileShare(path, "profile.txt")
+					share = FileShare("profile.txt")
 					share.write(f"{int(split[1]):03}_{int(split[2]):02}")
 					# Reply
-					self._send_ascii(path, "NAVACK")
+					self._send_ascii("NAVACK")
 
 				# SEQ processing
 				elif "SEQ," in frame_string[0:4]:
 					# Print
-					trace_log(path, "EMAP     > Rx=$" + frame_string)
+					trace_log("EMAP     > Rx=$" + frame_string)
 					# Parse
 					split = data_string.split(",")
 					# share information
-					share = FileShare(path, "navigation.txt")
+					share = FileShare("navigation.txt")
 					share.write(split[1])
 					# Reply
-					self._send_ascii(path, "SEQACK")
+					self._send_ascii("SEQACK")
 
 				# CTRL processing
 				elif "CTRL," in frame_string[0:5]:
 					# Print
-					trace_log(path, "EMAP     > Rx=$" + frame_string)
+					trace_log("EMAP     > Rx=$" + frame_string)
 					# Parse
 					split = data_string.split(",")
 					# share information
 					if split[1] != "NONE":
-						share = FileShare(path, "ctrl.txt")
+						share = FileShare("ctrl.txt")
 						share.write(split[1])
 					# share information
-					share = FileShare(path, "pressure.txt")
+					share = FileShare("pressure.txt")
 					share.write(split[2])
 					# Reply
-					self._send_ascii(path, "CTRLACK")
+					self._send_ascii("CTRLACK")
 
 				# CTD processing
 				elif "CTD," in frame_string[0:4]:
 					# Print
-					trace_log(path, "EMAP     > Rx=$" + frame_string)
+					trace_log("EMAP     > Rx=$" + frame_string)
 					# Parse
 					split = data_string.split(",")
 					# share information
-					share = FileShare(path, "ctd.txt")
+					share = FileShare("ctd.txt")
 					share.write(split[1] + "," + split[2] + "," + split[3])
 					# share information
-					share = FileShare(path, "pressure.txt")
+					share = FileShare("pressure.txt")
 					share.write(split[1])
 					# No reply
-					# self._send_ascii(path, "CTDACK")
+					# self._send_ascii("CTDACK")
 
 				# GPS processing
 				elif "GPS," in frame_string[0:4]:
 					# Print
-					trace_log(path, "EMAP     > Rx=$" + frame_string)
+					trace_log("EMAP     > Rx=$" + frame_string)
 					# Parse
 					split = data_string.split(",")
 					# Timestamp
@@ -361,12 +360,12 @@ def manager(self):
 					# Drift
 					drift = (now - utc).total_seconds()
 					# share information
-					share = FileShare(path, "synchro.txt")
+					share = FileShare("synchro.txt")
 					share.write(f"{drift:.3f}")
 					# Synchronize system clock
 					rtc_driver.synchronize(utc)
 					# Reply
-					self._send_ascii(path, "GPSACK")
+					self._send_ascii("GPSACK")
 					# Wait
 					time.sleep(0.5)
 
@@ -376,14 +375,14 @@ def manager(self):
 					if self._payload_step.read() == USEA_PAYLOAD_STEP_TREAT:
 						continue
 					# Print
-					trace_log(path, "EMAP     > Rx=$" + frame_string)
+					trace_log("EMAP     > Rx=$" + frame_string)
 					# Reply
-					self._send_ascii(path, "PINGACK")
+					self._send_ascii("PINGACK")
 
 				# COMMAND processing
 				elif "COMMAND," in frame_string[0:8]:
 					# Print
-					trace_log(path, "EMAP     > Rx=$" + frame_string)
+					trace_log("EMAP     > Rx=$" + frame_string)
 					# Parse
 					split = data_string.split(",")
 					# User version
@@ -391,25 +390,25 @@ def manager(self):
 						# Get version
 						reply = "Version " + USEA_VERSION + "-" + self._payload.get_version()
 						# Reply
-						self._send_ascii(path, "COMMANDACK," + str(len(reply)) + "," + reply)
+						self._send_ascii("COMMANDACK," + str(len(reply)) + "," + reply)
 					# Configuration
 					elif split[2] == "?payload-configuration":
 						# Acquire data
 						reply = user_driver.source_code
 						# Reply
-						self._send_ascii(path, "COMMANDACK," + str(len(reply)) + "," + reply)
+						self._send_ascii("COMMANDACK," + str(len(reply)) + "," + reply)
 					# Sensor test
 					elif split[2] == "?payload-data":
 						# Acquire data
 						reply = self._payload.get_data()
 						# Reply
-						self._send_ascii(path, "COMMANDACK," + str(len(reply)) + "," + reply)
+						self._send_ascii("COMMANDACK," + str(len(reply)) + "," + reply)
 					# Autotest
 					elif split[2] == "!payload-autotest":
 						# Test
 						reply = "payload : ok\r\n" + self._payload.test()
 						# Reply
-						self._send_ascii(path, "COMMANDACK," + str(len(reply)) + "," + reply)
+						self._send_ascii("COMMANDACK," + str(len(reply)) + "," + reply)
 					# Flush system
 					elif split[2] == "!payload-cleanup":
 						# Clean folders
@@ -421,13 +420,13 @@ def manager(self):
 						cleanup_folder("./temp")
 						cleanup_folder("./trash")
 						# Reply
-						self._send_ascii(path, "COMMANDACK,12,Command okay")
+						self._send_ascii("COMMANDACK,12,Command okay")
 					# Update
 					elif split[2] == "!payload-update":
 						# Check if update file exists
-						if os.path.isfile(path + "temp/payload_update.zip"):
+						if os.path.isfile("temp/payload_update.zip"):
 							# Reply
-							self._send_ascii(path, "COMMANDACK,12,Command okay")
+							self._send_ascii("COMMANDACK,12,Command okay")
 							# Wait
 							time.sleep(0.5)
 							# Interpret script
@@ -435,11 +434,11 @@ def manager(self):
 						# Error
 						else:
 							# Reply
-							self._send_ascii(path, "COMMANDACK,13,Command error")
+							self._send_ascii("COMMANDACK,13,Command error")
 					# Application reset
 					elif split[2] == "!payload-reset":
 						# Reply
-						self._send_ascii(path, "COMMANDACK,12,Command okay")
+						self._send_ascii("COMMANDACK,12,Command okay")
 						# Delay
 						time.sleep(0.5)
 						# Restart
@@ -447,37 +446,37 @@ def manager(self):
 					# Logger request
 					elif split[2] == "!payload-logger":
 						# Test request
-						if not os.path.isfile(path + "temp/logger.txt"):
-							file_request = open(path + "temp/logger.txt", "w")
+						if not os.path.isfile("temp/logger.txt"):
+							file_request = open("temp/logger.txt", "w")
 							file_request.close()
 						# Reply
-						self._send_ascii(path, "COMMANDACK,12,Command okay")
+						self._send_ascii("COMMANDACK,12,Command okay")
 					# Error
 					else:
-						self._send_ascii(path, "COMMANDACK,15,Unknown command")
+						self._send_ascii("COMMANDACK,15,Unknown command")
 
 				# LIST processing
 				elif "LIST" in frame_string[0:4]:
 					# Print
-					trace_log(path, "EMAP     > Rx=$" + frame_string)
+					trace_log("EMAP     > Rx=$" + frame_string)
 					# Logger request
-					if os.path.isfile(path + "temp/logger.txt"):
+					if os.path.isfile("temp/logger.txt"):
 						# Prepare logger extract
 						logger_extract(32 * 1024)
 						# Remove request
-						os.remove(path + "temp/logger.txt")
+						os.remove("temp/logger.txt")
 					# Scan directories
-					file_list = os.listdir(path + "payload/")
+					file_list = os.listdir("payload/")
 					# No file test
 					no_file = True
 					# Check file
 					for list_name in file_list:
 						# Get file size
-						file_size = os.path.getsize(path + "payload/" + list_name)
+						file_size = os.path.getsize("payload/" + list_name)
 						# File size is correct
 						if (file_size > 0) and (file_size < 131072):
 							# Reply
-							self._send_ascii(path, "LISTACK,1," + list_name)
+							self._send_ascii("LISTACK,1," + list_name)
 							# No file test
 							no_file = False
 							# Exit
@@ -485,62 +484,62 @@ def manager(self):
 						# File size error
 						else:
 							# Move file
-							os.rename(path + "payload/" + list_name, path + "trash/" + list_name)
+							os.rename("payload/" + list_name, "trash/" + list_name)
 							# Next
 							continue
 					# No file
 					if no_file:
 						# Reply
-						self._send_ascii(path, "LISTACK,0")
+						self._send_ascii("LISTACK,0")
 
 				# GET processing
 				elif "GET," in frame_string[0:4]:
 					# Print
-					trace_log(path, "EMAP     > Rx=$" + frame_string)
+					trace_log("EMAP     > Rx=$" + frame_string)
 					# Parse
 					split = data_string.split(",")
 					# Filename
-					file_name = path + "payload/" + split[1]
+					file_name = "payload/" + split[1]
 					# Buffer size
 					emap_buffer_size = int(split[2]) - len("DATA,xxx,xxxx,*CS")
 					# Reply
 					if os.path.isfile(file_name):
-						self._send_ascii(path, "GETACK," + str(os.path.getsize(file_name)))
+						self._send_ascii("GETACK," + str(os.path.getsize(file_name)))
 					else:
-						self._send_ascii(path, "GETNACK")
+						self._send_ascii("GETNACK")
 
 				# PUT processing
 				elif "PUT," in frame_string[0:4]:
 					# Print
-					trace_log(path, "EMAP     > Rx=$" + frame_string)
+					trace_log("EMAP     > Rx=$" + frame_string)
 					# Parse
 					split = data_string.split(",")
 					# Configuration file
 					if split[1] == "payload.cfg":
 						# Filename
-						file_name = path + "config/payload.cfg"
+						file_name = "config/payload.cfg"
 						# Remove file
 						if os.path.isfile(file_name):
 							os.remove(file_name)
 						# Initialize data block
 						index_cpt = 1
 						# Reply
-						self._send_ascii(path, "PUTACK,512")
+						self._send_ascii("PUTACK,512")
 					# Update file
 					elif split[1] == "payload_update.zip":
 						# Filename
-						file_name = path + "temp/payload_update.zip"
+						file_name = "temp/payload_update.zip"
 						# Remove file
 						if os.path.isfile(file_name):
 							os.remove(file_name)
 						# Initialize data block
 						index_cpt = 1
 						# Reply
-						self._send_ascii(path, "PUTACK,512")
+						self._send_ascii("PUTACK,512")
 					# Other
 					else:
 						# Reply
-						self._send_ascii(path, "PUTNACK")
+						self._send_ascii("PUTNACK")
 
 				# DATA processing
 				elif "DATA," in frame_string[0:5]:
@@ -548,13 +547,13 @@ def manager(self):
 					split = data_string.split(",")
 					# Print
 					if int(split[2]) > 0:
-						trace_log(path, "EMAP     > Rx=$" + split[0] + "," + split[1] + "," + split[2] + ",[...]*" + frame_string[-2:])
+						trace_log("EMAP     > Rx=$" + split[0] + "," + split[1] + "," + split[2] + ",[...]*" + frame_string[-2:])
 					else:
-						trace_log(path, "EMAP     > Rx=$" + split[0] + "," + split[1] + ",0*" + frame_string[-2:])
+						trace_log("EMAP     > Rx=$" + split[0] + "," + split[1] + ",0*" + frame_string[-2:])
 					# Check size
 					if split[2] == "0":
 						# Reply
-						self._send_ascii(path, "DATAACK," + split[1])
+						self._send_ascii("DATAACK," + split[1])
 					# Check index
 					elif index_cpt == int(split[1]):
 						# Next block
@@ -564,15 +563,15 @@ def manager(self):
 						file_handle.write(frame_data[len("DATA,,,") + len(split[1]) + len(split[2]):])
 						file_handle.close()
 						# Reply
-						self._send_ascii(path, "DATAACK," + split[1])
+						self._send_ascii("DATAACK," + split[1])
 					# Error
 					else:
-						self._send_ascii(path, "DATANACK")
+						self._send_ascii("DATANACK")
 
 				# GETDATA processing
 				elif "GETDATA" in frame_string[0:7]:
 					# Print
-					trace_log(path, "EMAP     > Rx=$" + frame_string)
+					trace_log("EMAP     > Rx=$" + frame_string)
 					# Initialize data blocks
 					index_cpt = 1
 					index_max = round(os.path.getsize(file_name) / emap_buffer_size) + 1
@@ -583,18 +582,18 @@ def manager(self):
 					# Format
 					frame = "DATA,1," + str(len(content)) + ","
 					# Reply
-					self._send_binary(path, frame, content)
+					self._send_binary(frame, content)
 
 				# DATAACK processing
 				elif "DATAACK," in frame_string[0:8]:
 					# Print
-					trace_log(path, "EMAP     > Rx=$" + frame_string)
+					trace_log("EMAP     > Rx=$" + frame_string)
 					# Parse
 					split = data_string.split(",")
 					# Last block
 					if int(split[1]) > index_max:
 						# Reply
-						self._send_ascii(path, "EOF")
+						self._send_ascii("EOF")
 						# Remove archive
 						if os.path.isfile(file_name):
 							os.remove(file_name)
@@ -612,25 +611,25 @@ def manager(self):
 							# Format
 							frame = "DATA," + str(index_cpt) + "," + str(len(content)) + ","
 							# Reply
-							self._send_binary(path, frame, content)
+							self._send_binary(frame, content)
 						# Reply
 						else:
-							self._send_ascii(path, "DATA," + str(index_cpt) + ",0")
+							self._send_ascii("DATA," + str(index_cpt) + ",0")
 
 				# DATAACK processing
 				elif "DATANACK," in frame_string[0:9]:
 					# Print
-					trace_log(path, "EMAP     > Rx=$" + frame_string)
+					trace_log("EMAP     > Rx=$" + frame_string)
 
 				# EOF processing
 				elif "EOF" in frame_string[0:3]:
 					# Print
-					trace_log(path, "EMAP     > Rx=$" + frame_string)
+					trace_log("EMAP     > Rx=$" + frame_string)
 
 				# Unknown command
 				else:
 					# Print
-					trace_log(path, "EMAP     > Rx=$" + frame_string + " [UNDEFINED]")
+					trace_log("EMAP     > Rx=$" + frame_string + " [UNDEFINED]")
 
 		# Error
 		except Exception as err:
@@ -638,7 +637,7 @@ def manager(self):
 			print(err)
 			print(traceback.format_exc())
 			# Trace
-			trace_log(path, "EMAP     > [ERROR]")
+			trace_log("EMAP     > [ERROR]")
 
 	# Close serial port
 	self._serial.close()
@@ -646,11 +645,5 @@ def manager(self):
 
 # Test function
 if __name__ == "__main__":
-	# Process launched outside main
-	sys.path.insert(1, os.getcwd())
-	sys.path.insert(1, "../")
-	path = "../"
-	# Allocate resource
-	emap = DriverEMAP()
 	# Run
-	emap.run()
+	emap_driver.run()

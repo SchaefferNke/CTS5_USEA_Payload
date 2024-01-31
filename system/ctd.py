@@ -6,7 +6,7 @@
 
 __authors__ = "Christophe SCHAEFFER"
 __copyright__ = "nke Instrumentation"
-__date__ = "2024-01-29"
+__date__ = "2024-01-31"
 __version__ = "1.0.0"
 
 # Standard libraries
@@ -14,6 +14,11 @@ import os
 import sys
 import time
 import traceback
+
+if __name__ == "__main__":
+	# Process launched outside main
+	sys.path.insert(1, os.getcwd())
+	sys.path.insert(1, "../")
 
 # Project libraries
 from system.share_lib import FileShare, get_profile
@@ -49,7 +54,7 @@ class DriverCTD:
 	# Create resource
 	def __init__(self):
 		# Manager
-		self._share_data = FileShare(path, "ctd.txt")
+		self._share_data = FileShare("ctd.txt")
 		# Output
 		self.output = DataCTD()
 		self.output.timestamp = 0.0
@@ -67,7 +72,6 @@ class DriverCTD:
 
 
 # Create resources
-path = "./"
 ctd_driver = DriverCTD()
 
 
@@ -77,10 +81,8 @@ def manager(self):
 		Running task
 	"""
 
-	global path
-
 	# Trace
-	trace_log(path, "CTD      > Activate")
+	trace_log("CTD      > Activate")
 
 	# Loop
 	try:
@@ -99,7 +101,7 @@ def manager(self):
 				self.output.temperature = float(split[1])
 				self.output.salinity = float(split[2])
 				# Store data
-				file = open(path + "ctd/" + get_profile(path) + "_ctd.csv", "a+")
+				file = open("ctd/" + get_profile() + "_ctd.csv", "a+")
 				file.write(
 					f"{self.output.timestamp:.3f}" + "," +
 					f"{self.output.pressure:.2f}" + "," +
@@ -117,16 +119,10 @@ def manager(self):
 		print(err)
 		print(traceback.format_exc())
 		# Trace
-		trace_log(path, "CTD      > [ERROR]")
+		trace_log("CTD      > [ERROR]")
 
 
 # Test function
 if __name__ == "__main__":
-	# Process launched outside main
-	sys.path.insert(1, os.getcwd())
-	sys.path.insert(1, "../")
-	path = "../"
-	# Allocate resource
-	ctd = DriverCTD()
 	# Run
-	ctd.run()
+	ctd_driver.run()

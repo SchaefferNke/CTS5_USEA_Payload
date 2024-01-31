@@ -32,12 +32,16 @@ It enables third-party Python programming in USEA-Payload acquisition board.
 |   +-- const.py
 |   +-- ctd.py
 |   +-- emap.py
-|   +-- technical.py
 |   +-- io_lib.py
+|   +-- rtc.py
 |   +-- serial_lib.py
-|   +-- timer_lib.py
 |   +-- share_lib.py
+|   +-- system_lib.py
+|   +-- technical.py
+|   +-- timer_lib.py
 |   +-- trace_lib.py
+|   +-- web_server.py
+|   +-- web_socket.py
 +-- user
 |   +-- user.ini
 |   +-- user_driver.py
@@ -46,7 +50,7 @@ main.py
 
 ## Version history
 
-### 1.0.0 (2023-09-25)
+### 1.0.0 (2024-01-31)
 - Creating reference application
 
 ## License information

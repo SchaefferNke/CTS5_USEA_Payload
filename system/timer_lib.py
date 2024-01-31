@@ -6,7 +6,7 @@
 
 __authors__ = "Christophe SCHAEFFER"
 __copyright__ = "nke Instrumentation"
-__date__ = "2024-01-29"
+__date__ = "2024-01-31"
 __version__ = "1.0.0"
 
 # Standard libraries
@@ -35,9 +35,8 @@ class DriverTimer:
 	"""
 
 	# Create resource
-	def __init__(self, path: str, name: str):
+	def __init__(self, name: str):
 		# Manager
-		self._path = path
 		self._name = name
 		self._active = False
 		self._one_shot = False
@@ -55,7 +54,7 @@ class DriverTimer:
 				- interval (float): interval of time (sec)
 		"""
 		# Trace
-		#trace_log(self._path, "TIMER    > Start tmr_" + self._name + " one-shot " + str(interval) + " sec")
+		# trace_log("TIMER    > Start tmr_" + self._name + " one-shot " + str(interval) + " sec")
 		# Wait for resource
 		timer_locks[self._name].acquire()
 		# Configure
@@ -75,7 +74,7 @@ class DriverTimer:
 				- period (float): base time (sec)
 		"""
 		# Trace
-		#trace_log(self._path, "TIMER    > Start tmr_" + self._name + " base time " + str(period) + " sec")
+		# trace_log("TIMER    > Start tmr_" + self._name + " base time " + str(period) + " sec")
 		# Wait for resource
 		timer_locks[self._name].acquire()
 		# Configure
@@ -93,7 +92,7 @@ class DriverTimer:
 			Stop a timer
 		"""
 		# Trace
-		trace_log(self._path, "TIMER    > Stop tmr_" + self._name)
+		trace_log("TIMER    > Stop tmr_" + self._name)
 		# Wait for resource
 		timer_locks[self._name].acquire()
 		# Deactivate
@@ -147,7 +146,7 @@ class DriverTimer:
 				- duration (float): time duration (sec)
 		"""
 		# Trace
-		trace_log(self._path, "TIMER    > Wait tmr_" + self._name + " " + str(duration) + " sec")
+		trace_log("TIMER    > Wait tmr_" + self._name + " " + str(duration) + " sec")
 		# Wait for resource
 		timer_locks[self._name].acquire()
 		# Activate
@@ -178,7 +177,7 @@ class DriverTimer:
 				- date (str): date and time ("YY-MM-DD HH:MM:SS" format)
 		"""
 		# Trace
-		trace_log(self._path, "TIMER    > Wait tmr_" + self._name + " " + date)
+		trace_log("TIMER    > Wait tmr_" + self._name + " " + date)
 		# Wait for resource
 		timer_locks[self._name].acquire()
 		# Extract date
@@ -208,7 +207,7 @@ class DriverTimer:
 			Wait until the current second to change
 		"""
 		# Trace
-		trace_log(self._path, "TIMER    > Synchro tmr_" + self._name)
+		trace_log("TIMER    > Synchro tmr_" + self._name)
 		# Wait for resource
 		timer_locks[self._name].acquire()
 		# Activate

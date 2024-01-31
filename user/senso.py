@@ -6,7 +6,7 @@
 
 __authors__ = "Christophe SCHAEFFER"
 __copyright__ = "nke Instrumentation"
-__date__ = "2024-01-29"
+__date__ = "2024-01-31"
 __version__ = "1.0.0"
 
 # Standard libraries
@@ -16,6 +16,11 @@ import time
 import datetime
 import zipfile
 import traceback
+
+if __name__ == "__main__":
+	# Process launched outside main
+	sys.path.insert(1, os.getcwd())
+	sys.path.insert(1, "../")
 
 # Project libraries
 from system.io_lib import DriverIOOutput, DriverIOInput
@@ -39,7 +44,7 @@ def acquisition_process(self, string: str) -> bool:
 			- bool: True if the acquisition process is successful
 	"""
 	# Print
-	trace_log(path, "SENSO    > " + string)
+	trace_log("SENSO    > " + string)
 	# Power-on
 	self._io_power.set_on()
 	# Warm-up
@@ -51,7 +56,7 @@ def acquisition_process(self, string: str) -> bool:
 		# Parse
 		split = frame_data.split(",")
 		# Print
-		trace_log(path, "SENSO    > Rx=" + frame_data)
+		trace_log("SENSO    > Rx=" + frame_data)
 		# Extract
 		self.output.timestamp = datetime.datetime.now().timestamp()
 		self.output.channel1 = float(split[2])
@@ -65,7 +70,7 @@ def acquisition_process(self, string: str) -> bool:
 	# Error
 	else:
 		# Print
-		trace_log(path, "SENSO    > Time-out")
+		trace_log("SENSO    > Time-out")
 		# Count error
 		if string == "Acquire":
 			self._tech.diagnosis_count_error()
@@ -117,7 +122,7 @@ class DriverSENSO:
 		self._io_power = DriverIOOutput("GPIO_3_20")
 		self._io_alarm = DriverIOInput("GPIO_2_0")
 		self._serial = DriverSerial("COM_5", 19200, 128, 0.15)
-		self._timer = DriverTimer(path, "senso")
+		self._timer = DriverTimer("senso")
 		self._share_step = DataShare("payload_step")
 		self._tech = DriverTechnicalUser("SENSO")
 		# Output
@@ -233,9 +238,9 @@ def compress():
 		Compress the data files
 	"""
 	# Create names
-	zip_src_name = path + "payload/" + get_profile(path) + "_payload.csv"
-	zip_tmp_name = path + "temp/" + get_profile(path) + "_payload.hex"
-	zip_dst_name = path + "payload/" + get_profile(path) + "_payload.hex"
+	zip_src_name = "payload/" + get_profile() + "_payload.csv"
+	zip_tmp_name = "temp/" + get_profile() + "_payload.hex"
+	zip_dst_name = "payload/" + get_profile() + "_payload.hex"
 	# No file to compress
 	if not os.path.isfile(zip_src_name):
 		return
@@ -248,7 +253,7 @@ def compress():
 	# Create archive
 	zip_file = zipfile.ZipFile(zip_tmp_name, "w")
 	# Add file
-	zip_file.write(zip_src_name, get_profile(path) + "_payload.csv", compress_type=zipfile.ZIP_DEFLATED)
+	zip_file.write(zip_src_name, get_profile() + "_payload.csv", compress_type=zipfile.ZIP_DEFLATED)
 	# Remove file
 	os.remove(zip_src_name)
 	# Close archive
@@ -258,7 +263,6 @@ def compress():
 
 
 # Create resources
-path = "./"
 senso_driver = DriverSENSO()
 
 
@@ -268,11 +272,10 @@ def manager(self):
 		Running task
 	"""
 
-	global path
 	file_name = ""
 
 	# Trace
-	trace_log(path, "SENSO    > Activate")
+	trace_log("SENSO    > Activate")
 
 	# Activate task
 	self._active = True
@@ -293,7 +296,7 @@ def manager(self):
 				continue
 
 			# Read resource
-			navigation = get_navigation(path)
+			navigation = get_navigation()
 
 			# Wait
 			if self._step == USEA_PAYLOAD_STEP_IDLE:
@@ -304,9 +307,9 @@ def manager(self):
 					(navigation == USEA_NAVIGATION_STATE_ASCENT_2) or
 					(navigation == USEA_NAVIGATION_STATE_ASCENT_3)):
 					# Create file name
-					file_name = path + "payload/" + get_profile(path) + "_payload.csv"
+					file_name = "payload/" + get_profile() + "_payload.csv"
 					# Print
-					trace_log(path, "SENSO    > Start acquisition")
+					trace_log("SENSO    > Start acquisition")
 					# Start recording
 					self._step = USEA_PAYLOAD_STEP_RECORD
 					# Share step
@@ -332,7 +335,7 @@ def manager(self):
 							# Acquire
 							if self.acquire_sample():
 								# Print
-								trace_log(path, "SENSO    > Record")
+								trace_log("SENSO    > Record")
 								# Store data
 								file = open(file_name, "a+")
 								file.write(
@@ -348,7 +351,7 @@ def manager(self):
 									# Declare the sensor broken
 									self._tech.diagnosis_count_broken()
 									# Print
-									trace_log(path, "SENSO    > Broken")
+									trace_log("SENSO    > Broken")
 						# Wait
 						else:
 							time.sleep(0.1)
@@ -361,7 +364,7 @@ def manager(self):
 					(navigation == USEA_NAVIGATION_STATE_BUOYANCY_INCREASE) or
 					(navigation == USEA_NAVIGATION_STATE_SURFACE_ACQUISITION)):
 					# Print
-					trace_log(path, "SENSO    > Stop acquisition")
+					trace_log("SENSO    > Stop acquisition")
 					# Stop recording
 					self._step = USEA_PAYLOAD_STEP_SURFACE
 					# Share step
@@ -369,7 +372,7 @@ def manager(self):
 				# Other
 				else:
 					# Print
-					trace_log(path, "SENSO    > Stop acquisition")
+					trace_log("SENSO    > Stop acquisition")
 					# Stop recording
 					self._step = USEA_PAYLOAD_STEP_IDLE
 					# Share step
@@ -380,7 +383,7 @@ def manager(self):
 				# Treatment step
 				if navigation == USEA_NAVIGATION_STATE_DATA_PROCESSING:
 					# Print
-					trace_log(path, "SENSO    > Start processing")
+					trace_log("SENSO    > Start processing")
 					# Start processing
 					self._step = USEA_PAYLOAD_STEP_TREAT
 					# Share step
@@ -396,7 +399,7 @@ def manager(self):
 					# TODO: for test
 					time.sleep(5.0)
 					# Print
-					trace_log(path, "SENSO    > Stop processing")
+					trace_log("SENSO    > Stop processing")
 					# Stop processing
 					self._step = USEA_PAYLOAD_STEP_IDLE
 					# Share step
@@ -425,16 +428,10 @@ def manager(self):
 		print(err)
 		print(traceback.format_exc())
 		# Trace
-		trace_log(path, "SENSO    > [ERROR]")
+		trace_log("SENSO    > [ERROR]")
 
 
 # Test function
 if __name__ == "__main__":
-	# Process launched outside main
-	sys.path.insert(1, os.getcwd())
-	sys.path.insert(1, "../")
-	path = "../"
-	# Allocate resource
-	senso = DriverSENSO()
 	# Run
-	senso.run()
+	senso_driver.run()

@@ -6,8 +6,11 @@
 
 __authors__ = "Christophe SCHAEFFER"
 __copyright__ = "nke Instrumentation"
-__date__ = "2024-01-29"
+__date__ = "2024-01-31"
 __version__ = "1.0.0"
+
+# Versioning
+USEA_VERSION = "1.0.0"
 
 # Navigation stages
 USEA_NAVIGATION_STATE_UNDEFINED = 0

@@ -6,7 +6,7 @@
 
 __authors__ = "Christophe SCHAEFFER"
 __copyright__ = "nke Instrumentation"
-__date__ = "2024-01-30"
+__date__ = "2024-01-31"
 __version__ = "1.0.0"
 
 # Standard libraries
@@ -16,10 +16,12 @@ import threading
 import traceback
 
 # Project libraries
-from system.system import system_driver
+from system.system_lib import system_driver
 from system.rtc import rtc_driver
 from system.io_lib import DriverIOOutput
 from system.technical import technical_driver
+from system.web_server import web_server
+from system.web_socket import web_socket
 from system.ctd import ctd_driver
 from system.emap import emap_driver
 from system.config import user_driver
@@ -49,7 +51,7 @@ if __name__ == "__main__":
 		os.makedirs("trash")
 
 	# Trace
-	trace_log("./", "MAIN     > Launch application")
+	trace_log("MAIN     > Launch application")
 
 	# Restore system clock
 	rtc_driver.restore()
@@ -58,12 +60,16 @@ if __name__ == "__main__":
 
 	# Create tasks
 	thread_technical = threading.Thread(target=technical_driver.run, name="task_technical", daemon=True)
+	thread_web_server = threading.Thread(target=web_server.run, name="task_web_server", daemon=True)
+	thread_web_socket = threading.Thread(target=web_socket.run, name="task_web_socket", daemon=True)
 	thread_ctd = threading.Thread(target=ctd_driver.run, name="task_ctd", daemon=True)
 	thread_user = threading.Thread(target=user_driver.run, name="task_user", daemon=True)
 	thread_emap = threading.Thread(target=emap_driver.run, name="task_emap", daemon=True)
 
 	# Launch tasks
 	thread_technical.start()
+	thread_web_server.start()
+	thread_web_socket.start()
 	thread_ctd.start()
 	thread_user.start()
 	thread_emap.start()
@@ -74,6 +80,8 @@ if __name__ == "__main__":
 
 			# Wait
 			time.sleep(1.0)
+
+			technical_driver.diagnosis_json()
 
 			# Watchdog
 			system_driver.watchdog_feed()
@@ -86,7 +94,7 @@ if __name__ == "__main__":
 			# CPU power management
 			if (activity_emap >= 300.0) and (activity_user >= 300.0):
 				# Trace
-				trace_log("./", "MAIN     > Suspend system")
+				trace_log("MAIN     > Suspend system")
 				# Suspend system
 				rtc_driver.program_wakealarm("300")
 				#system_driver.suspend()"""
@@ -97,4 +105,4 @@ if __name__ == "__main__":
 		print(err)
 		print(traceback.format_exc())
 		# Trace
-		trace_log("./", "MAIN     > [ERROR]")
+		trace_log("MAIN     > [ERROR]")

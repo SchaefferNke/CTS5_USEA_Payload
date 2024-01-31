@@ -6,7 +6,7 @@
 
 __authors__ = "Christophe SCHAEFFER"
 __copyright__ = "nke Instrumentation"
-__date__ = "2024-01-29"
+__date__ = "2024-01-31"
 __version__ = "1.0.0"
 
 # Standard libraries
@@ -184,9 +184,8 @@ class FileShare:
 	"""
 
 	# Create resource
-	def __init__(self, path: str, filename: str):
+	def __init__(self, filename: str):
 		# Manager
-		self._path = path
 		self._filename = filename
 		if not filename in file_locks:
 			file_locks[filename] = threading.Lock()
@@ -204,7 +203,7 @@ class FileShare:
 				- object: content (timestamp and string)
 		"""
 		# Resource doesn't exist
-		if not os.path.isfile(self._path + "share/" + self._filename):
+		if not os.path.isfile("share/" + self._filename):
 			# Fill empty content
 			self.content.timestamp = 0.0
 			self.content.string = "?"
@@ -218,7 +217,7 @@ class FileShare:
 			# Result
 			return str(self.content)
 		# Read file
-		file = open(self._path + "share/" + self._filename, "r")
+		file = open("share/" + self._filename, "r")
 		info = file.read()
 		file.close()
 		# Parse
@@ -244,7 +243,7 @@ class FileShare:
 		# Timestamp
 		now = datetime.datetime.now()
 		# Write file
-		file = open(self._path + "share/" + self._filename, "w")
+		file = open("share/" + self._filename, "w")
 		file.write(f"{now.timestamp():.3f}" + ";" + info)
 		file.close()
 		# Release resource
@@ -252,7 +251,7 @@ class FileShare:
 
 
 # Get current profile
-def get_profile(path: str) -> str:
+def get_profile() -> str:
 	"""
 		Read profile identification string
 
@@ -260,7 +259,7 @@ def get_profile(path: str) -> str:
 			- str: profile identification string (eg: "003_01", "CCC_PP" format)
 	"""
 	# Create resource
-	share = FileShare(path, "profile.txt")
+	share = FileShare("profile.txt")
 	# Read resource
 	share.read()
 	# Result
@@ -268,7 +267,7 @@ def get_profile(path: str) -> str:
 
 
 # Get current navigation stage
-def get_navigation(path: str) -> int:
+def get_navigation() -> int:
 	"""
 		Read navigation identification string
 
@@ -276,7 +275,7 @@ def get_navigation(path: str) -> int:
 			- str: navigation identification string (eg: "NA", "XX" format)
 	"""
 	# Create resource
-	share = FileShare(path, "navigation.txt")
+	share = FileShare("navigation.txt")
 	# Read resource
 	share.read()
 	# Result
@@ -319,7 +318,7 @@ def get_navigation(path: str) -> int:
 
 
 # Get current pressure
-def get_pressure(path: str) -> float:
+def get_pressure() -> float:
 	"""
 		Read last pressure value
 
@@ -327,7 +326,7 @@ def get_pressure(path: str) -> float:
 			- float: pressure value (dbar)
 	"""
 	# Create resource
-	share = FileShare(path, "pressure.txt")
+	share = FileShare("pressure.txt")
 	# Read resource
 	share.read()
 	# Result
