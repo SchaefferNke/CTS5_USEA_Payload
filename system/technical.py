@@ -6,7 +6,7 @@
 
 __authors__ = "Christophe SCHAEFFER"
 __copyright__ = "nke Instrumentation"
-__date__ = "2024-01-31"
+__date__ = "2024-02-01"
 __version__ = "1.0.0"
 
 # Standard libraries
@@ -59,10 +59,11 @@ class DriverTechnicalSystem:
 		self._mem_usage = 0.0
 		self._mem_usage_max = 0.0
 		self._mem_usage_sum = 0.0
-		self._disk_free = 0.0
-		self._disk_used = 0.0
+		self._disk_usage = 0.0
+		self._sdcard_usage = 0.0
+		self._sdcard_free = 0.0
 		# Check SD card
-		self._disk_is_present = False
+		self._sdcard_is_present = False
 
 	# Reset diagnosis counters
 	def diagnosis_reset(self):
@@ -109,16 +110,17 @@ class DriverTechnicalSystem:
 		if self._cpu_temp > self._cpu_temp_max:
 			self._cpu_temp_max = self._cpu_temp
 		# Memory usage
-		self._mem_usage = 100.0 * psutil.virtual_memory().used / psutil.virtual_memory().total
+		self._mem_usage = psutil.virtual_memory().percent
 		self._mem_usage_sum += self._mem_usage
 		if self._mem_usage > self._mem_usage_max:
 			self._mem_usage_max = self._mem_usage
 		# Disk usage
-		self._disk_free = 0.0
-		if not os.name == "nt":
-			self._disk_is_present = system_driver.disk_is_present()
-			if self._disk_is_present:
-				self._disk_free = (psutil.disk_usage("/dev/sda1").total - psutil.disk_usage("/dev/sda1").used) / 1073741824.0
+		self._disk_usage = psutil.disk_usage("/")
+		# SD card usage
+		self._sdcard_free = 0.0
+		self._sdcard_is_present = system_driver.disk_is_present()
+		if self._sdcard_is_present:
+			self._sdcard_free = psutil.disk_usage("/dev/sda1").free
 
 	# Save diagnosis
 	def diagnosis_json(self) -> object:
@@ -141,24 +143,31 @@ class DriverTechnicalSystem:
 			elif 'imx_thermal_zone' in temps:
 				self._cpu_temp = temps['imx_thermal_zone'][0].current
 		# Memory usage
-		self._mem_usage = 100.0 * psutil.virtual_memory().used / psutil.virtual_memory().total
+		self._mem_usage = psutil.virtual_memory().percent
 		# Disk usage
-		self._disk_used = 0.0
-		if not os.name == "nt":
-			self._disk_is_present = system_driver.disk_is_present()
-			if self._disk_is_present:
-				self._disk_used = 100.0 * psutil.disk_usage("/dev/sda1").used / psutil.disk_usage("/dev/sda1").total
+		disk_size = psutil.disk_usage("/").total / 1073741824.0
+		self._disk_usage = psutil.disk_usage("/").percent
+		# SD card usage
+		sdcard_size = 0.0
+		self._sdcard_usage = 0.0
+		self._sdcard_is_present = system_driver.disk_is_present()
+		if self._sdcard_is_present:
+			sdcard_size = psutil.disk_usage("/dev/sda1").total / 1073741824.0
+			self._sdcard_usage = psutil.disk_usage("/dev/sda1").percent
 		# Format
-		result = {}
-		result["board-name"] = "USEA-Payload"
-		result["software-version"] = USEA_VERSION + "-" + self._payload.get_version()
-		result["software-time"] = datetime.datetime.now().strftime("20%y-%m-%d %H:%M:%S")
-		result["cpu-freq"] = f"{self._cpu_freq:.0f}"
-		result["cpu-usage"] = f"{self._cpu_usage:.1f}"
-		result["cpu-temperature"] = f"{self._cpu_temp:.1f}"
-		result["mem-usage"] = f"{self._mem_usage:.1f}"
-		result["disk-present"] = str(self._disk_is_present)
-		result["disk-used"] = f"{self._disk_used:.1f}"
+		result = {
+			"board-name": "USEA-Payload",
+			"software-version": USEA_VERSION + "-" + self._payload.get_version(),
+			"system-time": datetime.datetime.now().strftime("20%y-%m-%d %H:%M:%S"),
+			"cpu-frequency": f"{self._cpu_freq:.0f}",
+			"cpu-usage": f"{self._cpu_usage:.1f}",
+			"cpu-temperature": f"{self._cpu_temp:.1f}",
+			"memory-usage": f"{self._mem_usage:.1f}",
+			"disk1-size": f"{disk_size:.1f}",
+			"disk1-usage": f"{self._disk_usage:.1f}",
+			"disk2-present": str(self._sdcard_is_present),
+			"disk2-size": f"{sdcard_size:.1f}",
+			"disk2-usage": f"{self._sdcard_usage:.1f}"}
 		# Result
 		return result
 
@@ -188,20 +197,20 @@ class DriverTechnicalSystem:
 		# Open file
 		tech_file = open(dest_file, "w")
 		# Write system info
-		if self._disk_is_present:
+		if self._sdcard_is_present:
 			tech_file.write(
 				"[PAYLOAD]\n" +
 				"CPU speed=" + f"{cpu_freq:.0f}" + "/" + f"{self._cpu_freq_max:.0f}" + " MHz\n" +
-				"CPU utilization=" + f"{cpu_usage:.0f}" + "/" + f"{self._cpu_usage_max:.0f}" + " %\n" +
+				"CPU usage=" + f"{cpu_usage:.0f}" + "/" + f"{self._cpu_usage_max:.0f}" + " %\n" +
 				"CPU temperature=" + f"{cpu_temp:.1f}" + "/" + f"{self._cpu_temp_max:.1f}" + " degC\n" +
-				"Memory utilization=" + f"{mem_usage:.0f}" + "/" + f"{self._mem_usage_max:.0f}" + " %\n" +
-				"Available space=" + f"{self._disk_free:.1f}" + " GB\n" +
+				"Memory usage=" + f"{mem_usage:.0f}" + "/" + f"{self._mem_usage_max:.0f}" + " %\n" +
+				"Available space=" + f"{self._sdcard_free:.1f}" + " GB\n" +
 				"Boot count=" + self._boot_count.content.string + "\n")
 		else:
 			tech_file.write(
 				"[PAYLOAD]\n" +
 				"CPU speed=" + f"{cpu_freq:.0f}" + "/" + f"{self._cpu_freq_max:.0f}" + " MHz\n" +
-				"CPU utilization=" + f"{cpu_usage:.0f}" + "/" + f"{self._cpu_usage_max:.0f}" + " %\n" +
+				"CPU usage=" + f"{cpu_usage:.0f}" + "/" + f"{self._cpu_usage_max:.0f}" + " %\n" +
 				"CPU temperature=" + f"{cpu_temp:.1f}" + "/" + f"{self._cpu_temp_max:.1f}" + " degC\n" +
 				"Memory utilization=" + f"{mem_usage:.0f}" + "/" + f"{self._mem_usage_max:.0f}" + " %\n" +
 				"Boot count=" + self._boot_count.content.string + "\n")

@@ -94,7 +94,7 @@ h2,h3,h4,h5,h6,
  line-height:100%;
  font-family:"Open Sans","Helvetica",sans-serif;
 }
-#WiMoMainTitle h1, #WiMoMainTitle h1 a{
+#USEAPayload h1, #USEAPayload h1 a{
  font-family: :"Verdana","Open Sans","Helvetica",sans-serif
 }
 h1,.h1{
@@ -197,7 +197,7 @@ h3 span.icon-arrow-right,.h3 span.icon-arrow-right{
  top:16px;
 }
 
-#WiMoMainTitle{
+#USEAPayload{
  cursor: pointer;
 }
 
@@ -256,7 +256,7 @@ header{
  background-image:radial-gradient(#000033, #132644);
 }
 
-header #WiMoMainTitle{
+header #USEAPayload{
  background-color: white;
  background-size: 50%;
  color: black;
@@ -265,7 +265,7 @@ header #WiMoMainTitle{
  /*border-bottom: 1px solid #dddce1;*/
 }
 
-#WiMoMainTitle h1{
+#USEAPayload h1{
  height: 100%;
  width: 100%;
  display: flex;
@@ -276,7 +276,7 @@ header #WiMoMainTitle{
  -webkit-align-items: center;
 }
 
-#WiMoMainTitle button
+#USEAPayload button
  background-color:#132644;
  color:white;
  padding:0;
@@ -290,11 +290,11 @@ header{
  header{
   height: 110px;
  }
- header #WiMoMainTitle{
+ header #USEAPayload{
   width: 20%; 
  }
- header #WiMoMainTitle img,
- header #WiMoMainTitle .logo-nke-instrumentation-c{
+ header #USEAPayload img,
+ header #USEAPayload .logo-nke-instrumentation-c{
   height: 60%;
  }
  nav{
@@ -319,12 +319,12 @@ header{
 /**  Mode tablette  **/
 /*********************/
 @media only screen and (min-width: 641px) and (max-width: 1200px) {
- header #WiMoMainTitle{
+ header #USEAPayload{
   width: 100%; 
   height: 80px;
  }
- header #WiMoMainTitle img,
- header #WiMoMainTitle .logo-nke-instrumentation-c{
+ header #USEAPayload img,
+ header #USEAPayload .logo-nke-instrumentation-c{
   height: 85%;
  }
  nav{
@@ -341,12 +341,12 @@ header{
 /**  Très petite tablette  **/
 /***********************/
 @media only screen and (min-width: 481px) and (max-width: 500px) {
- header #WiMoMainTitle{
+ header #USEAPayload{
   width: 100%; 
   height: 80px;
  }
- header #WiMoMainTitle img,
- header #WiMoMainTitle .logo-nke-instrumentation-c{
+ header #USEAPayload img,
+ header #USEAPayload .logo-nke-instrumentation-c{
   height: 85%;
  }
  nav{
@@ -371,12 +371,12 @@ header{
 /**  Petite tablette  **/
 /***********************/
 @media only screen and (min-width: 501px) and (max-width: 660px) {
- header #WiMoMainTitle{
+ header #USEAPayload{
   width: 100%; 
   height: 80px;
  }
- header #WiMoMainTitle img,
- header #WiMoMainTitle .logo-nke-instrumentation-c{
+ header #USEAPayload img,
+ header #USEAPayload .logo-nke-instrumentation-c{
   height: 85%;
  }
  nav{
@@ -430,7 +430,7 @@ header{
  header h1 a{
   font-size: 1.2em;
  }
- header #WiMoMainTitle{
+ header #USEAPayload{
   /* Flex */
   display: flex;
   flex-direction: row;
@@ -444,8 +444,8 @@ header{
   -webkit-justify-content:center;
   -webkit-align-items: center;
  }
- #WiMoMainTitle button,
- #WiMoMainTitle a[class^=icon]{
+ #USEAPayload button,
+ #USEAPayload a[class^=icon]{
   width:40px;
   height:40px;
   line-height:40px;
@@ -537,7 +537,7 @@ header{
   /*%%AP - 2019/04/10 - */
   box-shadow: 5px 0px 4px 0px rgba(0, 0, 0, .5);
  }
- header #WiMoMainTitle{
+ header #USEAPayload{
   position:relative;
   z-index: 1000;
   /* Flex */
@@ -555,11 +555,11 @@ header{
   height: 70px;
   padding: 6px 0px;
  }
- header #WiMoMainTitle img,
- header #WiMoMainTitle .logo-nke-instrumentation-c{
+ header #USEAPayload img,
+ header #USEAPayload .logo-nke-instrumentation-c{
   height:90%;
  }
- #WiMoMainTitle h1{
+ #USEAPayload h1{
   display: flex;
   align-items: center;
   justify-content: center;
@@ -569,7 +569,7 @@ header{
   -webkit-justify-content: center;
   position: relative;
  }
- #WiMoMainTitle button,#WiMoMainTitle a[class^=icon]{
+ #USEAPayload button,#USEAPayload a[class^=icon]{
   width:35px;
   height:35px;
   text-align: center;
@@ -578,7 +578,7 @@ header{
   top: 18px;
   z-index: 9000;
  }
- #WiMoMainTitle a[class^=icon]{
+ #USEAPayload a[class^=icon]{
   width:35px;
   height:35px;
   text-align: center;

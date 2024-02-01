@@ -9,16 +9,15 @@
   <meta name="theme-color" content="#193d8a">
   <meta name="msapplication-TileColor" content="#193d8a"/>
   <meta name="msapplication-TileImage" content="favicon.png"/>
-
   <link rel="stylesheet" type="text/css" href="styles.css"/>
-
 	</head>
 	<body class="alarm">
-  <!------------------->
-  <!----   HEADER  ---->
-  <!------------------->
+
+  <!-------------->
+  <!--- HEADER --->
+  <!-------------->
   <header>
-   <div id="WiMoMainTitle">
+   <div id="USEAPayload">
     <h1>
      <button class="btn none">X</button>
      <a id="icon-menu" href="#" class="icon-menu open"></a>
@@ -33,19 +32,19 @@
      <li class="li">
       <a class="" href="index.html">
        <div class="icon-status"></div>
-       <p id="tr-nav-1">DASHBOARD</p>
+       <p id="tr-nav-1">SYSTEM</p>
       </a>
      </li>
      <li class="li">
-      <a class="" href="log.html">
+      <a class="" href="trace.html">
        <div class="icon-alarm-log"></div>
-       <p id="tr-nav-2">LOG</p>
+       <p id="tr-nav-2">TRACE</p>
       </a>
      </li>
      <li class="li active">
-      <a class="" href="log.html">
+      <a class="" href="trace.html">
        <div class="icon-diag"></div>
-       <p id="tr-nav-2">DIAGNOSTIC</p>
+       <p id="tr-nav-2">COMMANDS</p>
       </a>
      </li>
 				</ul>
@@ -54,15 +53,14 @@
   </header>
   <div id="black" class="black-hide"></div>
 
-  <!--------------------------------------------------------------->
-  <!------------------->
-  <!----    BODY   ---->
-  <!------------------->
+  <!------------>
+  <!--- BODY --->
+  <!------------>
   <div id="body">
-      <!----------------------------------------------------------------------->
-    <!---------------------------------------->
-    <!--------     DASHBOARD     ------------->
-    <!---------------------------------------->
+
+    <!------------>
+    <!--- ICON --->
+    <!------------>
     <section>
      <article class="left">
       <div class="article left">
@@ -70,9 +68,12 @@
         <div class="param-circle">
          <div class="icon-system"></div>
         </div>
-        <h2>Diagnostic</h2>
+        <h2>Commands</h2>
        </div>
-          
+
+       <!--------------->
+       <!--- BUTTONS --->
+       <!--------------->
        <div class="button-c">
         <input type="button" value="Reboot board" class="btn blue" name="btn" id='btn-reboot'/>
        </div>
@@ -80,33 +81,16 @@
       </div>
      </article>
     </section>
-    <section>
-     <article class="right">
-      <div class="article right">
-       <div class="alarm-h2-c" style="visibility: hidden">
-        <div class="param-circle">
-         <div class="icon-system"></div>
-        </div>
-        <h2>Dashboard</h2>
-       </div>
-       <div class="param-triangle" style="visibility: hidden"></div>
-       
-       
-       
-      </div>
-     </article>
-    </section>
-   
+
   </div>
  </body>
  <script type="text/javascript" src="lib.js"></script>
  <script type="text/javascript">
-  // Click bouton reboot
-  ae(did("btn-reboot"), 'click', function(){
+  ae(did("btn-reboot"),'click',function(){
    console.log("Clicked")
-   let tReq = new AJAX_REQUEST("POST", "reboot", "");
+   let tReq = new AJAX_REQUEST("POST","reboot","");
    tReq.uiTimeout = 12000;
-   tReq.sErrorMsg = "Connexion error 1";
+   tReq.sErrorMsg = "Connection error 2";
    tReq.xFCallback200 = function(ea){
     ea=ea?ea:window.event;
     target=et(ea);
@@ -116,8 +100,6 @@
     console.log("204")
    };
    tReq.vFSend();
-   
-   
   });
  </script>
 </html>

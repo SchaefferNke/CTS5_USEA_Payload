@@ -1,17 +1,15 @@
 <!DOCTYPE html>
 <html>
-<head>
- <title>USEA-Payload</title>
- <meta charset="UTF-8"/>
- 
-	<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0"/>
- <link rel="apple-touch-icon" href="favicon.png"/>
- <link rel="shortcut icon" type="image/png" href="favicon.png"/>
- <meta name="theme-color" content="#193d8a">
- <meta name="msapplication-TileColor" content="#193d8a"/>
- <meta name="msapplication-TileImage" content="favicon.png"/>
-
- <link rel="stylesheet" type="text/css" href="styles.css"/>
+ <head>
+  <title>USEA-Payload</title>
+  <meta charset="UTF-8"/>
+	 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0"/>
+  <link rel="apple-touch-icon" href="favicon.png"/>
+  <link rel="shortcut icon" type="image/png" href="favicon.png"/>
+  <meta name="theme-color" content="#193d8a">
+  <meta name="msapplication-TileColor" content="#193d8a"/>
+  <meta name="msapplication-TileImage" content="favicon.png"/>
+  <link rel="stylesheet" type="text/css" href="styles.css"/>
 <style>
  @media only screen and (min-width: 961px) {
   #logger-container{
@@ -97,7 +95,7 @@
  -webkit-justify-self: flex-start;
  height: 100%;
 }
-.t-date, .t-comment{
+.t-date, .t-event{
  display: flex;
  justify-self: flex-start;
  align-items: center;
@@ -112,13 +110,11 @@
  width: 20%;
  margin-right: 10px;
 }
-.t-comment{
+.t-event{
  width: 80%;
  height: 100%;
 }
 </style>
-
- <!-- Script -->
  <script>
   function did(s){
    return document.getElementById(s);
@@ -135,80 +131,42 @@
    h=clk.getHours();
    m=clk.getMinutes();
    s=clk.getSeconds();
+   n=clk.getMilliseconds();
    if(M<10)M="0"+M;
    if(D<10)D="0"+D;
    if(h<10)h="0"+h;
    if(m<10)m="0"+m;
    if(s<10)s="0"+s;
-   sDate=Y+'-'+M+'-'+D;
-   sTime=h+':'+m+':'+s;
-   return( sDate+' '+sTime )
+   if(n<10)n="00"+n;
+   else if(n<100)n="0"+n;
+   return(Y+'-'+M+'-'+D+' '+h+':'+m+':'+s+'.'+n);
   }
   var bLogClicked = false;
   function vFAddTextToLogBloc(sLogLine){
-   var sLogLineBloc;
-   var tObj;
-   start = Date.now();
-   // Copie du noeud template
    tCloneNode = did("table-row-log-line-template").cloneNode(true);
-   // Affichage de la ligne
    tCloneNode.classList.remove("none");
-   // Datetime
-   tCloneNode.getElementsByClassName("t-date")[0].innerHTML    = sFGetCurrentDateTime();
-   tCloneNode.getElementsByClassName("t-comment")[0].innerHTML = sLogLine;
-   // Ajout de la ligne
+   tCloneNode.getElementsByClassName("t-date")[0].innerHTML  = sFGetCurrentDateTime();
+   tCloneNode.getElementsByClassName("t-event")[0].innerHTML = sLogLine;
    did("text-added").appendChild(tCloneNode);
    tTxtAdded = did("text-added")
-   // Le scroll est ramené en bas
    if(!bLogClicked) tTxtAdded.scrollTop = tTxtAdded.scrollHeight;
-  }  
-
-  // Etat de la connexion websocket
-  var bWSConnected = false;
+  }
   function vFCreateWebSocket(){
-   // Test état de la connection
-   if( bWSConnected ){
-    // Connecté : on relance le blocage du scroll
-    bLogClicked  = false;
-    return;
-   }
-   // Pour debug
-   //var socket = new WebSocket("wss://javascript.info/article/websocket/demo/hello");
-   //var socket = new WebSocket("ws://" + window.location.host + "/ws-test");
-   //var socket = new WebSocket("ws://" + window.location.host + ":8000");
    var socket = new WebSocket("ws://127.0.0.1:5678");
-   // Ouverture de la connexion websocket
-   socket.onopen = function(e) {
-    vFAddTextToLogBloc("[open] Connection established");
-    bLogClicked  = false;
-    bWSConnected = true;
-   };
-   socket.onmessage = function(event) {
+   socket.onmessage = function(e) {
     tDateTime = Date.now();
-    vFAddTextToLogBloc(event.data);
+    vFAddTextToLogBloc(e.data);
    };
-   socket.onclose = function(event) {
-    // Réinit
-    bWSConnected = false;
-    if (event.wasClean) {
-     vFAddTextToLogBloc(`[close] Connection closed cleanly, code=${event.code} reason=${event.reason}`);
-    } else {
-     vFAddTextToLogBloc('[close] Connection died');
-    }
-   };
-   socket.onerror = function(error) {
-    bWSConnected = false;
-    vFAddTextToLogBloc(`[error] ${error.message}`);
-   };
-  } 
+  }
  </script>
-</head>
+ </head>
 <body>
- <!------------------->
-  <!----   HEADER  ---->
-  <!------------------->
+
+  <!-------------->
+  <!--- HEADER --->
+  <!-------------->
   <header>
-   <div id="WiMoMainTitle">
+   <div id="USEAPayload">
     <h1>
      <button class="btn none">X</button>
      <a id="icon-menu" href="#" class="icon-menu open"></a>
@@ -223,19 +181,19 @@
      <li class="li">
       <a class="" href="index.html">
        <div class="icon-status"></div>
-       <p id="tr-nav-1">DASHBOARD</p>
+       <p id="tr-nav-1">SYSTEM</p>
       </a>
      </li>
      <li class="li active">
       <a class="" href="log.html">
        <div class="icon-alarm-log"></div>
-       <p id="tr-nav-2">LOG</p>
+       <p id="tr-nav-2">TRACE</p>
       </a>
      </li>
      <li class="li">
       <a class="" href="diag.html">
        <div class="icon-diag"></div>
-       <p id="tr-nav-2">DIAGNOSTIC</p>
+       <p id="tr-nav-2">COMMANDS</p>
       </a>
      </li>
 				</ul>
@@ -243,47 +201,33 @@
 			<div id="tms"></div>
   </header>
   <div id="black" class="black-hide"></div>
-  <!--------------------------------------------------------------->
-  <!------------------->
-  <!----    BODY   ---->
-  <!------------------->
+
+  <!-------------->
+  <!---- BODY ---->
+  <!-------------->
   <div id="body">
   
    <div class="body-c">
 
-    <div class="button-c">
-<!--<input type="button" value="Reboot board" class="btn blue" name="btn" id='btn-reboot'/>-->
-     <input type="button" value="Start log" class="btn blue" name="btn" id='btn-star-log'/>
-    </div>
-
     <div id="logger-container">
      <div class="param-box" id="">
       <h3 class="hadv on mopen" data-cgi="rw">
-       <span id="trace-log-reconnect" class="logo-refresh">
-        <span class="ico-refresh-inner"></span>
-       </span>
-       <span class="refresh-tooltip">
-        <div class="tooltip-r-container">
-         <div class="tooltip-r-txt">
-          <p>Restart logger<br/>connection</p>
-         </div>
-        </div>
-       </span>
        <span class="h3network-txt">Trace log</span>
        <span class="ico-triangle-right"></span>
       </h3>
-      <!------------------>
-      <!-- Header table -->
-      <!------------------>
+
+      <!----------------->
+      <!--- LOG TABLE --->
+      <!----------------->
       <div id="table-header" class="table-header">
        <div class="t-blank"></div>
-       <div class="t-date"><span>Date</span></div>
-       <div class="t-comment"><span>Comment</span></div>
+       <div class="t-date"><span>Timestamp</span></div>
+       <div class="t-event"><span>Event</span></div>
       </div>
       <div id="table-row-log-line-template" class="table-row none">
        <div class="t-blank"></div>
        <div class="t-date"></div>
-       <div class="t-comment"></div>
+       <div class="t-event"></div>
        <div class="t-blank"></div>
       </div>
       <div id="text-added" class="table-h-row">
@@ -294,12 +238,8 @@
    </div>
   </div>
  <script>
- ae(did("trace-log-reconnect"), 'click', vFCreateWebSocket);
- ae(did("btn-star-log"), 'click', vFCreateWebSocket);
- //did("trace-log-reconnect").click()
- ae(did("text-added"), 'click', function(){
-  console.log("Clicked")
-  tTxtAdded = did("text-added")
+ vFCreateWebSocket();
+ ae(did("text-added"),'click',function(){
   bLogClicked = true;
  });
  </script>

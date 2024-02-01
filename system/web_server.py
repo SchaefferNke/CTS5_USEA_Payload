@@ -6,16 +6,17 @@
 
 __authors__ = "Christophe SCHAEFFER"
 __copyright__ = "nke Instrumentation"
-__date__ = "2024-01-31"
+__date__ = "2024-02-01"
 __version__ = "1.0.0"
 
 # Standard libraries
 import os
 import sys
+import subprocess
 import json
+import logging
 
-from flask import Flask, render_template, send_file
-from threading import Thread
+from flask import Flask, render_template, send_file, request
 
 if __name__ == "__main__":
 	# Process launched outside main
@@ -29,6 +30,8 @@ from system.trace_lib import trace_log
 # Web server
 templateFolder = os.path.join(os.path.dirname(__file__), "web")
 app = Flask(__name__, template_folder=templateFolder)
+log = logging.getLogger("werkzeug")
+log.setLevel(logging.ERROR)
 
 
 # Get Flash python web framework
@@ -37,15 +40,25 @@ def get_app():
 	return app
 
 
-@app.route("/payload.json", methods=["GET"])
+# Reboot query
+@app.route("/reboot", methods=["POST"])
+def reboot_post():
+	# Trace
+	trace_log("WEB      > Reboot")
+	# TODO form = request.form
+	# TODO subprocess.call(["reboot"])
+	return "", 204
+
+
 # Json query
+@app.route("/payload.json", methods=["GET"])
 def payload_get():
 	return json.dumps(technical_driver.diagnosis_json(), indent=4)
 
 
+# Web page
 @app.route("/", defaults={"req_path": ""})
 @app.route("/<path:req_path>")
-# Web page
 def index(req_path):
 	abs_path = os.path.join(templateFolder, req_path)
 	if os.path.isfile(abs_path):
@@ -53,7 +66,8 @@ def index(req_path):
 	return render_template("index.html")
 
 
-class WebServer(Thread):
+# Class definition
+class WebServer:
 	"""
 		WebServer class: manage web server
 	"""
@@ -61,11 +75,13 @@ class WebServer(Thread):
 	# Create resource
 	def __init__(self):
 		# Server
-		Thread.__init__(self, daemon=True, name="WebServer")
 		self._server = get_app()
 
 	# Run task
 	def run(self):
+		"""
+			Working task
+		"""
 		# Trace
 		trace_log("WEB      > Activate")
 		# Start

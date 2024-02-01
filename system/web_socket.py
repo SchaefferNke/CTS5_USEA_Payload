@@ -6,7 +6,7 @@
 
 __authors__ = "Christophe SCHAEFFER"
 __copyright__ = "nke Instrumentation"
-__date__ = "2024-01-31"
+__date__ = "2024-02-01"
 __version__ = "1.0.0"
 
 # Standard libraries
@@ -14,6 +14,7 @@ import asyncio
 import websockets
 
 
+# Class definition
 class WebSocket:
 	"""
 		WebSocket class: manage websocket
@@ -22,7 +23,7 @@ class WebSocket:
 	async def handler(self, websocket):
 		while True:
 			if self._message_rcv > self._message_trs + 1 and self._message_trs > 0:
-				await websocket.send("--- Message lost ---")
+				await websocket.send("...")
 			if self._message_rcv > self._message_trs:
 				await websocket.send(self._message_str)
 				self._message_trs = self._message_rcv
@@ -50,6 +51,9 @@ class WebSocket:
 
 	# Run task
 	def run(self):
+		"""
+			Working task
+		"""
 		# Start
 		loop = asyncio.new_event_loop()
 		asyncio.set_event_loop(loop)

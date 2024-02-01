@@ -9,18 +9,15 @@
   <meta name="theme-color" content="#193d8a">
   <meta name="msapplication-TileColor" content="#193d8a"/>
   <meta name="msapplication-TileImage" content="favicon.png"/>
-
   <link rel="stylesheet" type="text/css" href="styles.css"/>
-  <style>
-   <!--#include file="styles.css" -->
-  </style>
 	</head>
 	<body class="alarm">
-  <!------------------->
-  <!----   HEADER  ---->
-  <!------------------->
+
+  <!-------------->
+  <!--- HEADER --->
+  <!-------------->
   <header>
-   <div id="WiMoMainTitle">
+   <div id="USEAPayload">
     <h1>
      <button class="btn none">X</button>
      <a id="icon-menu" href="#" class="icon-menu open"></a>
@@ -35,19 +32,19 @@
      <li class="li active">
       <a class="" href="index.html">
        <div class="icon-status"></div>
-       <p id="tr-nav-1">DASHBOARD</p>
+       <p id="tr-nav-1">SYSTEM</p>
       </a>
      </li>
      <li class="li">
-      <a class="" href="log.html">
+      <a class="" href="trace.html">
        <div class="icon-alarm-log"></div>
-       <p id="tr-nav-2">LOG</p>
+       <p id="tr-nav-2">TRACE</p>
       </a>
      </li>
      <li class="li">
       <a class="" href="diag.html">
        <div class="icon-diag"></div>
-       <p id="tr-nav-2">DIAGNOSTIC</p>
+       <p id="tr-nav-2">COMMANDS</p>
       </a>
      </li>
 				</ul>
@@ -56,15 +53,14 @@
   </header>
   <div id="black" class="black-hide"></div>
 
-  <!--------------------------------------------------------------->
-  <!------------------->
-  <!----    BODY   ---->
-  <!------------------->
+  <!------------>
+  <!--- BODY --->
+  <!------------>
   <div id="body">
-      <!----------------------------------------------------------------------->
-    <!---------------------------------------->
-    <!--------     DASHBOARD     ------------->
-    <!---------------------------------------->
+
+    <!------------>
+    <!--- ICON --->
+    <!------------>
     <section>
      <article class="left">
       <div class="article left">
@@ -72,38 +68,38 @@
         <div class="param-circle">
          <div class="icon-dashboard-h2"></div>
         </div>
-        <h2>Dashboard</h2>
+        <h2>System</h2>
        </div>
        <div class="param-triangle"></div>
-          
-       <!----------------------------------->
-       <!------     GENERAL INFO     -------->
-       <!----------------------------------->
+
+       <!------------------->
+       <!--- INFORMATION --->
+       <!------------------->
        <div class="param-box" id="">
         <h3 class="hadv on mopen" data-cgi="rw">
-         <span class="h3network-txt">General informations</span>
+         <span class="h3network-txt">System Information</span>
          <span class="ico-triangle-right"></span>
         </h3>
         <div id="rt-container" class="param-container">
          <div class="param-section">
-          <div id="gs-prod-info" class="param-line">
+          <div id="gs-board-name" class="param-line">
            <div class="ico-line-cont">
             <div class="ico-gs-com_desc"></div>
            </div>
-           <label id="tr-gs-1">Board name</label>
+           <label id="tr-gs-1">Board Name</label>
            <div class="param-value">
-            <p id="board-name">USEA-PAYLOAD</p>
+            <p id="board-name">...</p>
            </div>
           </div>
          </div>
          <div class="param-section">
-          <div id="gs-battery" class="param-line">
+          <div id="gs-version" class="param-line">
            <div class="ico-line-cont">
             <div class="ico-gs-firmware"></div>
            </div>
-           <label>Software version</label>
+           <label>Application Version</label>
            <div class="param-value">
-            <p id="software-version"></p>
+            <p id="software-version">...</p>
            </div>
           </div>
          </div>
@@ -112,21 +108,19 @@
            <div class="ico-line-cont">
             <div class="ico-gs-logo-clock"></div>
            </div>
-           <label>System time</label>
+           <label>System Time</label>
            <div class="param-value">
-            <p id="software-time"></p>
+            <p id="system-time">...</p>
            </div>
           </div>
          </div>
-        </div>
-        <div id="rt-loader" class="none">
-         <div id="rt-load" class="loaders"><span class="loader loader-quart"></span></div>
         </div>
        </div>
 
       </div>
      </article>
     </section>
+
     <section>
      <article class="right">
       <div class="article right">
@@ -134,81 +128,92 @@
         <div class="param-circle">
          <div class="icon-system"></div>
         </div>
-        <h2>Dashboard</h2>
+        <h2>System</h2>
        </div>
        <div class="param-triangle" style="visibility: hidden"></div>
-       <!----------------------------------->
-       <!------     GENERAL INFO     -------->
-       <!----------------------------------->
+
+       <!----------------->
+       <!--- RESOURCES --->
+       <!----------------->
        <div class="param-box" id="">
         <h3 class="hadv on mopen" data-cgi="rw">
-         <span class="h3network-txt">Internal parameters</span>
+         <span class="h3network-txt">System Resources</span>
          <span class="ico-triangle-right"></span>
         </h3>
         <div id="rt-container" class="param-container">
-         <div id="g2x" class="param-section">
-          <div id="gs-battery" class="param-line">
+         <div class="param-section">
+          <div id="gs-cpu-freq" class="param-line">
            <div class="ico-line-cont">
             <div class="ico-gs-sampling"></div>
            </div>
-           <label>CPU frequency</label>
+           <label>CPU Frequency</label>
            <div class="param-value">
-            <p id="cpu-freq"></p>
-           </div>
-          </div>
-         </div>
-         <div id="g2x" class="param-section">
-          <div id="gs-battery" class="param-line">
-           <div class="ico-line-cont">
-            <div class="ico-gs-firmware"></div>
-           </div>
-           <label>CPU usage</label>
-           <div class="param-value">
-            <p id="cpu-usage"></p>
-           </div>
-          </div>
-         </div>
-         <div id="g2x" class="param-section">
-          <div id="gs-battery" class="param-line">
-           <div class="ico-line-cont">
-            <div class="ico-gs-temperature"></div>
-           </div>
-           <label>CPU temperature</label>
-           <div class="param-value">
-            <p id="cpu-temperature"></p>
-           </div>
-          </div>
-         </div>
-         <div id="g2x" class="param-section">
-          <div id="gs-battery" class="param-line">
-           <div class="ico-line-cont">
-            <div class="ico-gs-firmware"></div>
-           </div>
-           <label>Memory usage</label>
-           <div class="param-value">
-            <p id="mem-usage"></p>
+            <p id="cpu-frequency">...</p>
            </div>
           </div>
          </div>
          <div class="param-section">
-          <div id="disk-present" class="param-line">
+          <div id="gs-cpu-usage" class="param-line">
            <div class="ico-line-cont">
-            <div class="ico-gs-memory"></div>
+            <div class="ico-gs-firmware"></div>
            </div>
-           <label>Disk used</label>
+           <label>CPU Usage</label>
            <div class="param-value">
-            <p><span class="outer"><span id="s00-inner" class="inner"></span></span></p>
-            <p id="disk-used"></p><p>% used</p>
-            <input type="hidden" id="s01" value=""/>
+            <p id="cpu-usage">...</p>
            </div>
           </div>
          </div>
-         
-        </div>
-        <div id="rt-loader" class="none">
-         <div id="rt-load" class="loaders"><span class="loader loader-quart"></span></div>
+         <div class="param-section">
+          <div id="gs-cpu-temp" class="param-line">
+           <div class="ico-line-cont">
+            <div class="ico-gs-temperature"></div>
+           </div>
+           <label>CPU Temperature</label>
+           <div class="param-value">
+            <p id="cpu-temperature">...</p>
+           </div>
+          </div>
+         </div>
+         <div class="param-section">
+          <div id="gs-mem-usage" class="param-line">
+           <div class="ico-line-cont">
+            <div class="ico-gs-firmware"></div>
+           </div>
+           <label>Memory Usage</label>
+           <div class="param-value">
+            <p id="memory-usage">...</p>
+           </div>
+          </div>
+         </div>
+         <div class="param-section">
+          <div id="gs-disk1" class="param-line">
+           <div class="ico-line-cont">
+            <div class="ico-gs-memory"></div>
+           </div>
+           <label>Disk 1 (eMMC)</label>
+           <div class="param-value">
+            <p><span class="outer"><span id="disk1-inner" class="inner"></span></span></p>
+            <p id="disk1-size"></p>&nbsp
+            <p id="disk1-usage">...</p>
+           </div>
+          </div>
+         </div>
+         <div class="param-section">
+          <div id="gs-disk2" class="param-line">
+           <div class="ico-line-cont">
+            <div class="ico-gs-memory"></div>
+           </div>
+           <label>Disk 2 (uSD)</label>
+           <div class="param-value">
+            <p><span class="outer"><span id="disk2-inner" class="inner"></span></span></p>
+            <p id="disk2-size"></p>&nbsp
+            <p id="disk2-usage">...</p>
+           </div>
+          </div>
+         </div>
         </div>
        </div>
+
       </div>
      </article>
     </section>
@@ -217,62 +222,45 @@
  </body>
  <script type="text/javascript" src="lib.js"></script>
  <script type="text/javascript">
-
-  //-------------------------------------------------
-  // Niveau batterie et mémoire (baregraphe)
-  //-------------------------------------------------
-  function fp(id,id_value,tid){
-   if(id_value==='%'||id_value==='')return;
+  function bargraph(id_value,tid){
+   if(id_value=='%)'||id_value=='')return;
    var v=parseInt(id_value);
    var c='green';
-   // Si en errreur
-   if(v==-1){
-    c='red';
-    v=100;
+   if(v>=50){
+    if(v>=80)c='red';
+    else c='orange';
    }
-   // Mémoire
-   if(id[0]==='s'||id==='i02'){
-    if(v>=50){
-     if(v>=80)c='red';
-     else c='orange';
-    }
-   }else{
-    if(v<50){
-     if(v>=20)c='orange';
-     else c='red';
-    }
-   }
-   // Si inférieur au seuil minimum
-   if( v<=5 )
-    did(tid).style.width=5+'%';
-   else
-    did(tid).style.width=v+'%';
+   did(tid).style.width=v+'%';
    did(tid).style.backgroundColor=c;
   }
-  
-  //-------------------------------------------------
-  // Niveau batterie et mémoire (baregraphe)
-  //-------------------------------------------------
   function vFAskJsonData(){
-   let tReq = new AJAX_REQUEST("GET", "payload.json", "");
+   let tReq = new AJAX_REQUEST("GET","payload.json","");
    tReq.uiTimeout = 12000;
-   tReq.sErrorMsg = "Connexion error 1";
+   tReq.sErrorMsg = "Connection error 1";
    tReq.xFCallback200 = function(ea){
     ea=ea?ea:window.event;
     target=et(ea);
     try{
      var dtd=JSON.parse(ea.target.responseText);
-     did("board-name").innerHTML       = dtd["board-name"]
-     did("software-version").innerHTML = dtd["software-version"]
-     did("software-time").innerHTML    = dtd["software-time"]
-     did("cpu-freq").innerHTML         = dtd["cpu-freq"] + " MHz"
-     did("cpu-usage").innerHTML        = dtd["cpu-usage"] + " %"
-     did("cpu-temperature").innerHTML  = dtd["cpu-temperature"] + "°C"
-     did("mem-usage").innerHTML        = dtd["mem-usage"] + " %"
-     if( dtd["disk-present"] == "True" ) did("disk-present").classList.remove("none")
-     else                                did("disk-present").classList.add("none")
-     did("disk-used").innerHTML        = dtd["disk-used"] + " %"
-     fp("disk-used",did("disk-used").innerHTML,"s00-inner");
+     did("board-name").innerHTML       = dtd["board-name"];
+     did("software-version").innerHTML = dtd["software-version"];
+     did("system-time").innerHTML      = dtd["system-time"];
+     did("cpu-frequency").innerHTML    = dtd["cpu-frequency"] + " MHz";
+     did("cpu-usage").innerHTML        = dtd["cpu-usage"] + "%";
+     did("cpu-temperature").innerHTML  = dtd["cpu-temperature"] + " °C";
+     did("memory-usage").innerHTML     = dtd["memory-usage"] + "%";
+     did("disk1-size").innerHTML       = dtd["disk1-size"] + " GB (Used: ";
+     did("disk1-usage").innerHTML      = dtd["disk1-usage"] + "%)";
+     bargraph(did("disk1-usage").innerHTML,"disk1-inner");
+     if(dtd["disk2-present"]=="True"){
+      did("disk2-size").innerHTML  = dtd["disk2-size"] + " GB (Used: ";
+      did("disk2-usage").innerHTML = dtd["disk2-usage"] + "%)";
+      bargraph(did("disk2-usage").innerHTML,"disk2-inner");
+     }
+     else{
+      did("disk2-size").innerHTML  = "Not available";
+      did("disk2-usage").innerHTML = "";
+     }
     }catch(a){
      console.log(a);
      console.log("catch");
@@ -280,7 +268,6 @@
    };
    tReq.vFSend();
   }
-  setInterval(vFAskJsonData, 1000)
-  
+  setInterval(vFAskJsonData,1000)
  </script>
 </html>
