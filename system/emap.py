@@ -6,7 +6,7 @@
 
 __authors__ = "Christophe SCHAEFFER"
 __copyright__ = "nke Instrumentation"
-__date__ = "2024-01-31"
+__date__ = "2024-02-02"
 __version__ = "1.0.0"
 
 # Standard libraries
@@ -110,6 +110,63 @@ class DriverEMAP:
 		self._timer = DriverTimer("emap")
 		self._payload_step = DataShare("payload_step")
 		self._payload = user_driver
+		# Survey
+		self._profile = "xxx_xx"
+		self._navigation = "XX"
+		self._pressure = "0.0"
+
+	# Status json
+	def status_json(self) -> object:
+		"""
+			Save json information
+
+			Returns:
+				- object: json object
+		"""
+		# Format
+		if self._navigation == "NA":
+			navigation = "BUOYANCY_DECREASE"
+		elif self._navigation == "NB":
+			navigation = "DESCENT"
+		elif self._navigation == "NC":
+			navigation = "PARK"
+		elif self._navigation == "ND":
+			navigation = "DEEP_DESCENT"
+		elif self._navigation == "NE":
+			navigation = "DEEP_PARK"
+		elif self._navigation == "NF":
+			navigation = "ASCENT"
+		elif self._navigation == "NG":
+			navigation = "SUB_SURFACE"
+		elif self._navigation == "NH":
+			navigation = "BUOYANCY_INCREASE"
+		elif self._navigation == "NI":
+			navigation = "RESCUE"
+		elif self._navigation == "NJ":
+			navigation = "ASCENT"
+		elif self._navigation == "NK":
+			navigation = "ASCENT_SLOWLY"
+		elif self._navigation == "NL":
+			navigation = "ASCENT_RESUME"
+		elif self._navigation == "SB":
+			navigation = "GPS"
+		elif self._navigation == "SC":
+			navigation = "RUDICS"
+		elif self._navigation == "SF":
+			navigation = "SURFACE_ACQUISITION"
+		elif self._navigation == "TC":
+			navigation = "DATA_PROCESSING"
+		elif self._navigation == "FN":
+			navigation = "END_OF_LIFE"
+		else:
+			navigation = "UNDEFINED"
+		# Save
+		result = {
+			"profile": self._profile,
+			"navigation": navigation,
+			"pressure": self._pressure}
+		# Result
+		return result
 
 	# Send frame over EMAP link
 	def _send_ascii(self, frame: str):
@@ -292,9 +349,11 @@ def manager(self):
 					trace_log("EMAP     > Rx=$" + frame_string)
 					# Parse
 					split = data_string.split(",")
+					# Store information
+					self._profile = f"{int(split[1]):03}_{int(split[2]):02}"
 					# share information
 					share = FileShare("profile.txt")
-					share.write(f"{int(split[1]):03}_{int(split[2]):02}")
+					share.write(self._profile)
 					# Reply
 					self._send_ascii("NAVACK")
 
@@ -304,9 +363,11 @@ def manager(self):
 					trace_log("EMAP     > Rx=$" + frame_string)
 					# Parse
 					split = data_string.split(",")
+					# Store information
+					self._navigation = split[1]
 					# share information
 					share = FileShare("navigation.txt")
-					share.write(split[1])
+					share.write(self._navigation)
 					# Reply
 					self._send_ascii("SEQACK")
 
@@ -320,9 +381,11 @@ def manager(self):
 					if split[1] != "NONE":
 						share = FileShare("ctrl.txt")
 						share.write(split[1])
+					# Store information
+					self._pressure = split[2]
 					# share information
 					share = FileShare("pressure.txt")
-					share.write(split[2])
+					share.write(self._pressure)
 					# Reply
 					self._send_ascii("CTRLACK")
 
@@ -335,9 +398,11 @@ def manager(self):
 					# share information
 					share = FileShare("ctd.txt")
 					share.write(split[1] + "," + split[2] + "," + split[3])
+					# Store information
+					self._pressure = split[1]
 					# share information
 					share = FileShare("pressure.txt")
-					share.write(split[1])
+					share.write(self._pressure)
 					# No reply
 					# self._send_ascii("CTDACK")
 

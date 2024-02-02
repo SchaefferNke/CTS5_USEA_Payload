@@ -6,7 +6,7 @@
 
 __authors__ = "Christophe SCHAEFFER"
 __copyright__ = "nke Instrumentation"
-__date__ = "2024-02-01"
+__date__ = "2024-02-02"
 __version__ = "1.0.0"
 
 # Standard libraries
@@ -25,6 +25,7 @@ if __name__ == "__main__":
 
 # Project libraries
 from system.technical import technical_driver
+from system.emap import emap_driver
 from system.trace_lib import trace_log
 
 # Web server
@@ -51,9 +52,15 @@ def reboot_post():
 
 
 # Json query
-@app.route("/payload.json", methods=["GET"])
-def payload_get():
-	return json.dumps(technical_driver.diagnosis_json(), indent=4)
+@app.route("/technical.json", methods=["GET"])
+def technical_get():
+	return json.dumps(technical_driver.status_json(), indent=1)
+
+
+# Json query
+@app.route("/emap.json", methods=["GET"])
+def emap_get():
+	return json.dumps(emap_driver.status_json(), indent=1)
 
 
 # Web page

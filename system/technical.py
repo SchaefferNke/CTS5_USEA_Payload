@@ -6,7 +6,7 @@
 
 __authors__ = "Christophe SCHAEFFER"
 __copyright__ = "nke Instrumentation"
-__date__ = "2024-02-01"
+__date__ = "2024-02-02"
 __version__ = "1.0.0"
 
 # Standard libraries
@@ -59,11 +59,10 @@ class DriverTechnicalSystem:
 		self._mem_usage = 0.0
 		self._mem_usage_max = 0.0
 		self._mem_usage_sum = 0.0
-		self._disk_usage = 0.0
-		self._sdcard_usage = 0.0
-		self._sdcard_free = 0.0
+		self._disk1_usage = 0.0
+		self._disk2_usage = 0.0
 		# Check SD card
-		self._sdcard_is_present = False
+		self._disk2_is_present = False
 
 	# Reset diagnosis counters
 	def diagnosis_reset(self):
@@ -115,17 +114,17 @@ class DriverTechnicalSystem:
 		if self._mem_usage > self._mem_usage_max:
 			self._mem_usage_max = self._mem_usage
 		# Disk usage
-		self._disk_usage = psutil.disk_usage("/")
+		self._disk1_usage = psutil.disk_usage("/").percent
 		# SD card usage
-		self._sdcard_free = 0.0
-		self._sdcard_is_present = system_driver.disk_is_present()
-		if self._sdcard_is_present:
-			self._sdcard_free = psutil.disk_usage("/dev/sda1").free
+		self._disk2_usage = 0.0
+		self._disk2_is_present = system_driver.disk_is_present()
+		if self._disk2_is_present:
+			self._disk2_usage = psutil.disk_usage("/dev/sda1").percent
 
-	# Save diagnosis
-	def diagnosis_json(self) -> object:
+	# Status json
+	def status_json(self) -> object:
 		"""
-			Save diagnosis into json file
+			Save json information
 
 			Returns:
 				- object: json object
@@ -145,29 +144,29 @@ class DriverTechnicalSystem:
 		# Memory usage
 		self._mem_usage = psutil.virtual_memory().percent
 		# Disk usage
-		disk_size = psutil.disk_usage("/").total / 1073741824.0
-		self._disk_usage = psutil.disk_usage("/").percent
+		disk1_size = psutil.disk_usage("/").total / 1073741824.0
+		self._disk1_usage = psutil.disk_usage("/").percent
 		# SD card usage
-		sdcard_size = 0.0
-		self._sdcard_usage = 0.0
-		self._sdcard_is_present = system_driver.disk_is_present()
-		if self._sdcard_is_present:
-			sdcard_size = psutil.disk_usage("/dev/sda1").total / 1073741824.0
-			self._sdcard_usage = psutil.disk_usage("/dev/sda1").percent
-		# Format
+		disk2_size = 0.0
+		self._disk2_usage = 0.0
+		self._disk2_is_present = system_driver.disk_is_present()
+		if self._disk2_is_present:
+			disk2_size = psutil.disk_usage("/dev/sda1").total / 1073741824.0
+			self._disk2_usage = psutil.disk_usage("/dev/sda1").percent
+		# Save
 		result = {
 			"board-name": "USEA-Payload",
 			"software-version": USEA_VERSION + "-" + self._payload.get_version(),
 			"system-time": datetime.datetime.now().strftime("20%y-%m-%d %H:%M:%S"),
-			"cpu-frequency": f"{self._cpu_freq:.0f}",
+			"cpu-speed": f"{self._cpu_freq:.0f}",
 			"cpu-usage": f"{self._cpu_usage:.1f}",
 			"cpu-temperature": f"{self._cpu_temp:.1f}",
 			"memory-usage": f"{self._mem_usage:.1f}",
-			"disk1-size": f"{disk_size:.1f}",
-			"disk1-usage": f"{self._disk_usage:.1f}",
-			"disk2-present": str(self._sdcard_is_present),
-			"disk2-size": f"{sdcard_size:.1f}",
-			"disk2-usage": f"{self._sdcard_usage:.1f}"}
+			"disk1-size": f"{disk1_size:.1f}",
+			"disk1-usage": f"{self._disk1_usage:.1f}",
+			"disk2-present": str(self._disk2_is_present),
+			"disk2-size": f"{disk2_size:.1f}",
+			"disk2-usage": f"{self._disk2_usage:.1f}"}
 		# Result
 		return result
 
@@ -197,14 +196,15 @@ class DriverTechnicalSystem:
 		# Open file
 		tech_file = open(dest_file, "w")
 		# Write system info
-		if self._sdcard_is_present:
+		if self._disk2_is_present:
 			tech_file.write(
 				"[PAYLOAD]\n" +
 				"CPU speed=" + f"{cpu_freq:.0f}" + "/" + f"{self._cpu_freq_max:.0f}" + " MHz\n" +
 				"CPU usage=" + f"{cpu_usage:.0f}" + "/" + f"{self._cpu_usage_max:.0f}" + " %\n" +
 				"CPU temperature=" + f"{cpu_temp:.1f}" + "/" + f"{self._cpu_temp_max:.1f}" + " degC\n" +
 				"Memory usage=" + f"{mem_usage:.0f}" + "/" + f"{self._mem_usage_max:.0f}" + " %\n" +
-				"Available space=" + f"{self._sdcard_free:.1f}" + " GB\n" +
+				"Disk_1 usage=" + f"{self._disk1_usage:.0f}" + " %\n" +
+				"Disk_2 usage=" + f"{self._disk2_usage:.1f}" + " %\n" +
 				"Boot count=" + self._boot_count.content.string + "\n")
 		else:
 			tech_file.write(
@@ -212,7 +212,8 @@ class DriverTechnicalSystem:
 				"CPU speed=" + f"{cpu_freq:.0f}" + "/" + f"{self._cpu_freq_max:.0f}" + " MHz\n" +
 				"CPU usage=" + f"{cpu_usage:.0f}" + "/" + f"{self._cpu_usage_max:.0f}" + " %\n" +
 				"CPU temperature=" + f"{cpu_temp:.1f}" + "/" + f"{self._cpu_temp_max:.1f}" + " degC\n" +
-				"Memory utilization=" + f"{mem_usage:.0f}" + "/" + f"{self._mem_usage_max:.0f}" + " %\n" +
+				"Memory usage=" + f"{mem_usage:.0f}" + "/" + f"{self._mem_usage_max:.0f}" + " %\n" +
+				"Disk_1 usage=" + f"{self._disk1_usage:.0f}" + " %\n" +
 				"Boot count=" + self._boot_count.content.string + "\n")
 		# Write power info
 		tech_file.write(

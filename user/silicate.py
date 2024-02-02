@@ -6,7 +6,7 @@
 
 __authors__ = "Christophe SCHAEFFER"
 __copyright__ = "nke Instrumentation"
-__date__ = "2024-01-31"
+__date__ = "2024-02-02"
 __version__ = "1.0.0"
 
 # Standard libraries
@@ -82,10 +82,10 @@ class DriverSilicate:
 	# Create resource
 	def __init__(self):
 		# Manager
-		self._step = USEA_PAYLOAD_STEP_SURFACE
+		self._step = USEA_PAYLOAD_STEP_IDLE
 		self._io_power = DriverIOOutput("GPIO_3_20")
 		self._io_alarm = DriverIOInput("GPIO_2_0")
-		self._serial = DriverSerial("COM_5", 57600, len("DATA,xxx,xxxx,*CS\r\n") + 512, 0.15)
+		self._serial = DriverSerial("COM_3", 115200, len("DATA,xxx,xxxx,*CS\r\n") + 512, 0.15)
 		self._timer = DriverTimer("silicate")
 		self._share_step = DataShare("silicate_step")
 

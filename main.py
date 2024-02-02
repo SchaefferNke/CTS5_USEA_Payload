@@ -81,8 +81,6 @@ if __name__ == "__main__":
 			# Wait
 			time.sleep(1.0)
 
-			technical_driver.diagnosis_json()
-
 			# Watchdog
 			system_driver.watchdog_feed()
 

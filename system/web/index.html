@@ -4,11 +4,11 @@
 		<title>USEA-Payload</title>
 		<meta charset="UTF-8"/>
 		<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0"/>
-  <link rel="apple-touch-icon" href="favicon.png"/>
-  <link rel="shortcut icon" type="image/png" href="favicon.png"/>
+  <link rel="apple-touch-icon" href="favicon.ico"/>
+  <link rel="shortcut icon" type="image/ico" href="favicon.ico"/>
   <meta name="theme-color" content="#193d8a">
   <meta name="msapplication-TileColor" content="#193d8a"/>
-  <meta name="msapplication-TileImage" content="favicon.png"/>
+  <meta name="msapplication-TileImage" content="favicon.ico"/>
   <link rel="stylesheet" type="text/css" href="styles.css"/>
 	</head>
 	<body class="alarm">
@@ -84,7 +84,7 @@
          <div class="param-section">
           <div id="gs-board-name" class="param-line">
            <div class="ico-line-cont">
-            <div class="ico-gs-com_desc"></div>
+            <div class="ico-gs-firmware"></div>
            </div>
            <label id="tr-gs-1">Board Name</label>
            <div class="param-value">
@@ -95,7 +95,7 @@
          <div class="param-section">
           <div id="gs-version" class="param-line">
            <div class="ico-line-cont">
-            <div class="ico-gs-firmware"></div>
+            <div class="ico-gs-com_desc"></div>
            </div>
            <label>Application Version</label>
            <div class="param-value">
@@ -142,13 +142,13 @@
         </h3>
         <div id="rt-container" class="param-container">
          <div class="param-section">
-          <div id="gs-cpu-freq" class="param-line">
+          <div id="gs-cpu-speed" class="param-line">
            <div class="ico-line-cont">
             <div class="ico-gs-sampling"></div>
            </div>
-           <label>CPU Frequency</label>
+           <label>CPU Speed</label>
            <div class="param-value">
-            <p id="cpu-frequency">...</p>
+            <p id="cpu-speed">...</p>
            </div>
           </div>
          </div>
@@ -164,7 +164,7 @@
           </div>
          </div>
          <div class="param-section">
-          <div id="gs-cpu-temp" class="param-line">
+          <div id="gs-cpu-temperature" class="param-line">
            <div class="ico-line-cont">
             <div class="ico-gs-temperature"></div>
            </div>
@@ -192,7 +192,9 @@
            </div>
            <label>Disk 1 (eMMC)</label>
            <div class="param-value">
-            <p><span class="outer"><span id="disk1-inner" class="inner"></span></span></p>
+            <p id="disk1-bargraph" class="none">
+             <span class="outer"><span id="disk1-inner" class="inner"></span></span>
+            </p>
             <p id="disk1-size"></p>&nbsp
             <p id="disk1-usage">...</p>
            </div>
@@ -205,7 +207,9 @@
            </div>
            <label>Disk 2 (uSD)</label>
            <div class="param-value">
-            <p><span class="outer"><span id="disk2-inner" class="inner"></span></span></p>
+            <p id="disk2-bargraph" class="none">
+             <span class="outer"><span id="disk2-inner" class="inner"></span></span>
+            </p>
             <p id="disk2-size"></p>&nbsp
             <p id="disk2-usage">...</p>
            </div>
@@ -222,7 +226,7 @@
  </body>
  <script type="text/javascript" src="lib.js"></script>
  <script type="text/javascript">
-  function bargraph(id_value,tid){
+  function vFBargraph(id_value,tid){
    if(id_value=='%)'||id_value=='')return;
    var v=parseInt(id_value);
    var c='green';
@@ -234,7 +238,7 @@
    did(tid).style.backgroundColor=c;
   }
   function vFAskJsonData(){
-   let tReq = new AJAX_REQUEST("GET","payload.json","");
+   let tReq = new AJAX_REQUEST("GET","technical.json","");
    tReq.uiTimeout = 12000;
    tReq.sErrorMsg = "Connection error 1";
    tReq.xFCallback200 = function(ea){
@@ -245,21 +249,24 @@
      did("board-name").innerHTML       = dtd["board-name"];
      did("software-version").innerHTML = dtd["software-version"];
      did("system-time").innerHTML      = dtd["system-time"];
-     did("cpu-frequency").innerHTML    = dtd["cpu-frequency"] + " MHz";
+     did("cpu-speed").innerHTML        = dtd["cpu-speed"] + " MHz";
      did("cpu-usage").innerHTML        = dtd["cpu-usage"] + "%";
      did("cpu-temperature").innerHTML  = dtd["cpu-temperature"] + " °C";
      did("memory-usage").innerHTML     = dtd["memory-usage"] + "%";
      did("disk1-size").innerHTML       = dtd["disk1-size"] + " GB (Used: ";
      did("disk1-usage").innerHTML      = dtd["disk1-usage"] + "%)";
-     bargraph(did("disk1-usage").innerHTML,"disk1-inner");
+     vFBargraph(did("disk1-usage").innerHTML,"disk1-inner");
+     did("disk1-bargraph").classList.remove("none")
      if(dtd["disk2-present"]=="True"){
       did("disk2-size").innerHTML  = dtd["disk2-size"] + " GB (Used: ";
       did("disk2-usage").innerHTML = dtd["disk2-usage"] + "%)";
-      bargraph(did("disk2-usage").innerHTML,"disk2-inner");
+      vFBargraph(did("disk2-usage").innerHTML,"disk2-inner");
+      did("disk2-bargraph").classList.remove("none")
      }
      else{
       did("disk2-size").innerHTML  = "Not available";
       did("disk2-usage").innerHTML = "";
+      did("disk2-bargraph").classList.add("none")
      }
     }catch(a){
      console.log(a);
@@ -269,5 +276,6 @@
    tReq.vFSend();
   }
   setInterval(vFAskJsonData,1000)
+  vFAskJsonData()
  </script>
 </html>

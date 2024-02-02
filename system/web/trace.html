@@ -4,11 +4,11 @@
   <title>USEA-Payload</title>
   <meta charset="UTF-8"/>
 	 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0"/>
-  <link rel="apple-touch-icon" href="favicon.png"/>
-  <link rel="shortcut icon" type="image/png" href="favicon.png"/>
+  <link rel="apple-touch-icon" href="favicon.ico"/>
+  <link rel="shortcut icon" type="image/ico" href="favicon.ico"/>
   <meta name="theme-color" content="#193d8a">
   <meta name="msapplication-TileColor" content="#193d8a"/>
-  <meta name="msapplication-TileImage" content="favicon.png"/>
+  <meta name="msapplication-TileImage" content="favicon.ico"/>
   <link rel="stylesheet" type="text/css" href="styles.css"/>
 <style>
  @media only screen and (min-width: 961px) {
@@ -24,6 +24,35 @@
    margin-top: 20px;
   }
  }
+ .body-trace{
+  max-width: 1400px;
+  display: flex;
+  justify-content: center;
+/*  align-items: center;*/
+  width: 100%;
+ }
+ .trace-bloc{
+/*
+  margin-left:  50px; 
+  margin-right: 50px;
+*/
+  margin-top: 50px;
+  padding-left:  50px; 
+  padding-right: 50px;
+ }
+ .trace-bloc.left{
+  width: 30%;
+  max-width: 350px;
+ }
+ .trace-bloc.right{
+  width: 70%
+ }
+ .ico-line-cont{
+  width: 15%;
+ }
+ .param-line:not(.sensor) label:not(.sw), .param-subline .label {
+    width: 25%!important;
+ }
  #text-added{
   display: flex;
   flex-direction: column;
@@ -36,11 +65,11 @@
  #text-added p{
   margin-top: 2px;
   margin-bottom: 2px;
-  font-size: 13px;
+/*  font-size: 13px;*/
   text-align: left;
  }
  .table-row *{
-  font-size: 13px;
+/*  font-size: 13px;*/
   text-align: left;
  }
  .table-row {
@@ -95,7 +124,7 @@
  -webkit-justify-self: flex-start;
  height: 100%;
 }
-.t-date, .t-event{
+.t-date, .t-group, .t-event{
  display: flex;
  justify-self: flex-start;
  align-items: center;
@@ -110,8 +139,13 @@
  width: 20%;
  margin-right: 10px;
 }
+.t-group{
+ max-width: 80px;
+ width:15%;
+ margin-right: 10px;
+}
 .t-event{
- width: 80%;
+ width: 65%;
  height: 100%;
 }
 </style>
@@ -146,18 +180,50 @@
    tCloneNode = did("table-row-log-line-template").cloneNode(true);
    tCloneNode.classList.remove("none");
    tCloneNode.getElementsByClassName("t-date")[0].innerHTML  = sFGetCurrentDateTime();
-   tCloneNode.getElementsByClassName("t-event")[0].innerHTML = sLogLine;
+   tCloneNode.getElementsByClassName("t-group")[0].innerHTML = sLogLine.split(">")[0];
+   tCloneNode.getElementsByClassName("t-event")[0].innerHTML = sLogLine.split(">")[1];
    did("text-added").appendChild(tCloneNode);
+   //did("text-added").prepend(tCloneNode);
+   //did("text-added").insertBefore(tCloneNode, did("text-added").firstChild)
    tTxtAdded = did("text-added")
    if(!bLogClicked) tTxtAdded.scrollTop = tTxtAdded.scrollHeight;
   }
+  // Etat de la connexion websocket
+  var bWSConnected = false;
   function vFCreateWebSocket(){
-   var socket = new WebSocket("ws://127.0.0.1:5678");
+   // Test état de la connection
+   if( bWSConnected ){
+    // Connecté : on relance le blocage du scroll
+    bLogClicked  = false;
+    return;
+   }
+   var socket = new WebSocket("ws://127.0.0.1:5678");   
+   // Ouverture de la connexion websocket
+   socket.onopen = function(e) {
+    //vFAddTextToLogBloc("[open] Connection established");
+    bLogClicked  = false;
+    bWSConnected = true;
+   };
    socket.onmessage = function(e) {
     tDateTime = Date.now();
     vFAddTextToLogBloc(e.data);
    };
-  }
+   bLogClicked  = true;
+   socket.onclose = function(event) {
+   // Réinit
+   bWSConnected = false;
+   if( event.wasClean ) {
+    vFAddTextToLogBloc(`CLOSE > Connection closed cleanly, code=${event.code} reason=${event.reason}`);
+   } else {
+    vFAddTextToLogBloc('CLOSE > Connection died');
+    bWSConnected = false;
+   }
+  };
+  socket.onerror = function(error) {
+   bWSConnected = false;
+   vFAddTextToLogBloc(`[ERROR] > ${error.message}`);
+  };
+ }
  </script>
  </head>
 <body>
@@ -170,8 +236,8 @@
     <h1>
      <button class="btn none">X</button>
      <a id="icon-menu" href="#" class="icon-menu open"></a>
-     <div class="logo-nke-instrumentation-c" style="">
-<svg style="height:100%" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 143.41 46.44"><defs><style>.cls-1{fill:#13100d}.cls-2{fill:#0d69b3}</style></defs><g id="Calque_2" data-name="Calque 2"><g id="Calque_1-2" data-name="Calque 1"><path class="cls-1" d="M1.52 39v7.21c0 .17-.08.26-.25.26h-1c-.17 0-.25-.09-.25-.26V39a.22.22 0 01.25-.25h1a.22.22 0 01.25.25zM8.26 46.44h-1c-.17 0-.25-.09-.25-.26V39a.22.22 0 01.25-.25h.9a.35.35 0 01.34.17l2.42 4.55H11V39a.22.22 0 01.25-.25h1a.22.22 0 01.25.25v7.21a.23.23 0 01-.25.26h-.88a.39.39 0 01-.37-.27l-2.4-4.47h-.09v4.45a.23.23 0 01-.25.26zM17.7 44.47v-.24A.22.22 0 0118 44h1a.22.22 0 01.25.25v.09a.85.85 0 00.18.63 1 1 0 00.66.17h.57a.7.7 0 00.84-.86v-.14a.61.61 0 00-.28-.53 1.53 1.53 0 00-.71-.23 8.13 8.13 0 01-.9-.13 5.72 5.72 0 01-.91-.27 1.45 1.45 0 01-.7-.63 2.37 2.37 0 01-.28-1.22v-.42a1.89 1.89 0 01.53-1.45 2 2 0 011.46-.52h1.2a2 2 0 011.48.52 1.92 1.92 0 01.52 1.45v.23a.22.22 0 01-.25.25h-1a.22.22 0 01-.25-.25v-.08a.85.85 0 00-.18-.63 1 1 0 00-.66-.17h-.47a.85.85 0 00-.66.19 1 1 0 00-.18.72v.23c0 .38.33.59 1 .65a5.8 5.8 0 011.81.41 1.53 1.53 0 01.7.64 2.22 2.22 0 01.23 1.16v.41a1.9 1.9 0 01-.53 1.45 2 2 0 01-1.46.52h-1.32a2 2 0 01-1.46-.52 1.94 1.94 0 01-.53-1.45zM30.61 46.44h-1a.23.23 0 01-.26-.26v-6c0-.09 0-.13-.13-.13h-1.38a.22.22 0 01-.25-.25V39a.22.22 0 01.25-.25h4.54a.22.22 0 01.25.25v.82a.22.22 0 01-.25.25H31c-.1 0-.15 0-.15.13v6c.01.15-.07.24-.24.24zM38.68 46.44h-1a.23.23 0 01-.26-.26V39c0-.17.09-.25.26-.25h2.85a2 2 0 011.47.52 1.92 1.92 0 01.52 1.45v.93a1.74 1.74 0 01-1.06 1.8l1.28 2.68c.07.19 0 .29-.2.29h-1a.8.8 0 01-.31 0 .36.36 0 01-.15-.21l-1.2-2.59h-.81a.12.12 0 00-.14.13v2.46a.23.23 0 01-.25.23zm.38-4.07h1.18a.87.87 0 00.56-.16.69.69 0 00.18-.53v-.93a.7.7 0 00-.18-.54.81.81 0 00-.56-.17h-1.18c-.09 0-.13 0-.13.13v2.07a.12.12 0 00.13.13zM51.78 38.72h1c.17 0 .26.08.26.24v5.52a1.94 1.94 0 01-.52 1.45 2 2 0 01-1.46.51h-1.31a2 2 0 01-1.46-.51 1.91 1.91 0 01-.52-1.45V39a.22.22 0 01.25-.25h1c.17 0 .26.08.26.25v5.44a.73.73 0 00.16.54.72.72 0 00.53.17h.83a.75.75 0 00.55-.17.77.77 0 00.16-.54V39a.22.22 0 01.27-.28zM63.54 38.72h1.78a.22.22 0 01.25.25v7.21a.23.23 0 01-.25.26h-1c-.17 0-.25-.09-.25-.26V40.5l-1.22 4a.3.3 0 01-.3.24h-1a.3.3 0 01-.3-.24l-1.25-4h-.1v5.7a.31.31 0 010 .2.28.28 0 01-.21.06h-1c-.17 0-.25-.09-.25-.26V39a.22.22 0 01.25-.25h1.79a.22.22 0 01.22.17l1.3 4.2 1.28-4.23a.21.21 0 01.26-.17zM75.17 46.44h-3.93a.23.23 0 01-.25-.26V39a.22.22 0 01.25-.25h3.93c.16 0 .24.08.24.25v.82c0 .17-.08.25-.24.25h-2.51c-.1 0-.14 0-.14.13v1.56c0 .09 0 .13.14.13h2c.17 0 .25.09.25.26v.81a.22.22 0 01-.25.25h-2a.12.12 0 00-.14.14V45a.12.12 0 00.14.14h2.51c.16 0 .24.08.24.25v.81c0 .15-.08.24-.24.24zM81.85 46.44h-1a.23.23 0 01-.26-.26V39c0-.17.09-.25.26-.25h.9a.34.34 0 01.33.17l2.43 4.55V39c0-.17.09-.25.26-.25h1a.22.22 0 01.25.25v7.21c0 .17-.08.26-.25.26h-.87a.41.41 0 01-.39-.24l-2.4-4.47h-.01v4.45c0 .14-.1.23-.25.23zM93.88 46.44h-1a.24.24 0 01-.27-.26v-6c0-.09 0-.13-.13-.13H91.1a.22.22 0 01-.25-.25V39a.22.22 0 01.25-.25h4.54a.22.22 0 01.25.25v.82a.22.22 0 01-.25.25h-1.37c-.09 0-.14 0-.14.13v6a.23.23 0 01-.25.24zM101.47 46.44h-1.15c-.14 0-.19-.09-.14-.26l1.89-7.18a.35.35 0 01.36-.25H104a.32.32 0 01.36.25l1.89 7.21c0 .17 0 .26-.14.26H105a.22.22 0 01-.18-.06.35.35 0 01-.07-.2l-.34-1.32h-2.34l-.34 1.32a.35.35 0 01-.07.2.24.24 0 01-.19.03zm1.74-6.27l-.86 3.47h1.77l-.86-3.47zM113.6 46.44h-1a.24.24 0 01-.27-.26v-6c0-.09 0-.13-.13-.13h-1.37a.22.22 0 01-.25-.25V39a.22.22 0 01.25-.25h4.54a.22.22 0 01.25.25v.82a.22.22 0 01-.25.25H114c-.1 0-.14 0-.14.13v6a.23.23 0 01-.26.24zM122 39v7.21c0 .17-.08.26-.25.26h-1c-.17 0-.25-.09-.25-.26V39a.22.22 0 01.25-.25h1a.22.22 0 01.25.25zM130.67 46.44h-1.35a2 2 0 01-1.46-.51 1.94 1.94 0 01-.52-1.45v-3.8a2 2 0 01.52-1.46 2 2 0 011.46-.5h1.35a2 2 0 011.46.5 1.93 1.93 0 01.52 1.46v3.8a1.91 1.91 0 01-.52 1.45 2 2 0 01-1.46.51zm-1.11-1.32h.86A.74.74 0 00131 45a.73.73 0 00.16-.54v-3.71a.75.75 0 00-.16-.55.74.74 0 00-.54-.16h-.86a.74.74 0 00-.54.16.8.8 0 00-.15.55v3.66a.77.77 0 00.09.59.74.74 0 00.56.12zM139.2 46.44h-1a.23.23 0 01-.25-.26V39a.22.22 0 01.25-.25h.9a.35.35 0 01.34.17l2.42 4.55V39a.22.22 0 01.25-.25h1a.22.22 0 01.25.25v7.21c0 .17-.08.26-.25.26h-.88a.4.4 0 01-.38-.24l-2.4-4.47h-.05v4.45c.05.14-.03.23-.2.23z"/><path class="cls-2" d="M33 33.76V15.33c0-.54 0-1.22-.09-2s-.16-1.83-.28-3.07h8.81l.09 3.37a7.57 7.57 0 013.07-2.88A9.33 9.33 0 0149 9.66q4.31 0 6.53 2.25t2.24 6.61v15.24H49.1v-12c0-2.61-.26-4.36-.8-5.24a3 3 0 00-2.77-1.33 3.45 3.45 0 00-2.87 1.29 5.81 5.81 0 00-1 3.67v13.6zM62.09 33.76V0h8.58v20.6l7.6-10.37h9.27L80 20.83l8.4 12.93h-10L70.67 21v12.76z"/><path class="cls-2" d="M112.26 26.16a8.37 8.37 0 01-3.7 6.06 14.77 14.77 0 01-8.41 2.11q-5.93 0-9-3.08t-3.08-9c0-4 1.06-7.13 3.18-9.3s5.15-3.26 9.09-3.26 6.92 1.08 9 3.25 3 5.33 3 9.5v1a5.11 5.11 0 01-.06.59H96a6.61 6.61 0 001.14 4.21 4 4 0 003.37 1.42 3.65 3.65 0 002.55-.86 4.41 4.41 0 001.3-2.57zm-16.13-7h8.33a6.34 6.34 0 00-1.23-3.57 3.41 3.41 0 00-2.73-1.21 3.85 3.85 0 00-3 1.16 6.57 6.57 0 00-1.37 3.59zM112.71 31.03h30.69v2.73h-30.69zM0 31.03h30.69v2.73H0z"/></g></g></svg>
+     <div class="logo-nke-instrumentation-c" style="display: flex;justify-content: center">
+<svg style="width:95%;height:100%" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 143.41 46.44"><defs><style>.cls-1{fill:#13100d}.cls-2{fill:#0d69b3}</style></defs><g id="Calque_2" data-name="Calque 2"><g id="Calque_1-2" data-name="Calque 1"><path class="cls-1" d="M1.52 39v7.21c0 .17-.08.26-.25.26h-1c-.17 0-.25-.09-.25-.26V39a.22.22 0 01.25-.25h1a.22.22 0 01.25.25zM8.26 46.44h-1c-.17 0-.25-.09-.25-.26V39a.22.22 0 01.25-.25h.9a.35.35 0 01.34.17l2.42 4.55H11V39a.22.22 0 01.25-.25h1a.22.22 0 01.25.25v7.21a.23.23 0 01-.25.26h-.88a.39.39 0 01-.37-.27l-2.4-4.47h-.09v4.45a.23.23 0 01-.25.26zM17.7 44.47v-.24A.22.22 0 0118 44h1a.22.22 0 01.25.25v.09a.85.85 0 00.18.63 1 1 0 00.66.17h.57a.7.7 0 00.84-.86v-.14a.61.61 0 00-.28-.53 1.53 1.53 0 00-.71-.23 8.13 8.13 0 01-.9-.13 5.72 5.72 0 01-.91-.27 1.45 1.45 0 01-.7-.63 2.37 2.37 0 01-.28-1.22v-.42a1.89 1.89 0 01.53-1.45 2 2 0 011.46-.52h1.2a2 2 0 011.48.52 1.92 1.92 0 01.52 1.45v.23a.22.22 0 01-.25.25h-1a.22.22 0 01-.25-.25v-.08a.85.85 0 00-.18-.63 1 1 0 00-.66-.17h-.47a.85.85 0 00-.66.19 1 1 0 00-.18.72v.23c0 .38.33.59 1 .65a5.8 5.8 0 011.81.41 1.53 1.53 0 01.7.64 2.22 2.22 0 01.23 1.16v.41a1.9 1.9 0 01-.53 1.45 2 2 0 01-1.46.52h-1.32a2 2 0 01-1.46-.52 1.94 1.94 0 01-.53-1.45zM30.61 46.44h-1a.23.23 0 01-.26-.26v-6c0-.09 0-.13-.13-.13h-1.38a.22.22 0 01-.25-.25V39a.22.22 0 01.25-.25h4.54a.22.22 0 01.25.25v.82a.22.22 0 01-.25.25H31c-.1 0-.15 0-.15.13v6c.01.15-.07.24-.24.24zM38.68 46.44h-1a.23.23 0 01-.26-.26V39c0-.17.09-.25.26-.25h2.85a2 2 0 011.47.52 1.92 1.92 0 01.52 1.45v.93a1.74 1.74 0 01-1.06 1.8l1.28 2.68c.07.19 0 .29-.2.29h-1a.8.8 0 01-.31 0 .36.36 0 01-.15-.21l-1.2-2.59h-.81a.12.12 0 00-.14.13v2.46a.23.23 0 01-.25.23zm.38-4.07h1.18a.87.87 0 00.56-.16.69.69 0 00.18-.53v-.93a.7.7 0 00-.18-.54.81.81 0 00-.56-.17h-1.18c-.09 0-.13 0-.13.13v2.07a.12.12 0 00.13.13zM51.78 38.72h1c.17 0 .26.08.26.24v5.52a1.94 1.94 0 01-.52 1.45 2 2 0 01-1.46.51h-1.31a2 2 0 01-1.46-.51 1.91 1.91 0 01-.52-1.45V39a.22.22 0 01.25-.25h1c.17 0 .26.08.26.25v5.44a.73.73 0 00.16.54.72.72 0 00.53.17h.83a.75.75 0 00.55-.17.77.77 0 00.16-.54V39a.22.22 0 01.27-.28zM63.54 38.72h1.78a.22.22 0 01.25.25v7.21a.23.23 0 01-.25.26h-1c-.17 0-.25-.09-.25-.26V40.5l-1.22 4a.3.3 0 01-.3.24h-1a.3.3 0 01-.3-.24l-1.25-4h-.1v5.7a.31.31 0 010 .2.28.28 0 01-.21.06h-1c-.17 0-.25-.09-.25-.26V39a.22.22 0 01.25-.25h1.79a.22.22 0 01.22.17l1.3 4.2 1.28-4.23a.21.21 0 01.26-.17zM75.17 46.44h-3.93a.23.23 0 01-.25-.26V39a.22.22 0 01.25-.25h3.93c.16 0 .24.08.24.25v.82c0 .17-.08.25-.24.25h-2.51c-.1 0-.14 0-.14.13v1.56c0 .09 0 .13.14.13h2c.17 0 .25.09.25.26v.81a.22.22 0 01-.25.25h-2a.12.12 0 00-.14.14V45a.12.12 0 00.14.14h2.51c.16 0 .24.08.24.25v.81c0 .15-.08.24-.24.24zM81.85 46.44h-1a.23.23 0 01-.26-.26V39c0-.17.09-.25.26-.25h.9a.34.34 0 01.33.17l2.43 4.55V39c0-.17.09-.25.26-.25h1a.22.22 0 01.25.25v7.21c0 .17-.08.26-.25.26h-.87a.41.41 0 01-.39-.24l-2.4-4.47h-.01v4.45c0 .14-.1.23-.25.23zM93.88 46.44h-1a.24.24 0 01-.27-.26v-6c0-.09 0-.13-.13-.13H91.1a.22.22 0 01-.25-.25V39a.22.22 0 01.25-.25h4.54a.22.22 0 01.25.25v.82a.22.22 0 01-.25.25h-1.37c-.09 0-.14 0-.14.13v6a.23.23 0 01-.25.24zM101.47 46.44h-1.15c-.14 0-.19-.09-.14-.26l1.89-7.18a.35.35 0 01.36-.25H104a.32.32 0 01.36.25l1.89 7.21c0 .17 0 .26-.14.26H105a.22.22 0 01-.18-.06.35.35 0 01-.07-.2l-.34-1.32h-2.34l-.34 1.32a.35.35 0 01-.07.2.24.24 0 01-.19.03zm1.74-6.27l-.86 3.47h1.77l-.86-3.47zM113.6 46.44h-1a.24.24 0 01-.27-.26v-6c0-.09 0-.13-.13-.13h-1.37a.22.22 0 01-.25-.25V39a.22.22 0 01.25-.25h4.54a.22.22 0 01.25.25v.82a.22.22 0 01-.25.25H114c-.1 0-.14 0-.14.13v6a.23.23 0 01-.26.24zM122 39v7.21c0 .17-.08.26-.25.26h-1c-.17 0-.25-.09-.25-.26V39a.22.22 0 01.25-.25h1a.22.22 0 01.25.25zM130.67 46.44h-1.35a2 2 0 01-1.46-.51 1.94 1.94 0 01-.52-1.45v-3.8a2 2 0 01.52-1.46 2 2 0 011.46-.5h1.35a2 2 0 011.46.5 1.93 1.93 0 01.52 1.46v3.8a1.91 1.91 0 01-.52 1.45 2 2 0 01-1.46.51zm-1.11-1.32h.86A.74.74 0 00131 45a.73.73 0 00.16-.54v-3.71a.75.75 0 00-.16-.55.74.74 0 00-.54-.16h-.86a.74.74 0 00-.54.16.8.8 0 00-.15.55v3.66a.77.77 0 00.09.59.74.74 0 00.56.12zM139.2 46.44h-1a.23.23 0 01-.25-.26V39a.22.22 0 01.25-.25h.9a.35.35 0 01.34.17l2.42 4.55V39a.22.22 0 01.25-.25h1a.22.22 0 01.25.25v7.21c0 .17-.08.26-.25.26h-.88a.4.4 0 01-.38-.24l-2.4-4.47h-.05v4.45c.05.14-.03.23-.2.23z"/><path class="cls-2" d="M33 33.76V15.33c0-.54 0-1.22-.09-2s-.16-1.83-.28-3.07h8.81l.09 3.37a7.57 7.57 0 013.07-2.88A9.33 9.33 0 0149 9.66q4.31 0 6.53 2.25t2.24 6.61v15.24H49.1v-12c0-2.61-.26-4.36-.8-5.24a3 3 0 00-2.77-1.33 3.45 3.45 0 00-2.87 1.29 5.81 5.81 0 00-1 3.67v13.6zM62.09 33.76V0h8.58v20.6l7.6-10.37h9.27L80 20.83l8.4 12.93h-10L70.67 21v12.76z"/><path class="cls-2" d="M112.26 26.16a8.37 8.37 0 01-3.7 6.06 14.77 14.77 0 01-8.41 2.11q-5.93 0-9-3.08t-3.08-9c0-4 1.06-7.13 3.18-9.3s5.15-3.26 9.09-3.26 6.92 1.08 9 3.25 3 5.33 3 9.5v1a5.11 5.11 0 01-.06.59H96a6.61 6.61 0 001.14 4.21 4 4 0 003.37 1.42 3.65 3.65 0 002.55-.86 4.41 4.41 0 001.3-2.57zm-16.13-7h8.33a6.34 6.34 0 00-1.23-3.57 3.41 3.41 0 00-2.73-1.21 3.85 3.85 0 00-3 1.16 6.57 6.57 0 00-1.37 3.59zM112.71 31.03h30.69v2.73h-30.69zM0 31.03h30.69v2.73H0z"/></g></g></svg>
      </div> 
     </h1>
    </div>
@@ -185,7 +251,7 @@
       </a>
      </li>
      <li class="li active">
-      <a class="" href="log.html">
+      <a class="" href="trace.html">
        <div class="icon-alarm-log"></div>
        <p id="tr-nav-2">TRACE</p>
       </a>
@@ -202,46 +268,128 @@
   </header>
   <div id="black" class="black-hide"></div>
 
-  <!-------------->
-  <!---- BODY ---->
-  <!-------------->
-  <div id="body">
-  
-   <div class="body-c">
+  <!------------>
+  <!--- BODY --->
+  <!------------>
+  <div id="body" >
+   <div class="body-trace">
 
-    <div id="logger-container">
-     <div class="param-box" id="">
-      <h3 class="hadv on mopen" data-cgi="rw">
-       <span class="h3network-txt">Trace log</span>
-       <span class="ico-triangle-right"></span>
-      </h3>
+    <!------------------->
+    <!--- INFORMATION --->
+    <!------------------->
+   
+     <div class="trace-bloc left">
+      <div class="param-box" id="">
+       <h3 class="hadv on mopen" data-cgi="rw">
+        <span class="h3network-txt">Navigation Status</span>
+        <span class="ico-triangle-right"></span>
+       </h3>
+       <div id="rt-container" class="param-container">
+        <div class="param-section">
+         <div id="gs-board-name" class="param-line">
+          <div class="ico-line-cont">
+           <div class="ico-gs-com_desc"></div>
+          </div>
+          <label id="tr-gs-1">Profile</label>
+          <div class="param-value">
+           <p id="profile">...</p>
+          </div>
+         </div>
+        </div>
+        <div class="param-section">
+         <div id="gs-version" class="param-line">
+          <div class="ico-line-cont">
+           <div class="ico-gs-com_desc"></div>
+          </div>
+          <label>Stage</label>
+          <div class="param-value">
+           <p id="navigation">...</p>
+          </div>
+         </div>
+        </div>
+        <div class="param-section">
+         <div id="gs-clock" class="param-line">
+          <div class="ico-line-cont">
+           <div class="ico-gs-com_desc"></div>
+          </div>
+          <label>Depth</label>
+          <div class="param-value">
+           <p id="pressure">...</p>
+          </div>
+         </div>
+        </div>
+       </div>
+      </div>
+     </div>
 
-      <!----------------->
-      <!--- LOG TABLE --->
-      <!----------------->
-      <div id="table-header" class="table-header">
-       <div class="t-blank"></div>
-       <div class="t-date"><span>Timestamp</span></div>
-       <div class="t-event"><span>Event</span></div>
-      </div>
-      <div id="table-row-log-line-template" class="table-row none">
-       <div class="t-blank"></div>
-       <div class="t-date"></div>
-       <div class="t-event"></div>
-       <div class="t-blank"></div>
-      </div>
-      <div id="text-added" class="table-h-row">
+     <div class="trace-bloc right">
+      <div class="param-box" id="">
+       <h3 class="hadv on mopen" data-cgi="rw">      
+        <span id="trace-log-reconnect" class="logo-refresh">
+         <span class="ico-refresh-inner"></span>
+        </span>
+        <span class="refresh-tooltip">
+         <div class="tooltip-r-container">
+          <div class="tooltip-r-txt">
+           <p>Restart logger<br/>connection</p>
+          </div>
+         </div>
+        </span>
+        <span class="h3network-txt">Trace log</span>
+        <span class="ico-triangle-right"></span>
+       </h3>
+
+       <!----------------->
+       <!--- LOG TABLE --->
+       <!----------------->
+       <div id="table-header" class="table-header">
+        <div class="t-blank"></div>
+        <div class="t-date"><span>Timestamp</span></div>
+        <div class="t-group"><span>Group</span></div>
+        <div class="t-event"><span>Event</span></div>
+       </div>
+       <div id="table-row-log-line-template" class="table-row none">
+        <div class="t-blank"></div>
+        <div class="t-date"></div>
+        <div class="t-group"></div>
+        <div class="t-event"></div>
+        <div class="t-blank"></div>
+       </div>
+       <div id="text-added" class="table-h-row">
+       </div>
       </div>
      </div>
     </div>
-    
    </div>
-  </div>
- <script>
+
+ <script type="text/javascript" src="lib.js"></script>
+ <script type="text/javascript">
+ ae(did("trace-log-reconnect"), 'click', vFCreateWebSocket);
  vFCreateWebSocket();
  ae(did("text-added"),'click',function(){
   bLogClicked = true;
  });
+ function vFAskJsonData(){
+  let tReq = new AJAX_REQUEST("GET","emap.json","");
+  tReq.uiTimeout = 12000;
+  tReq.sErrorMsg = "Connection error 1";
+  tReq.xFCallback200 = function(ea){
+   ea=ea?ea:window.event;
+   target=et(ea);
+   try{
+    var dtd=JSON.parse(ea.target.responseText);
+    did("profile").innerHTML    = dtd["profile"];
+    did("navigation").innerHTML = dtd["navigation"];
+    did("pressure").innerHTML   = dtd["pressure"] + " dbar";
+   }catch(a){
+    console.log(a);
+    console.log("catch");
+   }
+  };
+  tReq.vFSend();
+ }
+ setInterval(vFAskJsonData,1000)
+ vFAskJsonData()
  </script>
 </body>
 </html>
