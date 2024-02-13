@@ -195,10 +195,10 @@
     bLogClicked  = false;
     return;
    }
-   var socket = new WebSocket("ws://127.0.0.1:3856/rtlog");   
+   var socket = new WebSocket("ws://127.0.0.1:8080/rtlog");   
    // Ouverture de la connexion websocket
    socket.onopen = function(e) {
-    vFAddTextToLogBloc("WSOCK > Connection opened");
+    vFAddTextToLogBloc("WEB > Connection opened");
     bLogClicked  = false;
     bWSConnected = true;
    };
@@ -211,15 +211,15 @@
    // Réinit
    bWSConnected = false;
    if( event.wasClean ) {
-    vFAddTextToLogBloc(`WSOCK > Connection closed, code=${event.code} reason=${event.reason}`);
+    vFAddTextToLogBloc(`WEB > Connection closed, code=${event.code} reason=${event.reason}`);
    } else {
-    vFAddTextToLogBloc("WSOCK > Connection died");
+    vFAddTextToLogBloc("WEB > Connection died");
     bWSConnected = false;
    }
   };
   socket.onerror = function(error) {
    bWSConnected = false;
-   vFAddTextToLogBloc(`WSOCK > Error: ${error.message}`);
+   vFAddTextToLogBloc(`WEB > Error: ${error.message}`);
   };
  }
  </script>

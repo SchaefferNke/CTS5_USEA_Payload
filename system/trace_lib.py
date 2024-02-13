@@ -12,9 +12,6 @@ __version__ = "1.0.0"
 # Standard libraries
 import datetime
 
-# Project libraries
-#from system.web_socket import web_socket
-
 
 # Print event
 def trace_log(event: str):
@@ -29,8 +26,10 @@ def trace_log(event: str):
 	string = utc.strftime("%y-%m-%d %H:%M:%S : ") + event
 	# Print to console
 	print(string)
+	# web_server include makes circular dependency
+	from system.web_server import web_server
 	# Send to websocket
-	#web_socket.send(event)
+	web_server.send(event)
 	# Save in logger
 	log = open("log/payload.log", "a+")
 	log.write(string + "\r")

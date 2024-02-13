@@ -113,10 +113,22 @@ class DriverEMAP:
 		self._timer = DriverTimer("emap")
 		self._payload_step = DataShare("payload_step")
 		self._payload = user_driver
-		# Survey
-		self._profile = "xxx_xx"
-		self._navigation = "XX"
-		self._pressure = "0.0"
+		# Status
+		share = FileShare("profile.txt")
+		share.read()
+		self._profile = share.content.string
+		if self._profile == "?":
+			self._profile = "xxx_xx"
+		share = FileShare("pressure.txt")
+		share.read()
+		self._pressure = share.content.string
+		if self._pressure == "?":
+			self._pressure = "0.0"
+		share = FileShare("navigation.txt")
+		share.read()
+		self._navigation = share.content.string
+		if self._navigation == "?":
+			self._navigation = "XX"
 
 	# Status json
 	def status_json(self) -> object:
@@ -354,7 +366,7 @@ def manager(self):
 					split = data_string.split(",")
 					# Store information
 					self._profile = f"{int(split[1]):03}_{int(split[2]):02}"
-					# share information
+					# Share information
 					share = FileShare("profile.txt")
 					share.write(self._profile)
 					# Reply
@@ -368,7 +380,7 @@ def manager(self):
 					split = data_string.split(",")
 					# Store information
 					self._navigation = split[1]
-					# share information
+					# Share information
 					share = FileShare("navigation.txt")
 					share.write(self._navigation)
 					# Reply
@@ -380,13 +392,13 @@ def manager(self):
 					trace_log("EMAP     > Rx=$" + frame_string)
 					# Parse
 					split = data_string.split(",")
-					# share information
+					# Share information
 					if split[1] != "NONE":
 						share = FileShare("ctrl.txt")
 						share.write(split[1])
 					# Store information
 					self._pressure = split[2]
-					# share information
+					# Share information
 					share = FileShare("pressure.txt")
 					share.write(self._pressure)
 					# Reply
@@ -398,12 +410,12 @@ def manager(self):
 					trace_log("EMAP     > Rx=$" + frame_string)
 					# Parse
 					split = data_string.split(",")
-					# share information
+					# Share information
 					share = FileShare("ctd.txt")
 					share.write(split[1] + "," + split[2] + "," + split[3])
 					# Store information
 					self._pressure = split[1]
-					# share information
+					# Share information
 					share = FileShare("pressure.txt")
 					share.write(self._pressure)
 					# No reply
@@ -427,7 +439,7 @@ def manager(self):
 						microsecond=0)
 					# Drift
 					drift = (now - utc).total_seconds()
-					# share information
+					# Share information
 					share = FileShare("synchro.txt")
 					share.write(f"{drift:.3f}")
 					# Synchronize system clock

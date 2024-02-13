@@ -21,7 +21,6 @@ from system.rtc import rtc_driver
 from system.io_lib import DriverIOOutput
 from system.technical import technical_driver
 from system.web_server import web_server
-#from system.web_socket import web_socket
 from system.ctd import ctd_driver
 from system.emap import emap_driver
 from system.config import user_driver
@@ -61,7 +60,6 @@ if __name__ == "__main__":
 	# Create tasks
 	thread_technical = threading.Thread(target=technical_driver.run, name="task_technical", daemon=True)
 	thread_web_server = threading.Thread(target=web_server.run, name="task_web_server", daemon=True)
-	#thread_web_socket = threading.Thread(target=web_socket.run, name="task_web_socket", daemon=True)
 	thread_ctd = threading.Thread(target=ctd_driver.run, name="task_ctd", daemon=True)
 	thread_emap = threading.Thread(target=emap_driver.run, name="task_emap", daemon=True)
 	thread_user = threading.Thread(target=user_driver.run, name="task_user", daemon=True)
@@ -69,7 +67,6 @@ if __name__ == "__main__":
 	# Launch tasks
 	thread_technical.start()
 	thread_web_server.start()
-	#thread_web_socket.start()
 	thread_ctd.start()
 	thread_emap.start()
 	thread_user.start()

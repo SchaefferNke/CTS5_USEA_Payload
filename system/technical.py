@@ -43,7 +43,7 @@ class DriverTechnicalSystem:
 		self._timer = DriverTimer("technical")
 		self._payload_step = DataShare("payload_step")
 		self._boot_count = FileShare("boot.txt")
-		# User include makes circular dependency
+		# config.py include makes circular dependency
 		from system.config import user_driver
 		self._payload = user_driver
 		# Counters

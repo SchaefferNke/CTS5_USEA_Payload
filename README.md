@@ -41,7 +41,6 @@ It enables third-party Python programming in USEA-Payload acquisition board.
 |   +-- timer_lib.py
 |   +-- trace_lib.py
 |   +-- web_server.py
-|   +-- web_socket.py
 +-- user
 |   +-- user.ini
 |   +-- user_driver.py

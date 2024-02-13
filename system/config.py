@@ -13,7 +13,7 @@ __version__ = "1.0.0"
 import sys
 import time
 from configparser import RawConfigParser
-import traceback
+# import traceback
 
 
 # Read user configuration field
@@ -62,8 +62,8 @@ def load_class(source_code: str, class_name: str, default_class):
 
 	except Exception as err:
 		# Trace
-		print(err)
-		print(traceback.format_exc())
+		# print(err)
+		# print(traceback.format_exc())
 		# Result
 		return default_class
 
@@ -87,8 +87,8 @@ def load_function(user_class, str_function: str, ptr_default):
 
 	except Exception as err:
 		# Trace
-		print(err)
-		print(traceback.format_exc())
+		# print(err)
+		# print(traceback.format_exc())
 		# Result
 		return ptr_default
 
