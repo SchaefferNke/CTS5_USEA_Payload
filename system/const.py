@@ -6,7 +6,7 @@
 
 __authors__ = "Christophe SCHAEFFER"
 __copyright__ = "nke Instrumentation"
-__date__ = "2024-01-31"
+__date__ = "2024-02-13"
 __version__ = "1.0.0"
 
 # Versioning

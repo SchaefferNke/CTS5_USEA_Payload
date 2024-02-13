@@ -6,7 +6,7 @@
 
 __authors__ = "Christophe SCHAEFFER"
 __copyright__ = "nke Instrumentation"
-__date__ = "2024-02-02"
+__date__ = "2024-02-13"
 __version__ = "1.0.0"
 
 # Standard libraries
@@ -26,7 +26,6 @@ if __name__ == "__main__":
 from system.system_lib import system_driver
 from system.timer_lib import DriverTimer
 from system.share_lib import FileShare, DataShare, get_navigation, get_profile
-from system.config import user_driver
 from system.trace_lib import trace_log
 from system.const import *
 
@@ -44,6 +43,8 @@ class DriverTechnicalSystem:
 		self._timer = DriverTimer("technical")
 		self._payload_step = DataShare("payload_step")
 		self._boot_count = FileShare("boot.txt")
+		# User include makes circular dependency
+		from system.config import user_driver
 		self._payload = user_driver
 		# Counters
 		self._activity_run = 0.0
@@ -98,13 +99,14 @@ class DriverTechnicalSystem:
 		if self._cpu_usage > self._cpu_usage_max:
 			self._cpu_usage_max = self._cpu_usage
 		# CPU temperature
-		self._cpu_temp = 0.0
 		if not os.name == "nt":
 			temps = psutil.sensors_temperatures(fahrenheit=False)
-			if 'coretemp' in temps:
-				self._cpu_temp = temps['coretemp'][0].current
-			elif 'imx_thermal_zone' in temps:
-				self._cpu_temp = temps['imx_thermal_zone'][0].current
+			if "coretemp" in temps:
+				self._cpu_temp = temps["coretemp"][0].current
+			elif "imx_thermal_zone" in temps:
+				self._cpu_temp = temps["imx_thermal_zone"][0].current
+		else:
+			self._cpu_temp = 0.0
 		self._cpu_temp_sum += self._cpu_temp
 		if self._cpu_temp > self._cpu_temp_max:
 			self._cpu_temp_max = self._cpu_temp
@@ -114,12 +116,12 @@ class DriverTechnicalSystem:
 		if self._mem_usage > self._mem_usage_max:
 			self._mem_usage_max = self._mem_usage
 		# Disk usage
-		self._disk1_usage = psutil.disk_usage("/").percent
+		self._disk1_usage = psutil.disk_usage(system_driver.disk1_path()).percent
 		# SD card usage
 		self._disk2_usage = 0.0
-		self._disk2_is_present = system_driver.disk_is_present()
+		self._disk2_is_present = system_driver.disk2_is_present()
 		if self._disk2_is_present:
-			self._disk2_usage = psutil.disk_usage("/dev/sda1").percent
+			self._disk2_usage = psutil.disk_usage(system_driver.disk2_path()).percent
 
 	# Status json
 	def status_json(self) -> object:
@@ -134,25 +136,26 @@ class DriverTechnicalSystem:
 		# CPU usage
 		self._cpu_usage = psutil.cpu_percent(interval=1)
 		# CPU temperature
-		self._cpu_temp = 0.0
 		if not os.name == "nt":
 			temps = psutil.sensors_temperatures(fahrenheit=False)
-			if 'coretemp' in temps:
-				self._cpu_temp = temps['coretemp'][0].current
-			elif 'imx_thermal_zone' in temps:
-				self._cpu_temp = temps['imx_thermal_zone'][0].current
+			if "coretemp" in temps:
+				self._cpu_temp = temps["coretemp"][0].current
+			elif "imx_thermal_zone" in temps:
+				self._cpu_temp = temps["imx_thermal_zone"][0].current
+		else:
+			self._cpu_temp = 0.0
 		# Memory usage
 		self._mem_usage = psutil.virtual_memory().percent
 		# Disk usage
-		disk1_size = psutil.disk_usage("/").total / 1073741824.0
-		self._disk1_usage = psutil.disk_usage("/").percent
+		disk1_size = psutil.disk_usage(system_driver.disk1_path()).total / (1024.0**3)
+		self._disk1_usage = psutil.disk_usage(system_driver.disk1_path()).percent
 		# SD card usage
 		disk2_size = 0.0
 		self._disk2_usage = 0.0
-		self._disk2_is_present = system_driver.disk_is_present()
+		self._disk2_is_present = system_driver.disk2_is_present()
 		if self._disk2_is_present:
-			disk2_size = psutil.disk_usage("/dev/sda1").total / 1073741824.0
-			self._disk2_usage = psutil.disk_usage("/dev/sda1").percent
+			disk2_size = psutil.disk_usage(system_driver.disk2_path()).total / (1024.0**3)
+			self._disk2_usage = psutil.disk_usage(system_driver.disk2_path()).percent
 		# Save
 		result = {
 			"board-name": "USEA-Payload",

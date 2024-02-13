@@ -6,7 +6,7 @@
 
 __authors__ = "Christophe SCHAEFFER"
 __copyright__ = "nke Instrumentation"
-__date__ = "2024-02-02"
+__date__ = "2024-02-13"
 __version__ = "1.0.0"
 
 # Standard libraries
@@ -16,7 +16,7 @@ import subprocess
 import json
 import logging
 
-from flask import Flask, render_template, send_file, request
+from flask import Flask, render_template, send_file
 
 if __name__ == "__main__":
 	# Process launched outside main
@@ -46,20 +46,25 @@ def get_app():
 def reboot_post():
 	# Trace
 	trace_log("WEB      > Reboot")
-	# TODO form = request.form
-	# TODO subprocess.call(["reboot"])
+	# Reboot
+	if not os.name == "nt":
+		# Execute command
+		subprocess.call(["sudo", "reboot"])
+	# Reply
 	return "", 204
 
 
 # Json query
 @app.route("/technical.json", methods=["GET"])
 def technical_get():
+	# Reply
 	return json.dumps(technical_driver.status_json(), indent=1)
 
 
 # Json query
 @app.route("/emap.json", methods=["GET"])
 def emap_get():
+	# Reply
 	return json.dumps(emap_driver.status_json(), indent=1)
 
 
@@ -67,7 +72,9 @@ def emap_get():
 @app.route("/", defaults={"req_path": ""})
 @app.route("/<path:req_path>")
 def index(req_path):
+	# Request
 	abs_path = os.path.join(templateFolder, req_path)
+	# Reply
 	if os.path.isfile(abs_path):
 		return send_file(abs_path)
 	return render_template("index.html")

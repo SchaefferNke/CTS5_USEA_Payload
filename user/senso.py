@@ -6,7 +6,7 @@
 
 __authors__ = "Christophe SCHAEFFER"
 __copyright__ = "nke Instrumentation"
-__date__ = "2024-01-31"
+__date__ = "2024-02-13"
 __version__ = "1.0.0"
 
 # Standard libraries
@@ -89,9 +89,9 @@ def acquisition_process(self, string: str) -> bool:
 
 
 # Class definition
-class DataSENSO:
+class DataSenso:
 	"""
-		DataSENSO class: sensor data
+		DataSenso class: sensor data
 
 		Attributes:
 			- timestamp (float): timestamp
@@ -109,9 +109,9 @@ class DataSENSO:
 
 
 # Class definition
-class DriverSENSO:
+class DriverSenso:
 	"""
-		DriverSENSO class: manage acquisition of sensor
+		DriverSenso class: manage acquisition of sensor
 	"""
 
 	# Create resource
@@ -120,13 +120,13 @@ class DriverSENSO:
 		self._active = False
 		self._step = USEA_PAYLOAD_STEP_IDLE
 		self._io_power = DriverIOOutput("GPIO_3_20")
-		self._io_alarm = DriverIOInput("GPIO_2_0")
+		self._io_alarm = DriverIOInput("GPIO_5_5")
 		self._serial = DriverSerial("COM_5", 19200, 128, 0.15)
 		self._timer = DriverTimer("senso")
 		self._share_step = DataShare("payload_step")
 		self._tech = DriverTechnicalUser("SENSO")
 		# Output
-		self.output = DataSENSO()
+		self.output = DataSenso()
 		self.output.timestamp = 0.0
 		self.output.channel1 = 0.0
 		self.output.channel2 = 0.0
@@ -173,19 +173,19 @@ class DriverSENSO:
 
 
 # Class definition
-class TestSENSO:
+class TestSenso:
 	"""
-		TestSENSO class: manage test commands with sensor
+		TestSenso class: manage test commands with sensor
 	"""
 
 	# Create resource
 	def __init__(self):
 		# Manager
 		self._io_power = DriverIOOutput("GPIO_3_20")
-		self._io_alarm = DriverIOInput("GPIO_2_0")
+		self._io_alarm = DriverIOInput("GPIO_5_5")
 		self._serial = DriverSerial("COM_5", 19200, 128, 0.15)
 		# Output
-		self.output = DataSENSO()
+		self.output = DataSenso()
 		self.output.timestamp = 0.0
 		self.output.channel1 = 0.0
 		self.output.channel2 = 0.0
@@ -263,7 +263,7 @@ def compress():
 
 
 # Create resources
-senso_driver = DriverSENSO()
+senso_driver = DriverSenso()
 
 
 # Manager

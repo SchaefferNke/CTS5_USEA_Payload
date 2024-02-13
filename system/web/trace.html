@@ -183,8 +183,6 @@
    tCloneNode.getElementsByClassName("t-group")[0].innerHTML = sLogLine.split(">")[0];
    tCloneNode.getElementsByClassName("t-event")[0].innerHTML = sLogLine.split(">")[1];
    did("text-added").appendChild(tCloneNode);
-   //did("text-added").prepend(tCloneNode);
-   //did("text-added").insertBefore(tCloneNode, did("text-added").firstChild)
    tTxtAdded = did("text-added")
    if(!bLogClicked) tTxtAdded.scrollTop = tTxtAdded.scrollHeight;
   }
@@ -197,10 +195,10 @@
     bLogClicked  = false;
     return;
    }
-   var socket = new WebSocket("ws://127.0.0.1:5678");   
+   var socket = new WebSocket("ws://127.0.0.1:3856/rtlog");   
    // Ouverture de la connexion websocket
    socket.onopen = function(e) {
-    //vFAddTextToLogBloc("[open] Connection established");
+    vFAddTextToLogBloc("WSOCK > Connection opened");
     bLogClicked  = false;
     bWSConnected = true;
    };
@@ -213,15 +211,15 @@
    // Réinit
    bWSConnected = false;
    if( event.wasClean ) {
-    vFAddTextToLogBloc(`CLOSE > Connection closed cleanly, code=${event.code} reason=${event.reason}`);
+    vFAddTextToLogBloc(`WSOCK > Connection closed, code=${event.code} reason=${event.reason}`);
    } else {
-    vFAddTextToLogBloc('CLOSE > Connection died');
+    vFAddTextToLogBloc("WSOCK > Connection died");
     bWSConnected = false;
    }
   };
   socket.onerror = function(error) {
    bWSConnected = false;
-   vFAddTextToLogBloc(`[ERROR] > ${error.message}`);
+   vFAddTextToLogBloc(`WSOCK > Error: ${error.message}`);
   };
  }
  </script>

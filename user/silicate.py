@@ -84,10 +84,10 @@ class DriverSilicate:
 		# Manager
 		self._step = USEA_PAYLOAD_STEP_IDLE
 		self._io_power = DriverIOOutput("GPIO_3_20")
-		self._io_alarm = DriverIOInput("GPIO_2_0")
-		self._serial = DriverSerial("COM_3", 115200, len("DATA,xxx,xxxx,*CS\r\n") + 512, 0.15)
+		self._io_alarm = DriverIOInput("GPIO_5_5")
+		self._serial = DriverSerial("COM_5", 115200, len("DATA,xxx,xxxx,*CS\r\n") + 512, 0.15)
 		self._timer = DriverTimer("silicate")
-		self._share_step = DataShare("silicate_step")
+		self._share_step = DataShare("payload_step")
 
 	# Get version
 	@staticmethod

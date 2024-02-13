@@ -234,7 +234,8 @@
     if(v>=80)c='red';
     else c='orange';
    }
-   did(tid).style.width=v+'%';
+   if(v<=1) did(tid).style.width=3+'%';
+   else did(tid).style.width=v+'%';
    did(tid).style.backgroundColor=c;
   }
   function vFAskJsonData(){

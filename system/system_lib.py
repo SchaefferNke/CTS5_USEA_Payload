@@ -6,7 +6,7 @@
 
 __authors__ = "Christophe SCHAEFFER"
 __copyright__ = "nke Instrumentation"
-__date__ = "2024-01-31"
+__date__ = "2024-02-13"
 __version__ = "1.0.0"
 
 # Standard libraries
@@ -34,7 +34,7 @@ class DriverSystem:
 		if not os.name == "nt":
 			# Refresh watchdog counter
 			self._watchdog_cpt += 1
-			file_watchdog = open("tmp/_watchdog", "w")
+			file_watchdog = open("/tmp/_watchdog", "w")
 			file_watchdog.write(str(self._watchdog_cpt))
 			file_watchdog.close()
 
@@ -107,22 +107,54 @@ class DriverSystem:
 			# Program wakeup
 			os.system("sudo rtcwake -d /dev/rtc0 -m mem -s " + delay)
 
-	# Get disk status
+	# Get Disk1 path
 	@staticmethod
-	def disk_is_present() -> bool:
+	def disk1_path() -> str:
 		"""
-			Disk detection
+			Disk1 path
 
 			Returns:
-				- bool: True if the SD card is mounted
+				- str: Application path
+		"""
+		if not os.name == "nt":
+			result = "/opt/app"
+		else:
+			result = "/"
+		# Result
+		return result
+
+	# Get Disk2 path
+	@staticmethod
+	def disk2_path() -> str:
+		"""
+			Disk2 path
+
+			Returns:
+				- str: Data path
+		"""
+		if not os.name == "nt":
+			result = "/media/sd"
+		else:
+			result = "/"
+		# Result
+		return result
+
+	# Get Disk2 status
+	@staticmethod
+	def disk2_is_present() -> bool:
+		"""
+			Disk2 detection
+
+			Returns:
+				- bool: True if the SD card is inserted
 		"""
 		if not os.name == "nt":
 			# Program wakeup
-			result = os.system("sudo ls /dev/mmcblk0")
+			result = os.system("sudo ls /dev/mmcblk0 >/dev/null 2>&1")
 		else:
-			result = "0"
+			result = 256
 		# Result
-		if result == "/dev/mmcblk0":
+		if result == 0:
 			return True
 		return False
 
@@ -137,7 +169,7 @@ class DriverSystem:
 		"""
 		if not os.name == "nt":
 			# Set output on
-			os.system("gpioset " + name + "=1")
+			os.system("sudo gpioset " + name + "=1")
 
 	# Set output off
 	@staticmethod
@@ -150,7 +182,7 @@ class DriverSystem:
 		"""
 		if not os.name == "nt":
 			# Set output off
-			os.system("gpioset " + name + "=0")
+			os.system("sudo gpioset " + name + "=0")
 
 	# Test input state
 	@staticmethod
@@ -166,7 +198,7 @@ class DriverSystem:
 		"""
 		if not os.name == "nt":
 			# Read input
-			result = os.system("gpioget " + name)
+			result = os.system("sudo gpioget " + name + " >/dev/null 2>&1")
 		else:
 			result = "1"
 		# Result
@@ -206,6 +238,7 @@ class DriverSystem:
 		# Format
 		split = name.split("_")
 		if not os.name == "nt":
+			# Format
 			result = "/dev/ttymxc" + str(int(split[1])-1)
 		else:
 			result = "COM" + split[1]

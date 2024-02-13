@@ -6,7 +6,7 @@
 
 __authors__ = "Christophe SCHAEFFER"
 __copyright__ = "nke Instrumentation"
-__date__ = "2024-02-02"
+__date__ = "2024-02-13"
 __version__ = "1.0.0"
 
 # Standard libraries
@@ -106,7 +106,10 @@ class DriverEMAP:
 	# Create resource
 	def __init__(self):
 		# Manager
-		self._serial = DriverSerial("COM_1", 57600, len("DATA,xxx,xxxx,*CS\r\n") + 512, 0.15)
+		if not os.name == "nt":
+			self._serial = DriverSerial("COM_8", 57600, len("DATA,xxx,xxxx,*CS\r\n") + 512, 0.15)
+		else:
+			self._serial = DriverSerial("COM_1", 57600, len("DATA,xxx,xxxx,*CS\r\n") + 512, 0.15)
 		self._timer = DriverTimer("emap")
 		self._payload_step = DataShare("payload_step")
 		self._payload = user_driver

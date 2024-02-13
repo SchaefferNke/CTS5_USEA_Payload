@@ -6,13 +6,14 @@
 
 __authors__ = "Christophe SCHAEFFER"
 __copyright__ = "nke Instrumentation"
-__date__ = "2024-01-31"
+__date__ = "2024-02-13"
 __version__ = "1.0.0"
 
 # Standard libraries
 import sys
 import time
 from configparser import RawConfigParser
+import traceback
 
 
 # Read user configuration field
@@ -60,6 +61,9 @@ def load_class(source_code: str, class_name: str, default_class):
 		return getattr(user_module, class_name, default_class)
 
 	except Exception as err:
+		# Trace
+		print(err)
+		print(traceback.format_exc())
 		# Result
 		return default_class
 
@@ -82,6 +86,9 @@ def load_function(user_class, str_function: str, ptr_default):
 		return getattr(user_class, str_function, ptr_default)
 
 	except Exception as err:
+		# Trace
+		print(err)
+		print(traceback.format_exc())
 		# Result
 		return ptr_default
 
