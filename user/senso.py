@@ -282,7 +282,7 @@ def manager(self):
 	# Synchronize timer
 	self._timer.wait_until_synchro()
 	# Start timer
-	self._timer.start_base_time(20.0)
+	self._timer.start_base_time(60.0)
 	# Share step
 	self._share_step.write(self._step)
 

@@ -77,6 +77,9 @@
        <div class="button-c">
         <input type="button" value="Reboot board" class="btn blue" name="btn" id='btn-reboot'/>
        </div>
+       <div class="button-c">
+        <input type="button" value="Exit application" class="btn blue" name="btn" id='btn-exit'/>
+       </div>
 
       </div>
      </article>
@@ -89,6 +92,21 @@
   ae(did("btn-reboot"),'click',function(){
    console.log("Clicked")
    let tReq = new AJAX_REQUEST("POST","reboot","");
+   tReq.uiTimeout = 12000;
+   tReq.sErrorMsg = "Connection error 2";
+   tReq.xFCallback200 = function(ea){
+    ea=ea?ea:window.event;
+    target=et(ea);
+    console.log("200")
+   };
+   tReq.xFCallback204 = function(ea){
+    console.log("204")
+   };
+   tReq.vFSend();
+  });
+  ae(did("btn-exit"),'click',function(){
+   console.log("Clicked")
+   let tReq = new AJAX_REQUEST("POST","exit","");
    tReq.uiTimeout = 12000;
    tReq.sErrorMsg = "Connection error 2";
    tReq.xFCallback200 = function(ea){

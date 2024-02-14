@@ -48,10 +48,22 @@ def get_app():
 @app.route("/reboot", methods=["POST"])
 def reboot_post():
 	# Trace
-	trace_log("WEB      > Reboot")
+	trace_log("WEB      > Reboot board")
 	# Reboot
 	if not os.name == "nt":
 		subprocess.call(["sudo", "reboot"])
+	# Reply
+	return "", 204
+
+
+# Exit query
+@app.route("/exit", methods=["POST"])
+def exit_post():
+	# Trace
+	trace_log("WEB      > Exit application")
+	# Reboot
+	if not os.name == "nt":
+		os._exit(0)
 	# Reply
 	return "", 204
 

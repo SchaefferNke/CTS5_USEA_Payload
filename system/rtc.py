@@ -58,7 +58,7 @@ class DriverRTC:
 				- delay (int): delay time from now (seconds)
 		"""
 		# Trace
-		trace_log("RTC      > wakealarm=" + datetime.datetime.now().strftime("20%y-%m-%d %H:%M:%S") + " + " + str(delay) + " seconds")
+		trace_log("RTC      > Awake system in " + str(delay) + " seconds")
 		# Program wakeup
 		system_driver.program_wakealarm(delay)
 

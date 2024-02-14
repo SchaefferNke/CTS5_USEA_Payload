@@ -272,7 +272,7 @@ def get_navigation() -> int:
 		Read navigation identification string
 
 		Returns:
-			- str: navigation identification string (eg: "NA", "XX" format)
+			- int: navigation identification value (see const.py)
 	"""
 	# Create resource
 	share = FileShare("navigation.txt")

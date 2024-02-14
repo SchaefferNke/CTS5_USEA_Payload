@@ -84,14 +84,13 @@ if __name__ == "__main__":
 			system_driver.watchdog_feed()
 
 			# Tasks activity survey
-			time.sleep(1.0)
-			"""activity_emap = emap_driver.get_time_before_activity()
+			activity_emap = emap_driver.get_time_before_activity()
 			activity_user = user_driver.get_time_before_activity()
 			activity_next = int(min(activity_emap, activity_user))
 			# Power management
 			if not os.name == "nt":
 				# No planned activity
-				if activity_next >= 10:
+				if activity_next >= 15:
 					# Suspend CPLD
 					io_sleepn.set_off()
 					# Suspend system
@@ -103,7 +102,7 @@ if __name__ == "__main__":
 					time.sleep(1.0)
 			else:
 				# Wait
-				time.sleep(1.0)"""
+				time.sleep(1.0)
 
 	# Error
 	except Exception as err:

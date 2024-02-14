@@ -195,7 +195,10 @@
     bLogClicked  = false;
     return;
    }
-   var socket = new WebSocket("ws://127.0.0.1:8080/rtlog");   
+   function getRootUri() {
+	   return("ws://" + ((document.location.hostname == "") ? "usea.local" : document.location.hostname) + ":8080");
+   }   
+   var socket = new WebSocket(getRootUri()+"/rtlog");
    // Ouverture de la connexion websocket
    socket.onopen = function(e) {
     vFAddTextToLogBloc("WEB > Connection opened");
