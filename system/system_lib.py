@@ -6,7 +6,7 @@
 
 __authors__ = "Christophe SCHAEFFER"
 __copyright__ = "nke Instrumentation"
-__date__ = "2024-02-13"
+__date__ = "2024-02-14"
 __version__ = "1.0.0"
 
 # Standard libraries
@@ -96,16 +96,16 @@ class DriverSystem:
 
 	# Program wakealarm
 	@staticmethod
-	def program_wakealarm(delay: str):
+	def program_wakealarm(delay: int):
 		"""
 			Program wakealarm
 
 			Parameters:
-				- delay (str): delay time from now (seconds)
+				- delay (int): delay time from now (seconds)
 		"""
 		if not os.name == "nt":
 			# Program wakeup
-			os.system("sudo rtcwake -d /dev/rtc0 -m mem -s " + delay)
+			os.system("sudo rtcwake -d /dev/rtc0 -m mem -s " + str(delay))
 
 	# Get Disk1 path
 	@staticmethod

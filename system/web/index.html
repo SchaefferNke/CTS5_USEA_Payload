@@ -238,42 +238,43 @@
    else did(tid).style.width=v+'%';
    did(tid).style.backgroundColor=c;
   }
-  function vFAskJsonData(){
-   let tReq = new AJAX_REQUEST("GET","technical.json","");
-   tReq.uiTimeout = 12000;
-   tReq.sErrorMsg = "Connection error 1";
-   tReq.xFCallback200 = function(ea){
-    ea=ea?ea:window.event;
-    target=et(ea);
-    try{
-     var dtd=JSON.parse(ea.target.responseText);
-     did("board-name").innerHTML       = dtd["board-name"];
-     did("software-version").innerHTML = dtd["software-version"];
-     did("system-time").innerHTML      = dtd["system-time"];
-     did("cpu-speed").innerHTML        = dtd["cpu-speed"] + " MHz";
-     did("cpu-usage").innerHTML        = dtd["cpu-usage"] + "%";
-     did("cpu-temperature").innerHTML  = dtd["cpu-temperature"] + " °C";
-     did("memory-usage").innerHTML     = dtd["memory-usage"] + "%";
-     did("disk1-size").innerHTML       = dtd["disk1-size"] + " GB (Used: ";
-     did("disk1-usage").innerHTML      = dtd["disk1-usage"] + "%)";
-     vFBargraph(did("disk1-usage").innerHTML,"disk1-inner");
-     did("disk1-bargraph").classList.remove("none")
-     if(dtd["disk2-present"]=="True"){
-      did("disk2-size").innerHTML  = dtd["disk2-size"] + " GB (Used: ";
-      did("disk2-usage").innerHTML = dtd["disk2-usage"] + "%)";
-      vFBargraph(did("disk2-usage").innerHTML,"disk2-inner");
-      did("disk2-bargraph").classList.remove("none")
-     }
-     else{
-      did("disk2-size").innerHTML  = "Not available";
-      did("disk2-usage").innerHTML = "";
-      did("disk2-bargraph").classList.add("none")
-     }
-    }catch(a){
-     console.log(a);
-     console.log("catch");
+  var tReq = new AJAX_REQUEST("GET","technical.json","");
+  tReq.uiTimeout = 5000;
+  tReq.sErrorMsg = "Connection error 1";
+  tReq.xFCallback200 = function(ea){
+   ea=ea?ea:window.event;
+   target=et(ea);
+   try{
+    var dtd=JSON.parse(ea.target.responseText);
+    did("board-name").innerHTML       = dtd["board-name"];
+    did("software-version").innerHTML = dtd["software-version"];
+    did("system-time").innerHTML      = dtd["system-time"];
+    did("cpu-speed").innerHTML        = dtd["cpu-speed"] + " MHz";
+    did("cpu-usage").innerHTML        = dtd["cpu-usage"] + "%";
+    did("cpu-temperature").innerHTML  = dtd["cpu-temperature"] + " °C";
+    did("memory-usage").innerHTML     = dtd["memory-usage"] + "%";
+    did("disk1-size").innerHTML       = dtd["disk1-size"] + " GB (Used: ";
+    did("disk1-usage").innerHTML      = dtd["disk1-usage"] + "%)";
+    vFBargraph(did("disk1-usage").innerHTML,"disk1-inner");
+    did("disk1-bargraph").classList.remove("none")
+    if(dtd["disk2-present"]=="True"){
+     did("disk2-size").innerHTML  = dtd["disk2-size"] + " GB (Used: ";
+     did("disk2-usage").innerHTML = dtd["disk2-usage"] + "%)";
+     vFBargraph(did("disk2-usage").innerHTML,"disk2-inner");
+     did("disk2-bargraph").classList.remove("none")
     }
-   };
+    else{
+     did("disk2-size").innerHTML  = "Not available";
+     did("disk2-usage").innerHTML = "";
+     did("disk2-bargraph").classList.add("none")
+    }
+   }catch(a){
+    console.log(a);
+    console.log("catch");
+   }
+  };
+  function vFAskJsonData(){
+   console.log("-- vFAskJsonData --")
    tReq.vFSend();
   }
   setInterval(vFAskJsonData,1000)

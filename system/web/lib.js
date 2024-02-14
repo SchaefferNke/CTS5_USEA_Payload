@@ -81,6 +81,7 @@ function vFMobileNavOpen(e) {
 //-------------------------------------------
 // Classe requête AJAX
 //-------------------------------------------
+var bReqFinished  = true;
 function AJAX_REQUEST( sReqType, sReqName, sReqData ){
  // Attribut constructeur
  this.sReqType = sReqType;
@@ -97,13 +98,18 @@ function AJAX_REQUEST( sReqType, sReqName, sReqData ){
  this.uiRetry   = 1; 
  this.bDontStopPing = false;
  
+ 
  var tAJAX_REQUEST = this;
  
  //---------------------------
  // Envoi de la requête
  //---------------------------
  this.vFSend = function(){
-  var r,ie,t;
+  let r,ie,t;
+  
+  if( !bReqFinished ) return;
+  bReqFinished = false;
+  
   //url+='?a='+Date.now();
   if(ie=isIE()&&ie<10)r=new XMLDomainRequest();
   else r=new XMLHttpRequest();
@@ -114,7 +120,7 @@ function AJAX_REQUEST( sReqType, sReqName, sReqData ){
   r.open(this.sReqType,this.sReqName,true);
   // Si requete type post : Send the proper header information along with the request
   if(this.sReqType=='POST') r.setRequestHeader('Content-type', 
-                                      'application/x-www-form-urlencoded; charset=iso-8859-1');
+                                               'application/x-www-form-urlencoded; charset=iso-8859-1');
   r.timeout=this.uiTimeout;
   // Conservation de la requête source dans l'objet XMLHttpRequest (création de propriété dans l'objet)
   r.ajaxObj = this;
@@ -128,6 +134,9 @@ function AJAX_REQUEST( sReqType, sReqName, sReqData ){
   target=et(ea);
   // L'opération est terminée
   if(target.readyState!==4)return;
+  // Modification de la variable
+  bReqFinished = true
+  
   if(target.status===200){
    //console.log("Response 200")
    // Si fonction bien définie
@@ -185,6 +194,7 @@ function AJAX_REQUEST( sReqType, sReqName, sReqData ){
    // Décrément
    this.ajaxObj.uiRetry = this.ajaxObj.uiRetry - 1; 
    var tAjaxObj = this.ajaxObj;
+   bReqFinished = true;
    // Relance avec temps aléatoire
    setTimeout(function(){tAjaxObj.vFSend()},200+getRandomInt(200));
   }

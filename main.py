@@ -6,7 +6,7 @@
 
 __authors__ = "Christophe SCHAEFFER"
 __copyright__ = "nke Instrumentation"
-__date__ = "2024-02-13"
+__date__ = "2024-02-14"
 __version__ = "1.0.0"
 
 # Standard libraries
@@ -32,6 +32,8 @@ if __name__ == "__main__":
 
 	# Validate booting process
 	system_driver.boot_ok()
+	# Feed the watchdog
+	system_driver.watchdog_feed()
 
 	# Create paths
 	if not os.path.exists("log"):
@@ -49,53 +51,59 @@ if __name__ == "__main__":
 	if not os.path.exists("trash"):
 		os.makedirs("trash")
 
-	# Trace
-	trace_log("MAIN     > Launch application")
-
 	# Restore system clock
 	rtc_driver.restore()
 	# CPLD awake command
 	io_sleepn = DriverIOOutput("GPIO_3_27")
 
+	# Trace
+	trace_log("MAIN     > Launch tasks")
+
 	# Create tasks
 	thread_technical = threading.Thread(target=technical_driver.run, name="task_technical", daemon=True)
 	thread_web_server = threading.Thread(target=web_server.run, name="task_web_server", daemon=True)
-	thread_ctd = threading.Thread(target=ctd_driver.run, name="task_ctd", daemon=True)
 	thread_emap = threading.Thread(target=emap_driver.run, name="task_emap", daemon=True)
+	thread_ctd = threading.Thread(target=ctd_driver.run, name="task_ctd", daemon=True)
 	thread_user = threading.Thread(target=user_driver.run, name="task_user", daemon=True)
 
 	# Launch tasks
 	thread_technical.start()
 	thread_web_server.start()
-	thread_ctd.start()
 	thread_emap.start()
+	thread_ctd.start()
 	thread_user.start()
 
 	# Trace
-	trace_log("MAIN     > Application loop")
+	trace_log("MAIN     > Application is running")
 
 	# Main loop
 	try:
 		while True:
 
-			# Wait
-			time.sleep(1.0)
-
-			# Watchdog
+			# Feed the watchdog
 			system_driver.watchdog_feed()
 
-			# Activity management
+			# Tasks activity survey
+			time.sleep(1.0)
 			"""activity_emap = emap_driver.get_time_before_activity()
 			activity_user = user_driver.get_time_before_activity()
-			print("\t" + f"{activity_emap:.3f}" + "\t" + f"{activity_user:.3f}")
-
-			# CPU power management
-			if (activity_emap >= 300.0) and (activity_user >= 300.0):
-				# Trace
-				trace_log("MAIN     > Suspend system")
-				# Suspend system
-				rtc_driver.program_wakealarm("300")
-				#system_driver.suspend()"""
+			activity_next = int(min(activity_emap, activity_user))
+			# Power management
+			if not os.name == "nt":
+				# No planned activity
+				if activity_next >= 10:
+					# Suspend CPLD
+					io_sleepn.set_off()
+					# Suspend system
+					rtc_driver.program_wakealarm(activity_next - 5)
+					# Awake CPLD
+					io_sleepn.set_on()
+				else:
+					# Wait
+					time.sleep(1.0)
+			else:
+				# Wait
+				time.sleep(1.0)"""
 
 	# Error
 	except Exception as err:

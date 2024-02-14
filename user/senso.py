@@ -6,7 +6,7 @@
 
 __authors__ = "Christophe SCHAEFFER"
 __copyright__ = "nke Instrumentation"
-__date__ = "2024-02-13"
+__date__ = "2024-02-14"
 __version__ = "1.0.0"
 
 # Standard libraries
@@ -282,7 +282,7 @@ def manager(self):
 	# Synchronize timer
 	self._timer.wait_until_synchro()
 	# Start timer
-	self._timer.start_base_time(10.0)
+	self._timer.start_base_time(20.0)
 	# Share step
 	self._share_step.write(self._step)
 
@@ -332,6 +332,8 @@ def manager(self):
 					if not self._tech.diagnosis_is_broken():
 						# Acquisition rate
 						if self._timer.is_tick():
+							# Recording in progress
+							self._step = USEA_PAYLOAD_STEP_RECORDING
 							# Acquire
 							if self.acquire_sample():
 								# Print
@@ -352,6 +354,8 @@ def manager(self):
 									self._tech.diagnosis_count_broken()
 									# Print
 									trace_log("SENSO    > Broken")
+							# Recording finished
+							self._step = USEA_PAYLOAD_STEP_RECORD
 						# Wait
 						else:
 							time.sleep(0.1)

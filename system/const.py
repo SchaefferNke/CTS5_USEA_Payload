@@ -6,7 +6,7 @@
 
 __authors__ = "Christophe SCHAEFFER"
 __copyright__ = "nke Instrumentation"
-__date__ = "2024-02-13"
+__date__ = "2024-02-14"
 __version__ = "1.0.0"
 
 # Versioning
@@ -35,5 +35,6 @@ USEA_NAVIGATION_STATE_END_OF_LIFE = 17
 # Payload stages
 USEA_PAYLOAD_STEP_IDLE = 0
 USEA_PAYLOAD_STEP_RECORD = 1
-USEA_PAYLOAD_STEP_SURFACE = 2
-USEA_PAYLOAD_STEP_TREAT = 3
+USEA_PAYLOAD_STEP_RECORDING = 2
+USEA_PAYLOAD_STEP_SURFACE = 3
+USEA_PAYLOAD_STEP_TREAT = 4

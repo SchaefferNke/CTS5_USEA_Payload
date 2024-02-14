@@ -6,7 +6,7 @@
 
 __authors__ = "Christophe SCHAEFFER"
 __copyright__ = "nke Instrumentation"
-__date__ = "2024-02-13"
+__date__ = "2024-02-14"
 __version__ = "1.0.0"
 
 # Standard libraries
@@ -50,19 +50,17 @@ class DriverRTC:
 
 	# Program wakealarm
 	@staticmethod
-	def program_wakealarm(delay: str):
+	def program_wakealarm(delay: int):
 		"""
 			Program wakealarm
 
 			Parameters:
-				- delay (str): delay time from now (seconds)
+				- delay (int): delay time from now (seconds)
 		"""
-		# Compute awake date
-		utc = datetime.datetime.now()
+		# Trace
+		trace_log("RTC      > wakealarm=" + datetime.datetime.now().strftime("20%y-%m-%d %H:%M:%S") + " + " + str(delay) + " seconds")
 		# Program wakeup
 		system_driver.program_wakealarm(delay)
-		# Trace
-		trace_log("RTC      > wakealarm=" + utc.strftime("20%y-%m-%d %H:%M:%S") + " + " + delay)
 
 
 # Create resources
