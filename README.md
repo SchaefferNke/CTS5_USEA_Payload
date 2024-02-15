@@ -49,7 +49,7 @@ main.py
 
 ## Version history
 
-### 1.0.0 (2024-01-31)
+### 1.0.0 (2024-02-15)
 - Creating reference application
 
 ## License information

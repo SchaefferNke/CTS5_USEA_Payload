@@ -6,7 +6,7 @@
 
 __authors__ = "Christophe SCHAEFFER"
 __copyright__ = "nke Instrumentation"
-__date__ = "2024-02-14"
+__date__ = "2024-02-15"
 __version__ = "1.0.0"
 
 # Standard libraries
@@ -29,6 +29,7 @@ from system.serial_lib import DriverSerial
 from system.timer_lib import DriverTimer
 from system.share_lib import DataShare, FileShare
 from system.config import user_driver
+from system.technical import technical_driver
 from system.trace_lib import trace_log
 from system.const import *
 
@@ -138,7 +139,7 @@ class DriverEMAP:
 			Returns:
 				- object: json object
 		"""
-		# Format
+		# Navigation stage
 		if self._navigation == "NA":
 			navigation = "BUOYANCY_DECREASE"
 		elif self._navigation == "NB":
@@ -175,11 +176,18 @@ class DriverEMAP:
 			navigation = "END_OF_LIFE"
 		else:
 			navigation = "UNDEFINED"
+		# Sleep
+		if os.path.isfile("temp/sleep.txt"):
+			sleep = "Enabled"
+		else:
+			sleep = "Disabled"
 		# Save
 		result = {
 			"profile": self._profile,
 			"navigation": navigation,
-			"pressure": self._pressure}
+			"pressure": self._pressure,
+			"boot count": technical_driver.boot_count(),
+			"sleep": sleep}
 		# Result
 		return result
 

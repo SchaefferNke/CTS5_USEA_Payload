@@ -6,7 +6,7 @@
 
 __authors__ = "Christophe SCHAEFFER"
 __copyright__ = "nke Instrumentation"
-__date__ = "2024-02-14"
+__date__ = "2024-02-15"
 __version__ = "1.0.0"
 
 # Standard libraries
@@ -234,8 +234,17 @@ class DriverTechnicalSystem:
 			os.remove(user_file)
 		# Close file
 		tech_file.close()
-		# Clear boot counter
-		self._boot_count.write("?")
+
+	# Read boot count
+	def boot_count(self) -> str:
+		"""
+			Read boot count
+
+			Returns:
+				- str: boot count value
+		"""
+		# Result
+		return self._boot_count.content.string
 
 	# Run task
 	def run(self):

@@ -6,7 +6,7 @@
 
 __authors__ = "Christophe SCHAEFFER"
 __copyright__ = "nke Instrumentation"
-__date__ = "2024-02-14"
+__date__ = "2024-02-15"
 __version__ = "1.0.0"
 
 # Standard libraries
@@ -44,7 +44,7 @@ def get_app():
 	return app
 
 
-# Reboot query
+# Reboot command
 @app.route("/reboot", methods=["POST"])
 def reboot_post():
 	# Trace
@@ -56,11 +56,11 @@ def reboot_post():
 	return "", 204
 
 
-# Exit query
-@app.route("/exit", methods=["POST"])
-def exit_post():
+# Restart command
+@app.route("/restart", methods=["POST"])
+def restart_post():
 	# Trace
-	trace_log("WEB      > Exit application")
+	trace_log("WEB      > Restart application")
 	# Reboot
 	if not os.name == "nt":
 		os._exit(0)
@@ -68,14 +68,51 @@ def exit_post():
 	return "", 204
 
 
-# Json query
+# Exit command
+@app.route("/exit", methods=["POST"])
+def exit_post():
+	# Trace
+	trace_log("WEB      > Exit application")
+	# Reboot
+	if not os.name == "nt":
+		os._exit(1)
+	# Reply
+	return "", 204
+
+
+# Sleep-on command
+@app.route("/sleep-on.req", methods=["POST"])
+def sleep_on_post():
+	# Trace
+	trace_log("WEB      > Sleep enabled")
+	# Save
+	if not os.path.isfile("temp/sleep.txt"):
+		file_request = open("temp/sleep.txt", "w")
+		file_request.close()
+	# Reply
+	return "", 204
+
+
+# Sleep-off command
+@app.route("/sleep-off.req", methods=["POST"])
+def sleep_off_post():
+	# Trace
+	trace_log("WEB      > Sleep disabled")
+	# Save
+	if os.path.isfile("temp/sleep.txt"):
+		os.remove("temp/sleep.txt")
+	# Reply
+	return "", 204
+
+
+# Technical request
 @app.route("/technical.json", methods=["GET"])
 def technical_get():
 	# Reply
 	return json.dumps(technical_driver.status_json(), indent=1)
 
 
-# Json query
+# EMAP request
 @app.route("/emap.json", methods=["GET"])
 def emap_get():
 	# Reply
@@ -127,7 +164,7 @@ class WebServer:
 			Send message
 
 			Parameters:
-				- message (str): String to send
+				- message (str): message to send
 		"""
 		# Increment message
 		self.message_rcv += 1

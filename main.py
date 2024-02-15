@@ -6,7 +6,7 @@
 
 __authors__ = "Christophe SCHAEFFER"
 __copyright__ = "nke Instrumentation"
-__date__ = "2024-02-14"
+__date__ = "2024-02-15"
 __version__ = "1.0.0"
 
 # Standard libraries
@@ -83,12 +83,12 @@ if __name__ == "__main__":
 			# Feed the watchdog
 			system_driver.watchdog_feed()
 
-			# Tasks activity survey
-			activity_emap = emap_driver.get_time_before_activity()
-			activity_user = user_driver.get_time_before_activity()
-			activity_next = int(min(activity_emap, activity_user))
 			# Power management
-			if not os.name == "nt":
+			if os.path.isfile("temp/sleep.txt"):
+				# Tasks activity survey
+				activity_emap = emap_driver.get_time_before_activity()
+				activity_user = user_driver.get_time_before_activity()
+				activity_next = int(min(activity_emap, activity_user))
 				# No planned activity
 				if activity_next >= 15:
 					# Suspend CPLD

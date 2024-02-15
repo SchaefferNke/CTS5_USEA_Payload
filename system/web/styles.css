@@ -911,7 +911,6 @@ article{
  display: block;
  width: 34%;
  margin-right: 1%;
-/* width: 35%;*/
 }
 
 .param-line.sensor label:not(.sw-btn-label){
@@ -1432,7 +1431,7 @@ h3,.h3{
 input{
  border-radius: 8px;
  color: white;
- width: 110px;
+ width: 135px;
  height: 35px;
  cursor: pointer;
  border: none;
