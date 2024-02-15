@@ -56,7 +56,7 @@
       </console-settings>
     </option>
   </component>
-  <component name="RunManager" selected="Python.main">
+  <component name="RunManager" selected="Python docs.Sphinx html">
     <configuration name="ctd" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="CTS5_USEA_Payload" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -234,7 +234,7 @@
       <method v="2" />
     </configuration>
     <configuration name="Sphinx html" type="docs" factoryName="Sphinx task">
-      <module name="PROJET_USEA_LINUX_v1.00.000" />
+      <module name="CTS5_USEA_Payload" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <option name="SDK_HOME" value="C:\Users\cschaeffer.MICREL\AppData\Local\Programs\Python\Python311\python.exe" />
