@@ -6,7 +6,7 @@
 
 __authors__ = "Christophe SCHAEFFER"
 __copyright__ = "nke Instrumentation"
-__date__ = "2024-02-15"
+__date__ = "2024-02-16"
 __version__ = "1.0.0"
 
 # Standard libraries
@@ -177,7 +177,7 @@ class DriverEMAP:
 		else:
 			navigation = "UNDEFINED"
 		# Sleep
-		if os.path.isfile("temp/sleep.txt"):
+		if os.path.isfile("share/sleep.txt"):
 			sleep = "Enabled"
 		else:
 			sleep = "Disabled"
@@ -305,6 +305,52 @@ def logger_extract(size: int):
 	zip_file.close()
 	# Remove file
 	os.remove(log_dst_name)
+
+
+# Update application
+def update_application():
+	"""
+		Update the application
+	"""
+	# No update
+	update = False
+	# Create names
+	zip_path = "./temp"
+	zip_src_name = "payload_update.zip"
+	# Open archive
+	zip_file = zipfile.ZipFile(zip_path + "/" + zip_src_name, "r")
+	# Extract files
+	zip_file.extractall(zip_path)
+	# Close archive
+	zip_file.close()
+	# Remove archive
+	os.remove(zip_path + "/" + zip_src_name)
+	# List new files
+	new_files = os.listdir(zip_path)
+	# For all new files
+	for new_file_name in new_files:
+		# Parse
+		split = new_file_name.split("#")
+		# Destination
+		if len(split) == 2:
+			current_file_name = "./" + split[0] + "/" + split[1]
+		else:
+			current_file_name = "./" + new_file_name
+		# Remove file
+		if os.path.isfile(current_file_name):
+			os.remove(current_file_name)
+		# Move file
+		os.rename(zip_path + "/" + new_file_name, current_file_name)
+		# Trace
+		trace_log("EMAP     > Update application file: " + current_file_name)
+		# Update done
+		update = True
+	# Clean folder
+	cleanup_folder(zip_path)
+	# Apply changes
+	if update:
+		if not os.name == "nt":
+			os._exit(0)
 
 
 # Manager
@@ -517,8 +563,8 @@ def manager(self):
 							self._send_ascii("COMMANDACK,12,Command okay")
 							# Wait
 							time.sleep(0.5)
-							# Interpret script
-							# TODO: ouvrir l'archive et appliquer le script
+							# Update
+							update_application()
 						# Error
 						else:
 							# Reply

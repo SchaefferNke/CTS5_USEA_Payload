@@ -6,7 +6,7 @@
 
 __authors__ = "Christophe SCHAEFFER"
 __copyright__ = "nke Instrumentation"
-__date__ = "2024-02-15"
+__date__ = "2024-02-16"
 __version__ = "1.0.0"
 
 # Standard libraries
@@ -86,8 +86,8 @@ def sleep_on_post():
 	# Trace
 	trace_log("WEB      > Sleep enabled")
 	# Save
-	if not os.path.isfile("temp/sleep.txt"):
-		file_request = open("temp/sleep.txt", "w")
+	if not os.path.isfile("share/sleep.txt"):
+		file_request = open("share/sleep.txt", "w")
 		file_request.close()
 	# Reply
 	return "", 204
@@ -99,8 +99,8 @@ def sleep_off_post():
 	# Trace
 	trace_log("WEB      > Sleep disabled")
 	# Save
-	if os.path.isfile("temp/sleep.txt"):
-		os.remove("temp/sleep.txt")
+	if os.path.isfile("share/sleep.txt"):
+		os.remove("share/sleep.txt")
 	# Reply
 	return "", 204
 

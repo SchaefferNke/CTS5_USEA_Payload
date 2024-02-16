@@ -6,7 +6,7 @@
 
 __authors__ = "Christophe SCHAEFFER"
 __copyright__ = "nke Instrumentation"
-__date__ = "2024-02-15"
+__date__ = "2024-02-16"
 __version__ = "1.0.0"
 
 # Standard libraries
@@ -84,7 +84,7 @@ if __name__ == "__main__":
 			system_driver.watchdog_feed()
 
 			# Power management
-			if os.path.isfile("temp/sleep.txt"):
+			if os.path.isfile("share/sleep.txt"):
 				# Tasks activity survey
 				activity_emap = emap_driver.get_time_before_activity()
 				activity_user = user_driver.get_time_before_activity()
