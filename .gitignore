@@ -1,5 +1,4 @@
 __pycache__/
-.idea/
 config/
 ctd/
 log/
@@ -7,4 +6,6 @@ payload/
 share/
 temp/
 trash/
+.idea
+.idea/
 .idea/workspace.xml
