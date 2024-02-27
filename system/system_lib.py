@@ -6,7 +6,7 @@
 
 __authors__ = "Christophe SCHAEFFER"
 __copyright__ = "nke Instrumentation"
-__date__ = "2024-02-16"
+__date__ = "2024-02-27"
 __version__ = "1.0.0"
 
 # Standard libraries
@@ -60,16 +60,6 @@ class DriverSystem:
 			# Reboot
 			os.system("sudo reboot")
 
-	# Suspend system
-	@staticmethod
-	def suspend():
-		"""
-			Suspend system
-		"""
-		if not os.name == "nt":
-			# Suspend
-			os.system("sudo suspend")
-
 	# Restore system clock
 	@staticmethod
 	def clock_restore():
@@ -105,6 +95,10 @@ class DriverSystem:
 				- delay (int): delay time from now (seconds)
 		"""
 		if not os.name == "nt":
+			# Flush files buffering
+			os.system("sudo sync")
+			# Wait
+			time.sleep(0.25)
 			# Program wakeup
 			os.system("sudo rtcwake -d /dev/rtc0 -m mem -s " + str(delay))
 		else:

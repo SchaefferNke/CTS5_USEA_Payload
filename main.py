@@ -6,7 +6,7 @@
 
 __authors__ = "Christophe SCHAEFFER"
 __copyright__ = "nke Instrumentation"
-__date__ = "2024-02-16"
+__date__ = "2024-02-27"
 __version__ = "1.0.0"
 
 # Standard libraries
@@ -90,11 +90,11 @@ if __name__ == "__main__":
 				activity_user = user_driver.get_time_before_activity()
 				activity_next = int(min(activity_emap, activity_user))
 				# No planned activity
-				if activity_next >= 15:
+				if activity_next >= 20:
 					# Suspend CPLD
 					io_sleepn.set_off()
 					# Suspend system
-					rtc_driver.program_wakealarm(activity_next - 5)
+					rtc_driver.program_wakealarm(activity_next - 10)
 					# Awake CPLD
 					io_sleepn.set_on()
 				else:
