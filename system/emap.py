@@ -6,7 +6,7 @@
 
 __authors__ = "Christophe SCHAEFFER"
 __copyright__ = "nke Instrumentation"
-__date__ = "2024-02-27"
+__date__ = "2024-04-24"
 __version__ = "1.0.0"
 
 # Standard libraries
@@ -34,7 +34,7 @@ from system.trace_lib import trace_log
 from system.const import *
 
 # EMAP wake-up duration
-EMAP_WAKEUP_DURATION = 30.0
+EMAP_WAKEUP_DURATION = 20.0
 
 
 # Compute NMEA checksum (receive)

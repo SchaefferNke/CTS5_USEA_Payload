@@ -6,7 +6,7 @@
 
 __authors__ = "Christophe SCHAEFFER"
 __copyright__ = "nke Instrumentation"
-__date__ = "2024-02-27"
+__date__ = "2024-04-24"
 __version__ = "1.0.0"
 
 # Standard libraries
@@ -81,7 +81,7 @@ class DriverSystem:
 		"""
 		if not os.name == "nt":
 			# Set system clock
-			os.system("sudo date -s '%s'" % utc.strftime("20%y-%m-%dT%H:%M:%S"))
+			os.system("sudo date -s '%s'" % utc.strftime("20%y-%m-%d %H:%M:%S"))
 			# Synchronize hardware RTC to system clock
 			os.system("sudo hwclock -w")
 

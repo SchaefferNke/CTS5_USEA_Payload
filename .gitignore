@@ -9,3 +9,5 @@ trash/
 .idea
 .idea/
 .idea/workspace.xml
+init_outputs.sh
+*.db
