@@ -6,7 +6,7 @@
 
 __authors__ = "Christophe SCHAEFFER"
 __copyright__ = "nke Instrumentation"
-__date__ = "2024-04-24"
+__date__ = "2024-04-25"
 __version__ = "1.0.0"
 
 # Standard libraries
@@ -55,6 +55,7 @@ if __name__ == "__main__":
 	rtc_driver.restore()
 	# CPLD awake command
 	io_sleepn = DriverIOOutput("GPIO_3_27")
+	io_sleepn.set_on()
 
 	# Trace
 	trace_log("MAIN     > Launch tasks")
