@@ -6,7 +6,7 @@
 
 __authors__ = "Christophe SCHAEFFER"
 __copyright__ = "nke Instrumentation"
-__date__ = "2024-04-25"
+__date__ = "2024-04-26"
 __version__ = "1.0.0"
 
 # Standard libraries
@@ -347,6 +347,8 @@ def update_application():
 		update = True
 	# Clean folder
 	cleanup_folder(zip_path)
+	# Wait
+	time.sleep(1.0)
 	# Apply changes
 	if update:
 		if not os.name == "nt":
@@ -556,7 +558,7 @@ def manager(self):
 						# Reply
 						self._send_ascii("COMMANDACK,12,Command okay")
 					# Update
-					elif split[2] == "!payload-update":
+					elif split[2] == "!update:payload_update.zip":
 						# Check if update file exists
 						if os.path.isfile("temp/payload_update.zip"):
 							# Reply
@@ -577,6 +579,21 @@ def manager(self):
 						time.sleep(0.5)
 						# Restart
 						system_driver.reboot()
+					# Activate sleep mode
+					elif (split[2] == "!payload-sleep:true") or (split[2] == "!payload-sleep:True"):
+						# Save
+						if not os.path.isfile("share/sleep.txt"):
+							file_request = open("share/sleep.txt", "w")
+							file_request.close()
+						# Reply
+						self._send_ascii("COMMANDACK,12,Command okay")
+					# Deactivate sleep mode
+					elif (split[2] == "!payload-sleep:false") or (split[2] == "!payload-sleep:False"):
+						# Save
+						if os.path.isfile("share/sleep.txt"):
+							os.remove("share/sleep.txt")
+						# Reply
+						self._send_ascii("COMMANDACK,12,Command okay")
 					# Logger request
 					elif split[2] == "!payload-logger":
 						# Test request

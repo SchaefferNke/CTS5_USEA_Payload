@@ -6,7 +6,7 @@
 
 __authors__ = "Christophe SCHAEFFER"
 __copyright__ = "nke Instrumentation"
-__date__ = "2024-04-25"
+__date__ = "2024-04-26"
 __version__ = "1.0.0"
 
 # Standard libraries
@@ -152,7 +152,8 @@ class UserConfig:
 		str_function_version = read_configuration("COMMAND", "function_version")
 		str_function_measurement = read_configuration("COMMAND", "function_measurement")
 		str_function_test = read_configuration("COMMAND", "function_test")
-		self.source_code = str_source_code
+		if not str_source_code == "":
+			self.source_code = str_source_code
 		# Load mission configuration
 		user_class_mission = load_class(str_source_code, str_class_mission, DefaultConfig)
 		self._ptr_run = load_function(user_class_mission, str_function_run, default_driver.run)
