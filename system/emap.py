@@ -6,7 +6,7 @@
 
 __authors__ = "Christophe SCHAEFFER"
 __copyright__ = "nke Instrumentation"
-__date__ = "2024-04-26"
+__date__ = "2024-05-02"
 __version__ = "1.0.0"
 
 # Standard libraries
@@ -124,7 +124,7 @@ class DriverEMAP:
 		share.read()
 		self._pressure = share.content.string
 		if self._pressure == "?":
-			self._pressure = "0.0"
+			self._pressure = "0.00"
 		share = FileShare("navigation.txt")
 		share.read()
 		self._navigation = share.content.string
@@ -463,14 +463,14 @@ def manager(self):
 				# CTD processing
 				elif "CTD," in frame_string[0:4]:
 					# Print
-					trace_log("EMAP     > Rx=$" + frame_string)
+					# trace_log("EMAP     > Rx=$" + frame_string)
 					# Parse
 					split = data_string.split(",")
 					# Share information
 					share = FileShare("ctd.txt")
 					share.write(split[1] + "," + split[2] + "," + split[3])
 					# Store information
-					self._pressure = split[1]
+					self._pressure = f"{float(split[1]):.2f}"
 					# Share information
 					share = FileShare("pressure.txt")
 					share.write(self._pressure)
@@ -498,12 +498,15 @@ def manager(self):
 					# Share information
 					share = FileShare("synchro.txt")
 					share.write(f"{drift:.3f}")
+					share.lock()
 					# Synchronize system clock
 					rtc_driver.synchronize(utc)
 					# Reply
 					self._send_ascii("GPSACK")
 					# Wait
 					time.sleep(0.5)
+					# Release
+					share.unlock()
 
 				# PING processing
 				elif "PING" in frame_string[0:4]:

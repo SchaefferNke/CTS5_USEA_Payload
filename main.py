@@ -6,7 +6,7 @@
 
 __authors__ = "Christophe SCHAEFFER"
 __copyright__ = "nke Instrumentation"
-__date__ = "2024-04-26"
+__date__ = "2024-05-02"
 __version__ = "1.0.0"
 
 # Standard libraries
@@ -50,6 +50,10 @@ if __name__ == "__main__":
 		os.makedirs("temp")
 	if not os.path.exists("trash"):
 		os.makedirs("trash")
+
+	# Cleanup files
+	if os.path.isfile("share/synchro.txt"):
+		os.remove("share/synchro.txt")
 
 	# Restore system clock
 	rtc_driver.restore()

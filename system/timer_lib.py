@@ -6,7 +6,7 @@
 
 __authors__ = "Christophe SCHAEFFER"
 __copyright__ = "nke Instrumentation"
-__date__ = "2024-04-26"
+__date__ = "2024-05-02"
 __version__ = "1.0.0"
 
 # Standard libraries
@@ -16,6 +16,7 @@ import threading
 
 # Project libraries
 from system.trace_lib import trace_log
+from system.share_lib import FileShare
 
 # Lock list
 timer_locks = {}
@@ -41,7 +42,8 @@ class DriverTimer:
 		self._active = False
 		self._one_shot = False
 		self._duration = 0.0
-		self._end = 0.0
+		self._start = 0.0
+		self._stop = 0.0
 		if not name in timer_locks:
 			timer_locks[name] = threading.Lock()
 
@@ -59,7 +61,8 @@ class DriverTimer:
 		timer_locks[self._name].acquire()
 		# Configure
 		self._one_shot = True
-		self._end = datetime.datetime.now().timestamp() + interval
+		self._start = datetime.datetime.now().timestamp()
+		self._stop = self._start + interval
 		# Activate
 		self._active = True
 		# Release resource
@@ -80,7 +83,8 @@ class DriverTimer:
 		# Configure
 		self._one_shot = False
 		self._duration = period
-		self._end = datetime.datetime.now().timestamp() + period
+		self._start = datetime.datetime.now().timestamp()
+		self._stop = self._start + period
 		# Activate
 		self._active = True
 		# Release resource
@@ -110,10 +114,12 @@ class DriverTimer:
 		"""
 		# Wait for resource
 		timer_locks[self._name].acquire()
+		# Resynchronize
+		self._after_external_clock_synchronization()
 		# Activated
 		if self._active:
 			# Get result
-			if datetime.datetime.now().timestamp() < self._end:
+			if datetime.datetime.now().timestamp() < self._stop:
 				# Result
 				result = False
 			else:
@@ -124,8 +130,8 @@ class DriverTimer:
 				# Base-time mode
 				else:
 					# Compute next time
-					while datetime.datetime.now().timestamp() >= self._end:
-						self._end = self._end + self._duration
+					while datetime.datetime.now().timestamp() >= self._stop:
+						self._stop += self._duration
 				# Result
 				result = True
 		# Deactivated
@@ -152,11 +158,13 @@ class DriverTimer:
 		# Activate
 		self._active = True
 		# Configure
-		self._end = datetime.datetime.now().timestamp() + duration
+		self._stop = datetime.datetime.now().timestamp() + duration
 		# Wait loop
 		while True:
+			# Resynchronize
+			self._after_external_clock_synchronization()
 			# Compute remaining time
-			remaining = self._end - datetime.datetime.now().timestamp()
+			remaining = self._stop - datetime.datetime.now().timestamp()
 			# Close to the end ?
 			if remaining > 1.5:
 				time.sleep(1.0)
@@ -185,11 +193,13 @@ class DriverTimer:
 		# Activate
 		self._active = True
 		# Configure
-		self._end = date_time.timestamp()
+		self._stop = date_time.timestamp()
 		# Wait loop
 		while True:
+			# Resynchronize
+			self._after_external_clock_synchronization()
 			# Compute remaining time
-			remaining = self._end - datetime.datetime.now().timestamp()
+			remaining = self._stop - datetime.datetime.now().timestamp()
 			# Close to the end ?
 			if remaining > 1.5:
 				time.sleep(1.0)
@@ -233,7 +243,7 @@ class DriverTimer:
 		# Wait for resource
 		timer_locks[self._name].acquire()
 		# Compute remaining time
-		remaining = self._end - datetime.datetime.now().timestamp()
+		remaining = self._stop - datetime.datetime.now().timestamp()
 		# Integrity test
 		if remaining < 0.0:
 			# Elapsed
@@ -248,3 +258,28 @@ class DriverTimer:
 		timer_locks[self._name].release()
 		# Result
 		return remaining
+
+	# Resynchronize timers after external clock synchronization
+	def _after_external_clock_synchronization(self):
+		"""
+			Resynchronize timers after external clock synchronization
+
+			Parameters:
+				- timer (DriverTimer): timer to synchronize
+		"""
+		# Read shared information
+		share = FileShare("synchro.txt")
+		share.read()
+		# External synchronisation ?
+		if (not share.content.string == "") and (not share.content.string == "?"):
+			# Compute new start
+			start = share.content.timestamp
+			# New start ?
+			if not start == self._start:
+				# Compute error
+				error = -float(share.content.string)
+				# Update timer
+				self._start = start
+				self._stop += error
+				# Trace
+				# trace_log("TIMER    > Synchronize tmr_" + self._name)

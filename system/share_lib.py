@@ -6,7 +6,7 @@
 
 __authors__ = "Christophe SCHAEFFER"
 __copyright__ = "nke Instrumentation"
-__date__ = "2024-04-26"
+__date__ = "2024-05-02"
 __version__ = "1.0.0"
 
 # Standard libraries
@@ -246,6 +246,22 @@ class FileShare:
 		file = open("share/" + self._filename, "w")
 		file.write(f"{now.timestamp():.3f}" + ";" + info)
 		file.close()
+		# Release resource
+		file_locks[self._filename].release()
+
+	# Lock resource file
+	def lock(self):
+		"""
+			Lock file
+		"""
+		# Wait for resource
+		file_locks[self._filename].acquire()
+
+	# Unlock resource file
+	def unlock(self):
+		"""
+			Unlock file
+		"""
 		# Release resource
 		file_locks[self._filename].release()
 

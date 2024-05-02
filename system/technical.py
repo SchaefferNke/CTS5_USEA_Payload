@@ -6,7 +6,7 @@
 
 __authors__ = "Christophe SCHAEFFER"
 __copyright__ = "nke Instrumentation"
-__date__ = "2024-04-26"
+__date__ = "2024-05-02"
 __version__ = "1.0.0"
 
 # Standard libraries
@@ -197,7 +197,7 @@ class DriverTechnicalSystem:
 		if os.path.isfile(dest_file):
 			os.remove(dest_file)
 		# Open file
-		tech_file = open(dest_file, "w")
+		tech_file = open(dest_file, "w", encoding="utf-8", newline="\r\n")
 		# Write system info
 		if self._disk2_is_present:
 			tech_file.write(
@@ -206,7 +206,7 @@ class DriverTechnicalSystem:
 				"CPU usage=" + f"{cpu_usage:.0f}" + "/" + f"{self._cpu_usage_max:.0f}" + " %\n" +
 				"CPU temperature=" + f"{cpu_temp:.1f}" + "/" + f"{self._cpu_temp_max:.1f}" + " degC\n" +
 				"Memory usage=" + f"{mem_usage:.0f}" + "/" + f"{self._mem_usage_max:.0f}" + " %\n" +
-				"Disk_1 usage=" + f"{self._disk1_usage:.0f}" + " %\n" +
+				"Disk_1 usage=" + f"{self._disk1_usage:.1f}" + " %\n" +
 				"Disk_2 usage=" + f"{self._disk2_usage:.1f}" + " %\n" +
 				"Boot count=" + self._boot_count.content.string + "\n")
 		else:
@@ -216,7 +216,7 @@ class DriverTechnicalSystem:
 				"CPU usage=" + f"{cpu_usage:.0f}" + "/" + f"{self._cpu_usage_max:.0f}" + " %\n" +
 				"CPU temperature=" + f"{cpu_temp:.1f}" + "/" + f"{self._cpu_temp_max:.1f}" + " degC\n" +
 				"Memory usage=" + f"{mem_usage:.0f}" + "/" + f"{self._mem_usage_max:.0f}" + " %\n" +
-				"Disk_1 usage=" + f"{self._disk1_usage:.0f}" + " %\n" +
+				"Disk_1 usage=" + f"{self._disk1_usage:.1f}" + " %\n" +
 				"Boot count=" + self._boot_count.content.string + "\n")
 		# Write power info
 		tech_file.write(
@@ -234,6 +234,38 @@ class DriverTechnicalSystem:
 			os.remove(user_file)
 		# Close file
 		tech_file.close()
+
+	# Save metadata
+	def metadata_save(self):
+		"""
+			Save metadata into technical file
+		"""
+		# Create names
+		dest_file = "payload/payload.xml"
+		# Remove dst file
+		if os.path.isfile(dest_file):
+			os.remove(dest_file)
+		# Open file
+		metadata_file = open(dest_file, "w", encoding="utf-8", newline="\r\n")
+		# Write system info
+		if system_driver.disk2_is_present():
+			metadata_file.write(
+				"\t\t<MEASURE_BOARD " +
+				"Model=\"PAYLOAD\" " +
+				"Firmware=\"" + USEA_VERSION + "-" + self._payload.get_version() + "\" " +
+				"Driver=\"" + self._payload.source_code + "\" " +
+				"SDCard=\"Installed\"" +
+				"/>\n")
+		else:
+			metadata_file.write(
+				"\t\t<MEASURE_BOARD " +
+				"Model=\"PAYLOAD\" " +
+				"Firmware=\"" + USEA_VERSION + "-" + self._payload.get_version() + "\" " +
+				"Driver=\"" + self._payload.source_code + "\" " +
+				"SDCard=\"Not installed\" " +
+				"/>\n")
+		# Close file
+		metadata_file.close()
 
 	# Read boot count
 	def boot_count(self) -> str:
@@ -353,7 +385,7 @@ class DriverTechnicalUser:
 			if os.path.isfile(error_dst_name):
 				os.remove(error_dst_name)
 			# Write content
-			file_dst = open(error_dst_name, "w")
+			file_dst = open(error_dst_name, "w", encoding="utf-8", newline="\r\n")
 			file_dst.write("[ALARM]\n")
 			if self._is_broken:
 				file_dst.write(self._name + " broken\n")
@@ -390,6 +422,9 @@ def manager(self):
 
 	# Start timer
 	self._timer.start_base_time(1.0)
+
+	# Create metadata file
+	self.metadata_save()
 
 	# Loop
 	try:
