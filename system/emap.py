@@ -6,7 +6,7 @@
 
 __authors__ = "Christophe SCHAEFFER"
 __copyright__ = "nke Instrumentation"
-__date__ = "2024-05-02"
+__date__ = "2024-05-06"
 __version__ = "1.0.0"
 
 # Standard libraries
@@ -181,13 +181,17 @@ class DriverEMAP:
 			sleep = "Enabled"
 		else:
 			sleep = "Disabled"
+		# User information
+		user_info = FileShare("user.txt")
+		user_info.read()
 		# Save
 		result = {
 			"profile": self._profile,
 			"navigation": navigation,
 			"pressure": self._pressure,
 			"boot count": technical_driver.boot_count(),
-			"sleep": sleep}
+			"sleep": sleep,
+			"user": user_info.content.string}
 		# Result
 		return result
 
@@ -204,6 +208,19 @@ class DriverEMAP:
 		time.sleep(0.05)
 		self._serial.write(frame_ascii.encode("ascii"))
 		trace_log("EMAP     > Tx=" + frame_ascii)
+
+	# Send frame over EMAP link
+	def _send_ascii_no_trace(self, frame: str):
+		"""
+			Send a frame on the serial port
+
+			Parameters:
+				- frame (str): frame to send
+		"""
+		checksum = nmea_checksum_compute_ascii(frame, len(frame))
+		frame_ascii = "$" + frame + "*%0*X" % (2, checksum)
+		time.sleep(0.05)
+		self._serial.write(frame_ascii.encode("ascii"))
 
 	def _send_binary(self, frame: str, content: bytes):
 		"""
@@ -444,21 +461,26 @@ def manager(self):
 
 				# CTRL processing
 				elif "CTRL," in frame_string[0:5]:
-					# Print
-					trace_log("EMAP     > Rx=$" + frame_string)
 					# Parse
 					split = data_string.split(",")
-					# Share information
+					# Hydraulic action
 					if split[1] != "NONE":
+						# Share information
 						share = FileShare("ctrl.txt")
 						share.write(split[1])
+						# Print
+						trace_log("EMAP     > Rx=$" + frame_string)
+						# Reply
+						self._send_ascii("CTRLACK")
+					# No action
+					else:
+						# Reply
+						self._send_ascii_no_trace("CTRLACK")
 					# Store information
 					self._pressure = split[2]
 					# Share information
 					share = FileShare("pressure.txt")
 					share.write(self._pressure)
-					# Reply
-					self._send_ascii("CTRLACK")
 
 				# CTD processing
 				elif "CTD," in frame_string[0:4]:

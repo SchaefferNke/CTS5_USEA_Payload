@@ -6,7 +6,7 @@
 
 __authors__ = "Christophe SCHAEFFER"
 __copyright__ = "nke Instrumentation"
-__date__ = "2024-05-02"
+__date__ = "2024-05-06"
 __version__ = "1.0.0"
 
 # Standard libraries
@@ -77,7 +77,7 @@ class DriverTimer:
 				- period (float): base time (sec)
 		"""
 		# Trace
-		# trace_log("TIMER    > Start tmr_" + self._name + " base time " + str(period) + " sec")
+		trace_log("TIMER    > Start tmr_" + self._name + " base time " + str(period) + " sec")
 		# Wait for resource
 		timer_locks[self._name].acquire()
 		# Configure
@@ -114,10 +114,10 @@ class DriverTimer:
 		"""
 		# Wait for resource
 		timer_locks[self._name].acquire()
-		# Resynchronize
-		self._after_external_clock_synchronization()
 		# Activated
 		if self._active:
+			# Resynchronize
+			self._after_external_clock_synchronization()
 			# Get result
 			if datetime.datetime.now().timestamp() < self._stop:
 				# Result
@@ -273,13 +273,15 @@ class DriverTimer:
 		# External synchronisation ?
 		if (not share.content.string == "") and (not share.content.string == "?"):
 			# Compute new start
-			start = share.content.timestamp
+			new_start = share.content.timestamp
 			# New start ?
-			if not start == self._start:
-				# Compute error
-				error = -float(share.content.string)
+			if not new_start == self._start:
+				# Now
+				now = datetime.datetime.now().timestamp()
+				# Compute remaining time
+				remaining = self._stop - now - float(share.content.string)
 				# Update timer
-				self._start = start
-				self._stop += error
+				self._start = new_start
+				self._stop = now + remaining
 				# Trace
-				# trace_log("TIMER    > Synchronize tmr_" + self._name)
+				trace_log("TIMER    > Synchronize tmr_" + self._name + " (" + f"{remaining:.1f}" + " sec)")

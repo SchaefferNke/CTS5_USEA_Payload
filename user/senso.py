@@ -6,7 +6,7 @@
 
 __authors__ = "Christophe SCHAEFFER"
 __copyright__ = "nke Instrumentation"
-__date__ = "2024-05-02"
+__date__ = "2024-05-06"
 __version__ = "1.0.0"
 
 # Standard libraries
@@ -26,7 +26,7 @@ if __name__ == "__main__":
 from system.io_lib import DriverIOOutput, DriverIOInput
 from system.serial_lib import DriverSerial
 from system.timer_lib import DriverTimer
-from system.share_lib import DataShare, get_navigation, get_profile
+from system.share_lib import FileShare, DataShare, get_navigation, get_profile
 from system.technical import DriverTechnicalUser
 from system.trace_lib import trace_log
 from system.const import *
@@ -171,6 +171,27 @@ class DriverSenso:
 		# Acquire
 		return acquisition_process(self, "Acquire")
 
+	# Share information string
+	def share_info(self):
+		"""
+			Share information string
+		"""
+		# Share information
+		share = FileShare("user.txt")
+		# Processing step
+		if self._step == USEA_PAYLOAD_STEP_IDLE:
+			share.write("IDLE")
+		elif self._step == USEA_PAYLOAD_STEP_RECORD:
+			share.write("RECORD")
+		elif self._step == USEA_PAYLOAD_STEP_RECORDING:
+			share.write("RECORDING")
+		elif self._step == USEA_PAYLOAD_STEP_SURFACE:
+			share.write("SURFACE")
+		elif self._step == USEA_PAYLOAD_STEP_TREAT:
+			share.write("TREAT")
+		else:
+			share.write("?")
+
 
 # Class definition
 class TestSenso:
@@ -285,6 +306,8 @@ def manager(self):
 	self._timer.start_base_time(15.0)
 	# Share step
 	self._share_step.write(self._step)
+	# Share info
+	self.share_info()
 
 	# Loop
 	try:
@@ -314,6 +337,8 @@ def manager(self):
 					self._step = USEA_PAYLOAD_STEP_RECORD
 					# Share step
 					self._share_step.write(self._step)
+					# Share info
+					self.share_info()
 					# Reset error flags counters
 					self._tech.diagnosis_reset()
 				# Wait
@@ -334,6 +359,8 @@ def manager(self):
 						if self._timer.is_tick():
 							# Recording in progress
 							self._step = USEA_PAYLOAD_STEP_RECORDING
+							# Share info
+							self.share_info()
 							# Acquire
 							if self.acquire_sample():
 								# Print
@@ -356,6 +383,8 @@ def manager(self):
 									trace_log("SENSO    > Broken")
 							# Recording finished
 							self._step = USEA_PAYLOAD_STEP_RECORD
+							# Share info
+							self.share_info()
 						# Wait
 						else:
 							time.sleep(0.1)
@@ -373,6 +402,8 @@ def manager(self):
 					self._step = USEA_PAYLOAD_STEP_SURFACE
 					# Share step
 					self._share_step.write(self._step)
+					# Share info
+					self.share_info()
 				# Other
 				else:
 					# Print
@@ -381,6 +412,8 @@ def manager(self):
 					self._step = USEA_PAYLOAD_STEP_IDLE
 					# Share step
 					self._share_step.write(self._step)
+					# Share info
+					self.share_info()
 
 			# Surface
 			elif self._step == USEA_PAYLOAD_STEP_SURFACE:
@@ -392,6 +425,8 @@ def manager(self):
 					self._step = USEA_PAYLOAD_STEP_TREAT
 					# Share step
 					self._share_step.write(self._step)
+					# Share info
+					self.share_info()
 					# Simulate treatment delay
 					# TODO: for test
 					time.sleep(5.0)
@@ -408,6 +443,8 @@ def manager(self):
 					self._step = USEA_PAYLOAD_STEP_IDLE
 					# Share step
 					self._share_step.write(self._step)
+					# Share info
+					self.share_info()
 				# Surface step
 				elif (
 					(navigation == USEA_NAVIGATION_STATE_SUB_SURFACE) or
@@ -421,6 +458,8 @@ def manager(self):
 					self._step = USEA_PAYLOAD_STEP_IDLE
 					# Share step
 					self._share_step.write(self._step)
+					# Share info
+					self.share_info()
 
 			# Other
 			else:
