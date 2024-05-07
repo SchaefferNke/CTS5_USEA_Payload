@@ -6,7 +6,7 @@
 
 __authors__ = "Christophe SCHAEFFER"
 __copyright__ = "nke Instrumentation"
-__date__ = "2024-05-06"
+__date__ = "2024-05-07"
 __version__ = "1.0.0"
 
 # Standard libraries
@@ -262,7 +262,7 @@ class DriverTechnicalSystem:
 				"Model=\"PAYLOAD\" " +
 				"Firmware=\"" + USEA_VERSION + "-" + self._payload.get_version() + "\" " +
 				"Driver=\"" + self._payload.source_code + "\" " +
-				"SDCard=\"Not installed\" " +
+				"SDCard=\"Not installed\"" +
 				"/>\n")
 		# Close file
 		metadata_file.close()

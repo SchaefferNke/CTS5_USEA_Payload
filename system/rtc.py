@@ -6,7 +6,7 @@
 
 __authors__ = "Christophe SCHAEFFER"
 __copyright__ = "nke Instrumentation"
-__date__ = "2024-05-06"
+__date__ = "2024-05-07"
 __version__ = "1.0.0"
 
 # Standard libraries
@@ -61,6 +61,8 @@ class DriverRTC:
 		trace_log("RTC      > Awake system in " + str(delay) + " seconds")
 		# Program wakeup
 		system_driver.program_wakealarm(delay)
+		# Trace
+		trace_log("RTC      > Awake")
 
 
 # Create resources

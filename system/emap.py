@@ -6,7 +6,7 @@
 
 __authors__ = "Christophe SCHAEFFER"
 __copyright__ = "nke Instrumentation"
-__date__ = "2024-05-06"
+__date__ = "2024-05-07"
 __version__ = "1.0.0"
 
 # Standard libraries
@@ -503,6 +503,8 @@ def manager(self):
 				elif "GPS," in frame_string[0:4]:
 					# Print
 					trace_log("EMAP     > Rx=$" + frame_string)
+					# Reply
+					self._send_ascii("GPSACK")
 					# Parse
 					split = data_string.split(",")
 					# Timestamp
@@ -520,14 +522,11 @@ def manager(self):
 					# Share information
 					share = FileShare("synchro.txt")
 					share.write(f"{drift:.3f}")
+					# Lock for other threads
 					share.lock()
 					# Synchronize system clock
 					rtc_driver.synchronize(utc)
-					# Reply
-					self._send_ascii("GPSACK")
-					# Wait
-					time.sleep(0.5)
-					# Release
+					# Unlock
 					share.unlock()
 
 				# PING processing
