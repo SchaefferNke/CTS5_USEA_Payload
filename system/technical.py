@@ -6,7 +6,7 @@
 
 __authors__ = "Christophe SCHAEFFER"
 __copyright__ = "nke Instrumentation"
-__date__ = "2024-05-07"
+__date__ = "2024-05-13"
 __version__ = "1.0.0"
 
 # Standard libraries
@@ -64,6 +64,8 @@ class DriverTechnicalSystem:
 		self._disk2_usage = 0.0
 		# Check SD card
 		self._disk2_is_present = False
+		# Power-on alarm
+		self._power_on = True
 
 	# Reset diagnosis counters
 	def diagnosis_reset(self):
@@ -232,6 +234,15 @@ class DriverTechnicalSystem:
 			tech_file.write(content)
 			# Remove user file
 			os.remove(user_file)
+		else:
+			# Write alarm
+			if self._power_on:
+				# Clear flag
+				self._power_on = False
+				# Write alarm info
+				tech_file.write(
+					"[ALARM]\n" +
+					"Power-on (PAYLOAD)\n")
 		# Close file
 		tech_file.close()
 
