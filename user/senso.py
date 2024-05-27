@@ -6,7 +6,7 @@
 
 __authors__ = "Christophe SCHAEFFER"
 __copyright__ = "nke Instrumentation"
-__date__ = "2024-05-13"
+__date__ = "2024-05-27"
 __version__ = "1.0.0"
 
 # Standard libraries
@@ -241,7 +241,7 @@ class TestSenso:
 			Test process
 
 			Returns:
-				- str: result string (eg: "senso   : ok", xxxxxxxx: ok/error format)
+				- str: result string (eg: "senso   : ok", senso   : ok/error format)
 		"""
 		# Acquire
 		if acquisition_process(self, "Autotest"):

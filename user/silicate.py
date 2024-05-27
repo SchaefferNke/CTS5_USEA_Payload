@@ -6,7 +6,7 @@
 
 __authors__ = "Christophe SCHAEFFER"
 __copyright__ = "nke Instrumentation"
-__date__ = "2024-02-02"
+__date__ = "2024-05-27"
 __version__ = "1.0.0"
 
 # Standard libraries
@@ -107,6 +107,19 @@ class DriverSilicate:
 		self._serial.write(frame_ascii.encode("ascii"))
 		trace_log("SILICATE > Tx=" + frame_ascii)
 
+	# Test sensor
+	def test(self) -> str:
+		"""
+			Test process
+
+			Returns:
+				- str: result string (eg: "silicate: ok", silicate: ok/error format)
+		"""
+		# Download files
+		emap(self)
+		# Reply
+		return "silicate: ok"
+
 	# Run task
 	def run(self):
 		"""
@@ -126,11 +139,23 @@ def emap(self):
 	index_cpt = 0
 
 	# Start timer
-	self._timer.start_one_shot(60.0)
+	self._timer.start_one_shot(120.0)
 
+	# Activate UART
+	self._io_power.set_on()
 	# Open serial port
 	if self._serial.open():
 		try:
+
+			# Awake sensor
+			awake_ascii = "_"
+			time.sleep(1.0)
+			self._serial.write(awake_ascii.encode("ascii"))
+			time.sleep(1.0)
+			self._serial.write(awake_ascii.encode("ascii"))
+			time.sleep(1.0)
+			self._serial.write(awake_ascii.encode("ascii"))
+			time.sleep(1.0)
 
 			# Timestamp
 			now = datetime.datetime.now()
@@ -252,6 +277,8 @@ def emap(self):
 
 	# Close serial port
 	self._serial.close()
+	# Deactivate UART
+	self._io_power.set_off()
 
 
 # Compression
@@ -303,6 +330,9 @@ def manager(self):
 	# Share step
 	self._share_step.write(self._step)
 
+	# Sleep
+	self._io_power.set_off()
+
 	# Loop
 	try:
 		while True:
@@ -314,9 +344,11 @@ def manager(self):
 			if self._step == USEA_PAYLOAD_STEP_IDLE:
 				# Parking step
 				if navigation == USEA_NAVIGATION_STATE_PARK:
+					# Wait
+					time.sleep(1.0)
 					# Print
 					trace_log("SILICATE > Start acquisition")
-					# Power-on
+					# Awake
 					self._io_power.set_on()
 					# Start recording
 					self._step = USEA_PAYLOAD_STEP_RECORD
@@ -330,9 +362,11 @@ def manager(self):
 			elif self._step == USEA_PAYLOAD_STEP_RECORD:
 				# Ascent
 				if navigation == USEA_NAVIGATION_STATE_ASCENT:
+					# Wait
+					time.sleep(1.0)
 					# Print
 					trace_log("SILICATE > Stop acquisition")
-					# Power-on
+					# Sleep
 					self._io_power.set_off()
 					# Stop recording
 					self._step = USEA_PAYLOAD_STEP_SURFACE
@@ -346,6 +380,8 @@ def manager(self):
 			elif self._step == USEA_PAYLOAD_STEP_SURFACE:
 				# Treatment step
 				if navigation == USEA_NAVIGATION_STATE_DATA_PROCESSING:
+					# Wait
+					time.sleep(1.0)
 					# Print
 					trace_log("SILICATE > Start download")
 					# Download files
