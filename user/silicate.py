@@ -6,7 +6,7 @@
 
 __authors__ = "Christophe SCHAEFFER"
 __copyright__ = "nke Instrumentation"
-__date__ = "2024-05-27"
+__date__ = "2024-05-30"
 __version__ = "1.0.0"
 
 # Standard libraries
@@ -141,21 +141,18 @@ def emap(self):
 	# Start timer
 	self._timer.start_one_shot(120.0)
 
+	# Wait
+	time.sleep(0.25)
+	# Trace
+	trace_log("SILICATE > Enable")
 	# Activate UART
 	self._io_power.set_on()
+	# Wait
+	time.sleep(2.5)
+
 	# Open serial port
 	if self._serial.open():
 		try:
-
-			# Awake sensor
-			awake_ascii = "_"
-			time.sleep(1.0)
-			self._serial.write(awake_ascii.encode("ascii"))
-			time.sleep(1.0)
-			self._serial.write(awake_ascii.encode("ascii"))
-			time.sleep(1.0)
-			self._serial.write(awake_ascii.encode("ascii"))
-			time.sleep(1.0)
 
 			# Timestamp
 			now = datetime.datetime.now()
@@ -214,7 +211,7 @@ def emap(self):
 						self.send_ascii("GET," + split[2] + ",531")
 					# Exit
 					else:
-						return
+						break
 
 				# GETACK processing
 				elif "GETACK" in frame_string[0:6]:
@@ -277,8 +274,14 @@ def emap(self):
 
 	# Close serial port
 	self._serial.close()
+	# Wait
+	time.sleep(0.25)
+	# Trace
+	trace_log("SILICATE > Disable")
 	# Deactivate UART
 	self._io_power.set_off()
+	# Wait
+	time.sleep(2.5)
 
 
 # Compression
@@ -383,17 +386,19 @@ def manager(self):
 					# Wait
 					time.sleep(1.0)
 					# Print
-					trace_log("SILICATE > Start download")
+					trace_log("SILICATE > Data download")
 					# Download files
 					emap(self)
 					# Print
-					trace_log("SILICATE > Stop download")
+					trace_log("SILICATE > Data compression")
+					# Compress files
+					compress()
+					# Print
+					trace_log("SILICATE > Data ready")
 					# Idle
 					self._step = USEA_PAYLOAD_STEP_IDLE
 					# Share step
 					self._share_step.write(self._step)
-					# Compress files
-					compress()
 
 				# Wait
 				else:

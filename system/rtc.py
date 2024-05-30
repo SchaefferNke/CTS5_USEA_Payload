@@ -6,7 +6,7 @@
 
 __authors__ = "Christophe SCHAEFFER"
 __copyright__ = "nke Instrumentation"
-__date__ = "2024-05-27"
+__date__ = "2024-05-30"
 __version__ = "1.0.0"
 
 # Standard libraries
@@ -31,6 +31,13 @@ class DriverRTC:
 		"""
 		# Synchronize system clock to hardware RTC
 		system_driver.clock_restore()
+		# Check date
+		if datetime.datetime.now().date().year < 2024:
+			# Default date
+			now = datetime.datetime.now()
+			utc = now.replace(year=2024, month=5, day=29, hour=12, minute=0, second=0, microsecond=0)
+			# Set system clock
+			system_driver.clock_synchronize(utc)
 		# Trace
 		trace_log("RTC      > Restore=" + datetime.datetime.now().strftime("20%y-%m-%d %H:%M:%S"))
 

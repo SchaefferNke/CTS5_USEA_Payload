@@ -6,7 +6,7 @@
 
 __authors__ = "Christophe SCHAEFFER"
 __copyright__ = "nke Instrumentation"
-__date__ = "2024-05-27"
+__date__ = "2024-05-30"
 __version__ = "1.0.0"
 
 # Standard libraries
@@ -334,6 +334,14 @@ def update_application():
 	# Create names
 	zip_path = "./temp"
 	zip_src_name = "payload_update.zip"
+	# Clean directory
+	existing_files = os.listdir(zip_path)
+	# For all current files
+	for existing_file_name in existing_files:
+		# Except update file
+		if not existing_file_name == zip_src_name:
+			# Remove file
+			os.remove(zip_path + "/" + existing_file_name)
 	# Open archive
 	zip_file = zipfile.ZipFile(zip_path + "/" + zip_src_name, "r")
 	# Extract files
@@ -358,6 +366,8 @@ def update_application():
 			os.remove(current_file_name)
 		# Move file
 		os.rename(zip_path + "/" + new_file_name, current_file_name)
+		# Wait
+		time.sleep(0.025)
 		# Trace
 		trace_log("EMAP     > Update application file: " + current_file_name)
 		# Update done
