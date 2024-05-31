@@ -6,7 +6,7 @@
 
 __authors__ = "Christophe SCHAEFFER"
 __copyright__ = "nke Instrumentation"
-__date__ = "2024-05-30"
+__date__ = "2024-05-31"
 __version__ = "1.0.0"
 
 # Standard libraries
@@ -167,7 +167,14 @@ def emap(self):
 					time.sleep(0.1)
 					continue
 				# Wait start of frame
-				if self._serial.read(1).decode() != "$":
+				try:
+					# Read char
+					start_char = self._serial.read(1).decode()
+					# Test start of frame
+					if start_char != "$":
+						continue
+				# Bad character
+				except UnicodeDecodeError:
 					continue
 
 				# Read frame

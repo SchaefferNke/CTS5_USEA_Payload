@@ -6,7 +6,7 @@
 
 __authors__ = "Christophe SCHAEFFER"
 __copyright__ = "nke Instrumentation"
-__date__ = "2024-05-30"
+__date__ = "2024-05-31"
 __version__ = "1.0.0"
 
 # Standard libraries
@@ -411,7 +411,14 @@ def manager(self):
 				# Start timer
 				self._timer.start_one_shot(EMAP_WAKEUP_DURATION)
 				# Wait start of frame
-				if self._serial.read(1).decode() != "$":
+				try:
+					# Read char
+					start_char = self._serial.read(1).decode()
+					# Test start of frame
+					if start_char != "$":
+						continue
+				# Bad character
+				except UnicodeDecodeError:
 					continue
 
 				# Read frame
@@ -614,7 +621,7 @@ def manager(self):
 						# Restart
 						system_driver.reboot()
 					# Activate sleep mode
-					elif (split[2] == "!payload-sleep:true") or (split[2] == "!payload-sleep:True"):
+					elif split[2] == "!payload-sleep:1":
 						# Save
 						if not os.path.isfile("share/sleep.txt"):
 							file_request = open("share/sleep.txt", "w")
@@ -622,18 +629,25 @@ def manager(self):
 						# Reply
 						self._send_ascii("COMMANDACK,12,Command okay")
 					# Deactivate sleep mode
-					elif (split[2] == "!payload-sleep:false") or (split[2] == "!payload-sleep:False"):
+					elif split[2] == "!payload-sleep:0":
 						# Save
 						if os.path.isfile("share/sleep.txt"):
 							os.remove("share/sleep.txt")
 						# Reply
 						self._send_ascii("COMMANDACK,12,Command okay")
 					# Logger request
-					elif split[2] == "!payload-logger":
+					elif split[2] == "!payload-logger:1":
 						# Test request
 						if not os.path.isfile("temp/logger.txt"):
 							file_request = open("temp/logger.txt", "w")
 							file_request.close()
+						# Reply
+						self._send_ascii("COMMANDACK,12,Command okay")
+					# Cancel logger request
+					elif split[2] == "!payload-logger:0":
+						# Save
+						if os.path.isfile("temp/logger.txt"):
+							os.remove("temp/logger.txt")
 						# Reply
 						self._send_ascii("COMMANDACK,12,Command okay")
 					# Error
