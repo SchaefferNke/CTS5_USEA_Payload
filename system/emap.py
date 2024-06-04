@@ -6,7 +6,7 @@
 
 __authors__ = "Christophe SCHAEFFER"
 __copyright__ = "nke Instrumentation"
-__date__ = "2024-05-31"
+__date__ = "2024-06-04"
 __version__ = "1.0.0"
 
 # Standard libraries
@@ -661,7 +661,7 @@ def manager(self):
 					# Logger request
 					if os.path.isfile("temp/logger.txt"):
 						# Prepare logger extract
-						logger_extract(32 * 1024)
+						logger_extract(64 * 1024)
 						# Remove request
 						os.remove("temp/logger.txt")
 					# Scan directories

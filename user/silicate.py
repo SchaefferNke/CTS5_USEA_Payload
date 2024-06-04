@@ -6,7 +6,7 @@
 
 __authors__ = "Christophe SCHAEFFER"
 __copyright__ = "nke Instrumentation"
-__date__ = "2024-05-31"
+__date__ = "2024-06-04"
 __version__ = "1.0.0"
 
 # Standard libraries
@@ -311,13 +311,13 @@ def compress():
 		os.remove(zip_dst_name)
 	# Create archive
 	zip_file = zipfile.ZipFile(zip_tmp_name, "w")
-	# For files in folder
-	while True:
-		# Scan directory
-		if not os.listdir(zip_src_name):
-			break
-		# File name
-		file_name = os.listdir(zip_src_name)[0]
+	# List files
+	files = os.listdir(zip_src_name)
+	# For all new files
+	for file_name in files:
+		# Only *.csv files
+		if file_name.find(".csv") == -1:
+			continue
 		# Add file
 		zip_file.write(zip_src_name + file_name, file_name, compress_type=zipfile.ZIP_DEFLATED)
 		# Remove file
