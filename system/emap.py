@@ -6,7 +6,7 @@
 
 __authors__ = "Christophe SCHAEFFER"
 __copyright__ = "nke Instrumentation"
-__date__ = "2024-06-04"
+__date__ = "2024-06-07"
 __version__ = "1.0.0"
 
 # Standard libraries
@@ -16,6 +16,8 @@ import time
 import datetime
 import zipfile
 import traceback
+from checksumdir import dirhash
+from simple_file_checksum import get_checksum
 
 if __name__ == "__main__":
 	# Process launched outside main
@@ -562,10 +564,22 @@ def manager(self):
 					trace_log("EMAP     > Rx=$" + frame_string)
 					# Parse
 					split = data_string.split(",")
-					# User version
+					# Version
 					if split[2] == "?payload-version":
 						# Get version
 						reply = "Version " + USEA_VERSION + "-" + self._payload.get_version()
+						# Reply
+						self._send_ascii("COMMANDACK," + str(len(reply)) + "," + reply)
+					# Checksum
+					elif split[2] == "?payload-checksum":
+						# Compute checksums
+						chk_1 = get_checksum("main.py", algorithm="md5")
+						chk_2 = dirhash("system", "md5", excluded_extensions=["pyc", "html", "ico", "woff", "js", "css"])
+						chk_3 = get_checksum("user/" + user_driver.source_code, algorithm="md5")
+						str_1 = hex(int(chk_1[0:8], 16) ^ int(chk_1[8:16], 16) ^ int(chk_1[16:24], 16) ^ int(chk_1[24:32], 16))
+						str_2 = hex(int(chk_2[0:8], 16) ^ int(chk_2[8:16], 16) ^ int(chk_2[16:24], 16) ^ int(chk_2[24:32], 16))
+						str_3 = hex(int(chk_3[0:8], 16) ^ int(chk_3[8:16], 16) ^ int(chk_3[16:24], 16) ^ int(chk_3[24:32], 16))
+						reply = str_1 + "-" + str_2 + "-" + str_3
 						# Reply
 						self._send_ascii("COMMANDACK," + str(len(reply)) + "," + reply)
 					# Configuration

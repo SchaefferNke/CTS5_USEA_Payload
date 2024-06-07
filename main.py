@@ -6,7 +6,7 @@
 
 __authors__ = "Christophe SCHAEFFER"
 __copyright__ = "nke Instrumentation"
-__date__ = "2024-06-04"
+__date__ = "2024-06-07"
 __version__ = "1.0.0"
 
 # Standard libraries
@@ -25,7 +25,6 @@ from system.ctd import ctd_driver
 from system.emap import emap_driver
 from system.config import user_driver
 from system.trace_lib import trace_log
-
 
 # Main function
 if __name__ == "__main__":
