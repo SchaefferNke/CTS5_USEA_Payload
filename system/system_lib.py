@@ -6,8 +6,8 @@
 
 __authors__ = "Christophe SCHAEFFER"
 __copyright__ = "nke Instrumentation"
-__date__ = "2024-06-07"
-__version__ = "1.0.0"
+__date__ = "2026-02-11"
+__version__ = "1.0.1"
 
 # Standard libraries
 import os
@@ -35,9 +35,11 @@ class DriverSystem:
 		if not os.name == "nt":
 			# Refresh watchdog counter
 			self._watchdog_cpt += 1
-			file_watchdog = open("/tmp/_watchdog", "w")
-			file_watchdog.write(str(self._watchdog_cpt))
-			file_watchdog.close()
+			try:
+				with open("/tmp/_watchdog", "w") as file_watchdog:
+					file_watchdog.write(str(self._watchdog_cpt))
+			except IOError:
+				return
 
 	# System boot validation
 	@staticmethod
@@ -47,8 +49,11 @@ class DriverSystem:
 		"""
 		if not os.name == "nt":
 			# Save
-			subprocess.run(["fw_setenv", "bootcount",         "0"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-			subprocess.run(["fw_setenv", "upgrade_available", "0"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+			try:
+				subprocess.run(["fw_setenv", "bootcount",         "0"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True)
+				subprocess.run(["fw_setenv", "upgrade_available", "0"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True)
+			except subprocess.CalledProcessError:
+				return
 
 	# Reboot system
 	@staticmethod
@@ -85,11 +90,11 @@ class DriverSystem:
 			# Synchronize hardware RTC to system clock
 			os.system("sudo hwclock -w")
 
-	# Program wakealarm
+	# Program wakealarm in sleep mode (S3)
 	@staticmethod
-	def program_wakealarm(delay: int):
+	def program_wakealarm_sleep(delay: int):
 		"""
-			Program wakealarm
+			Program wakealarm (Suspend-to-RAM)
 
 			Parameters:
 				- delay (int): delay time from now (seconds)
@@ -101,6 +106,26 @@ class DriverSystem:
 			time.sleep(0.25)
 			# Program wakeup
 			os.system("sudo rtcwake -d /dev/rtc0 -m mem -s " + str(delay))
+		else:
+			# Wait
+			time.sleep(delay)
+
+	# Program wakealarm in standby mode (S1)
+	@staticmethod
+	def program_wakealarm_standby(delay: int):
+		"""
+			Program wakealarm (Standby)
+
+			Parameters:
+				- delay (int): delay time from now (seconds)
+		"""
+		if not os.name == "nt":
+			# Flush files buffering
+			os.system("sudo sync")
+			# Wait
+			time.sleep(0.25)
+			# Program wakeup
+			os.system("sudo rtcwake -d /dev/rtc0 -m standby -s " + str(delay))
 		else:
 			# Wait
 			time.sleep(delay)
@@ -182,11 +207,11 @@ class DriverSystem:
 			# Set output off
 			os.system("sudo gpioset " + name + "=0")
 
-	# Test input state
+	# Get input state
 	@staticmethod
-	def input_is_on(name: str) -> bool:
+	def input_get(name: str) -> bool:
 		"""
-			Test the input state
+			Get the input state
 
 			Parameters:
 				- name (str): GPIO name (eg: "gpiochip2 8")
@@ -196,13 +221,16 @@ class DriverSystem:
 		"""
 		if not os.name == "nt":
 			# Read input
-			result = os.system("sudo gpioget " + name + " >/dev/null 2>&1")
+			cmd = "sudo gpioget " + name
+			cmd_result = subprocess.run(cmd.split(), capture_output=True)
+			split = cmd_result.stdout.decode().split()
+			result = split[0]
 		else:
 			result = "1"
 		# Result
-		if result == "1":
-			return True
-		return False
+		if result == "0":
+			return False
+		return True
 
 	# Format GPIO string for system access
 	@staticmethod

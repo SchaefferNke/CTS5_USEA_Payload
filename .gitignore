@@ -11,3 +11,7 @@ trash/
 .idea/workspace.xml
 init_outputs.sh
 *.db
+user/tridente.py
+user/fluo4.py
+user/user_fluo4.ini
+user/user_tridente.ini

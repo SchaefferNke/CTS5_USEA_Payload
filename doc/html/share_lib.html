@@ -8,7 +8,7 @@
     <title>share_lib &#8212; USEA-Payload documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="_static/nature.css?v=2388c7e7" />
-    <script src="_static/documentation_options.js?v=8d563738"></script>
+    <script src="_static/documentation_options.js?v=292eb321"></script>
     <script src="_static/doctools.js?v=888ff710"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="icon" href="_static/Picto32x32.ico"/>
@@ -70,9 +70,13 @@
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="share_lib.DataShare.read">
-<span class="sig-name descname"><span class="pre">read</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">object</span></span></span><a class="headerlink" href="#share_lib.DataShare.read" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">read</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">object</span></span></span><a class="headerlink" href="#share_lib.DataShare.read" title="Link to this definition">¶</a></dt>
 <dd><p>Read a variable</p>
 <dl class="simple">
+<dt>Parameters:</dt><dd><ul class="simple">
+<li><p>timeout (float): timeout value</p></li>
+</ul>
+</dd>
 <dt>Returns:</dt><dd><ul class="simple">
 <li><p>object: data object</p></li>
 </ul>
@@ -82,29 +86,21 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="share_lib.DataShare.write">
-<span class="sig-name descname"><span class="pre">write</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#share_lib.DataShare.write" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">write</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#share_lib.DataShare.write" title="Link to this definition">¶</a></dt>
 <dd><p>Write a variable</p>
 <dl class="simple">
 <dt>Parameters:</dt><dd><ul class="simple">
 <li><p>value (object): data object</p></li>
+<li><p>timeout (float): timeout value</p></li>
+</ul>
+</dd>
+<dt>Returns:</dt><dd><ul class="simple">
+<li><p>bool: False in case of timeout</p></li>
 </ul>
 </dd>
 </dl>
 </dd></dl>
 
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="share_lib.DataShareContent">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">share_lib.</span></span><span class="sig-name descname"><span class="pre">DataShareContent</span></span><a class="headerlink" href="#share_lib.DataShareContent" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>DataShareContent class: shared variable</p>
-<dl class="simple">
-<dt>Attributes:</dt><dd><ul class="simple">
-<li><p>value (object): variable object</p></li>
-</ul>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="py class">
@@ -152,6 +148,22 @@
 <dd><p>Wait until the event is set</p>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="share_lib.EventShare.wait_timeout">
+<span class="sig-name descname"><span class="pre">wait_timeout</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#share_lib.EventShare.wait_timeout" title="Link to this definition">¶</a></dt>
+<dd><p>Wait until the event is set</p>
+<dl class="simple">
+<dt>Attributes:</dt><dd><ul class="simple">
+<li><p>timeout (float): timeout value</p></li>
+</ul>
+</dd>
+<dt>Returns:</dt><dd><ul class="simple">
+<li><p>bool: False in case of timeout</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
@@ -170,10 +182,30 @@
 </dd>
 </dl>
 <dl class="py method">
+<dt class="sig sig-object py" id="share_lib.FileShare.lock">
+<span class="sig-name descname"><span class="pre">lock</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#share_lib.FileShare.lock" title="Link to this definition">¶</a></dt>
+<dd><p>Lock file</p>
+<dl class="simple">
+<dt>Parameters:</dt><dd><ul class="simple">
+<li><p>timeout (float): timeout value</p></li>
+</ul>
+</dd>
+<dt>Returns:</dt><dd><ul class="simple">
+<li><p>bool: False in case of timeout</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="share_lib.FileShare.read">
-<span class="sig-name descname"><span class="pre">read</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">object</span></span></span><a class="headerlink" href="#share_lib.FileShare.read" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">read</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">object</span></span></span><a class="headerlink" href="#share_lib.FileShare.read" title="Link to this definition">¶</a></dt>
 <dd><p>Read from file</p>
 <dl class="simple">
+<dt>Parameters:</dt><dd><ul class="simple">
+<li><p>timeout (float): timeout value</p></li>
+</ul>
+</dd>
 <dt>Returns:</dt><dd><ul class="simple">
 <li><p>object: content (timestamp and string)</p></li>
 </ul>
@@ -182,12 +214,23 @@
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="share_lib.FileShare.unlock">
+<span class="sig-name descname"><span class="pre">unlock</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#share_lib.FileShare.unlock" title="Link to this definition">¶</a></dt>
+<dd><p>Unlock file</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="share_lib.FileShare.write">
-<span class="sig-name descname"><span class="pre">write</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#share_lib.FileShare.write" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">write</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#share_lib.FileShare.write" title="Link to this definition">¶</a></dt>
 <dd><p>Write in file</p>
 <dl class="simple">
 <dt>Parameters:</dt><dd><ul class="simple">
 <li><p>info (str): string to write</p></li>
+<li><p>timeout (float): timeout value</p></li>
+</ul>
+</dd>
+<dt>Returns:</dt><dd><ul class="simple">
+<li><p>bool: False in case of timeout</p></li>
 </ul>
 </dd>
 </dl>
@@ -202,7 +245,7 @@
 <p>FileShareContent class: shared file</p>
 <dl class="simple">
 <dt>Attributes:</dt><dd><ul class="simple">
-<li><p>timestamp (str): Unix Epoch timestamp</p></li>
+<li><p>timestamp (float): Unix Epoch timestamp</p></li>
 <li><p>string (str): event</p></li>
 </ul>
 </dd>
@@ -263,16 +306,18 @@
 <li><a class="reference internal" href="#share_lib.DataShare.write"><code class="docutils literal notranslate"><span class="pre">DataShare.write()</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#share_lib.DataShareContent"><code class="docutils literal notranslate"><span class="pre">DataShareContent</span></code></a></li>
 <li><a class="reference internal" href="#share_lib.EventShare"><code class="docutils literal notranslate"><span class="pre">EventShare</span></code></a><ul>
 <li><a class="reference internal" href="#share_lib.EventShare.is_set"><code class="docutils literal notranslate"><span class="pre">EventShare.is_set()</span></code></a></li>
 <li><a class="reference internal" href="#share_lib.EventShare.reset"><code class="docutils literal notranslate"><span class="pre">EventShare.reset()</span></code></a></li>
 <li><a class="reference internal" href="#share_lib.EventShare.set"><code class="docutils literal notranslate"><span class="pre">EventShare.set()</span></code></a></li>
 <li><a class="reference internal" href="#share_lib.EventShare.wait"><code class="docutils literal notranslate"><span class="pre">EventShare.wait()</span></code></a></li>
+<li><a class="reference internal" href="#share_lib.EventShare.wait_timeout"><code class="docutils literal notranslate"><span class="pre">EventShare.wait_timeout()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#share_lib.FileShare"><code class="docutils literal notranslate"><span class="pre">FileShare</span></code></a><ul>
+<li><a class="reference internal" href="#share_lib.FileShare.lock"><code class="docutils literal notranslate"><span class="pre">FileShare.lock()</span></code></a></li>
 <li><a class="reference internal" href="#share_lib.FileShare.read"><code class="docutils literal notranslate"><span class="pre">FileShare.read()</span></code></a></li>
+<li><a class="reference internal" href="#share_lib.FileShare.unlock"><code class="docutils literal notranslate"><span class="pre">FileShare.unlock()</span></code></a></li>
 <li><a class="reference internal" href="#share_lib.FileShare.write"><code class="docutils literal notranslate"><span class="pre">FileShare.write()</span></code></a></li>
 </ul>
 </li>
@@ -320,7 +365,7 @@
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-    &#169; Copyright 2023, nke Instrumentation.
+    &#169; Copyright 2026, nke Instrumentation.
     </div>
   </body>
 </html>

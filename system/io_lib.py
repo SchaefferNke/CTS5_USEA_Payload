@@ -6,8 +6,8 @@
 
 __authors__ = "Christophe SCHAEFFER"
 __copyright__ = "nke Instrumentation"
-__date__ = "2024-06-07"
-__version__ = "1.0.0"
+__date__ = "2026-02-11"
+__version__ = "1.0.1"
 
 # Standard libraries
 import threading
@@ -41,28 +41,40 @@ class DriverIOOutput:
 		"""
 			Set the output on
 		"""
+		# Select resource
+		lock = io_locks[self._name]
 		# Wait for resource
-		io_locks[self._name].acquire()
-		# Set output on
-		system_driver.output_set_on(self._name)
-		# Save state
-		self._is_on = True
-		# Release resource
-		io_locks[self._name].release()
+		lock.acquire()
+		# Try
+		try:
+			# Set output on
+			system_driver.output_set_on(self._name)
+			# Save state
+			self._is_on = True
+		# Exit
+		finally:
+			# Release resource
+			lock.release()
 
 	# Set output off
 	def set_off(self):
 		"""
 			Set the output off
 		"""
+		# Select resource
+		lock = io_locks[self._name]
 		# Wait for resource
-		io_locks[self._name].acquire()
-		# Set output off
-		system_driver.output_set_off(self._name)
-		# Save state
-		self._is_on = False
-		# Release resource
-		io_locks[self._name].release()
+		lock.acquire()
+		# Try
+		try:
+			# Set output off
+			system_driver.output_set_off(self._name)
+			# Save state
+			self._is_on = False
+		# Exit
+		finally:
+			# Release resource
+			lock.release()
 
 	# Test output state
 	def is_on(self) -> bool:
@@ -72,14 +84,18 @@ class DriverIOOutput:
 			Returns:
 				- bool: True if the output is on
 		"""
+		# Select resource
+		lock = io_locks[self._name]
 		# Wait for resource
-		io_locks[self._name].acquire()
-		# Test
-		result = self._is_on
-		# Release resource
-		io_locks[self._name].release()
-		# Result
-		return result
+		lock.acquire()
+		# Try
+		try:
+			# Test
+			return self._is_on
+		# Exit
+		finally:
+			# Release resource
+			lock.release()
 
 
 # Class definition
@@ -98,19 +114,23 @@ class DriverIOInput:
 		if not self._name in io_locks:
 			io_locks[self._name] = threading.Lock()
 
-	# Test input state
-	def is_on(self) -> bool:
+	# Get input state
+	def get(self) -> bool:
 		"""
-			Test the input state
+			Get the input state
 
 			Returns:
 				- bool: True if the input is on
 		"""
+		# Select resource
+		lock = io_locks[self._name]
 		# Wait for resource
-		io_locks[self._name].acquire()
-		# Read
-		result = system_driver.input_is_on(self._name)
-		# Release resource
-		io_locks[self._name].release()
-		# Result
-		return result
+		lock.acquire()
+		# Try
+		try:
+			# Read
+			return system_driver.input_get(self._name)
+		# Exit
+		finally:
+			# Release resource
+			lock.release()

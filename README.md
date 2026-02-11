@@ -49,6 +49,10 @@ main.py
 
 ## Version history
 
+### 1.0.1 (2026-02-11)
+- Improving the reference application
+- Adding multi-user support
+
 ### 1.0.0 (2024-02-15)
 - Creating reference application
 

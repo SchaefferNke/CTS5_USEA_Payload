@@ -6,15 +6,14 @@
 
 __authors__ = "Christophe SCHAEFFER"
 __copyright__ = "nke Instrumentation"
-__date__ = "2024-06-07"
-__version__ = "1.0.0"
+__date__ = "2026-02-11"
+__version__ = "1.0.1"
 
 # Standard libraries
 import os
 import sys
 import time
 import datetime
-import zipfile
 import traceback
 
 if __name__ == "__main__":
@@ -26,12 +25,12 @@ if __name__ == "__main__":
 from system.io_lib import DriverIOOutput, DriverIOInput
 from system.serial_lib import DriverSerial
 from system.timer_lib import DriverTimer
-from system.share_lib import DataShare, get_navigation, get_profile
+from system.share_lib import DataShare, get_navigation
 from system.trace_lib import trace_log
 from system.const import *
 
 # Versioning
-SILICATE_VERSION = "1.0.0"
+SILICATE_VERSION = "1.0.1"
 
 
 # Compute NMEA checksum (receive)
@@ -80,17 +79,21 @@ class DriverSilicate:
 	"""
 
 	# Create resource
-	def __init__(self):
+	def __init__(self, user_index: int):
 		# Manager
-		self._step = USEA_PAYLOAD_STEP_IDLE
+		self._user_index = user_index
+		self._step = USEA_USER_STEP_IDLE
 		self._io_power = DriverIOOutput("GPIO_3_20")
 		self._io_alarm = DriverIOInput("GPIO_5_5")
-		self._serial = DriverSerial("COM_5", 115200, len("DATA,xxx,xxxx,*CS\r\n") + 512, 0.15)
+		self._serial = DriverSerial("COM_5", 115200, 0.15)
 		self._timer = DriverTimer("silicate")
-		self._share_step = DataShare("payload_step")
+		if user_index == 0:
+			self._share_step = DataShare("user_step")
+		else:
+			self._share_step = DataShare(f"user{user_index}_step")
 
 	# Get version
-	@staticmethod
+	# noinspection PyMethodMayBeStatic
 	def get_version(self) -> str: return SILICATE_VERSION
 
 	# Send frame over EMAP link
@@ -225,7 +228,7 @@ def emap(self):
 					# Print
 					trace_log("SILICATE > Rx=$" + frame_string)
 					# Remove file
-					if os.path.isfile(file_name):
+					if os.path.exists(file_name):
 						os.remove(file_name)
 					# Initialize block
 					index_cpt = 1
@@ -291,45 +294,8 @@ def emap(self):
 	time.sleep(2.5)
 
 
-# Compression
-def compress():
-	"""
-		Compress the data files
-		"""
-	# Create names
-	zip_src_name = "payload/"
-	zip_tmp_name = "temp/" + get_profile() + "_payload.hex"
-	zip_dst_name = "payload/" + get_profile() + "_payload.hex"
-	# No file to compress
-	if not os.listdir(zip_src_name):
-		return
-	# Remove src archive
-	if os.path.isfile(zip_tmp_name):
-		os.remove(zip_tmp_name)
-	# Remove dst archive
-	if os.path.isfile(zip_dst_name):
-		os.remove(zip_dst_name)
-	# Create archive
-	zip_file = zipfile.ZipFile(zip_tmp_name, "w")
-	# List files
-	files = os.listdir(zip_src_name)
-	# For all new files
-	for file_name in files:
-		# Only *.csv files
-		if file_name.find(".csv") == -1:
-			continue
-		# Add file
-		zip_file.write(zip_src_name + file_name, file_name, compress_type=zipfile.ZIP_DEFLATED)
-		# Remove file
-		os.remove(zip_src_name + file_name)
-	# Close archive
-	zip_file.close()
-	# Move archive
-	os.rename(zip_tmp_name, zip_dst_name)
-
-
 # Create resources
-silicate_driver = DriverSilicate()
+silicate_driver = DriverSilicate(0)
 
 
 # Manager
@@ -344,14 +310,14 @@ def manager(self):
 	self._io_power.set_off()
 
 	# Loop
-	try:
-		while True:
+	while True:
+		try:
 
 			# Read resource
 			navigation = get_navigation()
 
 			# Wait
-			if self._step == USEA_PAYLOAD_STEP_IDLE:
+			if self._step == USEA_USER_STEP_IDLE:
 				# Parking step
 				if navigation == USEA_NAVIGATION_STATE_PARK:
 					# Wait
@@ -361,7 +327,7 @@ def manager(self):
 					# Awake
 					self._io_power.set_on()
 					# Start recording
-					self._step = USEA_PAYLOAD_STEP_RECORD
+					self._step = USEA_USER_STEP_RECORD
 					# Share step
 					self._share_step.write(self._step)
 				# Wait
@@ -369,7 +335,7 @@ def manager(self):
 					time.sleep(0.1)
 
 			# Record
-			elif self._step == USEA_PAYLOAD_STEP_RECORD:
+			elif self._step == USEA_USER_STEP_RECORD:
 				# Ascent
 				if navigation == USEA_NAVIGATION_STATE_ASCENT:
 					# Wait
@@ -379,7 +345,7 @@ def manager(self):
 					# Sleep
 					self._io_power.set_off()
 					# Stop recording
-					self._step = USEA_PAYLOAD_STEP_SURFACE
+					self._step = USEA_USER_STEP_SURFACE
 					# Share step
 					self._share_step.write(self._step)
 				# Wait
@@ -387,7 +353,7 @@ def manager(self):
 					time.sleep(0.1)
 
 			# Surface
-			elif self._step == USEA_PAYLOAD_STEP_SURFACE:
+			elif self._step == USEA_USER_STEP_SURFACE:
 				# Treatment step
 				if navigation == USEA_NAVIGATION_STATE_DATA_PROCESSING:
 					# Wait
@@ -398,12 +364,10 @@ def manager(self):
 					emap(self)
 					# Print
 					trace_log("SILICATE > Data compression")
-					# Compress files
-					compress()
 					# Print
 					trace_log("SILICATE > Data ready")
 					# Idle
-					self._step = USEA_PAYLOAD_STEP_IDLE
+					self._step = USEA_USER_STEP_IDLE
 					# Share step
 					self._share_step.write(self._step)
 
@@ -415,13 +379,13 @@ def manager(self):
 			else:
 				time.sleep(0.1)
 
-	# Error
-	except Exception as err:
-		# Trace
-		print(err)
-		print(traceback.format_exc())
-		# Trace
-		trace_log("SILICATE > [ERROR]")
+		# Error
+		except Exception as err:
+			# Trace
+			print(err)
+			print(traceback.format_exc())
+			# Trace
+			trace_log("SILICATE > [ERROR]")
 
 
 # Test function

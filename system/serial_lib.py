@@ -6,14 +6,12 @@
 
 __authors__ = "Christophe SCHAEFFER"
 __copyright__ = "nke Instrumentation"
-__date__ = "2024-06-07"
-__version__ = "1.0.0"
+__date__ = "2026-02-11"
+__version__ = "1.0.1"
 
 # Standard libraries
-import datetime
 import serial
 import threading
-import traceback
 
 # Project libraries
 from system.system_lib import system_driver
@@ -30,22 +28,34 @@ class DriverSerial:
 		Attributes:
 			- name (str): name (eg: "COM_1")
 			- speed (int): baud rate (eg: 57600 bauds)
-			- size (int): read buffer size
 			- timeout (float): reading timeout (sec)
+
+		Access modes (exclusive):
+			- persistent : open/read/write/close
+			- oneshot    : receive_ascii
+
+		Important:
+			When the serial port is opened in persistent mode, the serial resource and the associated lock are held
+			exclusively until close() is explicitly called.
+			open() must be paired with close() to release the lock and the resource.
 	"""
 
+	MODE_NONE = None
+	MODE_PERSISTENT = "persistent"
+	MODE_ONESHOT = "oneshot"
+
 	# Create resource
-	def __init__(self, name: str, speed: int, size: int, timeout: float):
+	def __init__(self, name: str, speed: int, timeout: float):
 		# Manager
 		self._name = system_driver.format_serial_name(name)
 		self._speed = speed
-		self._size = size
 		self._timeout = timeout
 		self._serial = None
+		self._mode = self.MODE_NONE
 		if not self._name in serial_locks:
 			serial_locks[self._name] = threading.Lock()
 
-	# Open serial port
+	# Open serial port (persistent mode)
 	def open(self) -> bool:
 		"""
 			Open the serial port
@@ -53,30 +63,52 @@ class DriverSerial:
 			Returns:
 				- bool: True if the port is open
 		"""
+		# Integrity test
+		if self._mode == self.MODE_ONESHOT:
+			raise RuntimeError("Serial port already used in oneshot mode")
+		# Select resource
+		lock = serial_locks[self._name]
 		# Wait for resource
-		serial_locks[self._name].acquire()
-		# Open
-		self._serial = serial.Serial(self._name, self._speed, timeout=self._timeout)
-		# Flush serial port
-		self._serial.flushInput()
-		self._serial.flushOutput()
-		# Open
-		if self._serial.isOpen():
-			return True
-		# Release resource
-		serial_locks[self._name].release()
-		# Error
-		return False
+		lock.acquire()
+		# Try
+		try:
+			# Open
+			self._serial = serial.Serial(self._name, self._speed, timeout=self._timeout)
+			# Flush serial port
+			self._serial.reset_input_buffer()
+			self._serial.reset_output_buffer()
+			# Select mode
+			self._mode = self.MODE_PERSISTENT
+			# Result
+			return self._serial.is_open
+		# Access fail
+		except (serial.SerialException, ValueError, OSError, PermissionError):
+			# Release object
+			self._serial = None
+			self._mode = self.MODE_NONE
+			# Release resource
+			lock.release()
+			# Error
+			return False
 
 	# Close serial port
 	def close(self):
 		"""
 			Close the serial port
 		"""
-		# Close serial port
-		self._serial.close()
-		# Release resource
-		serial_locks[self._name].release()
+		# Integrity test
+		if self._mode != self.MODE_PERSISTENT:
+			return
+		try:
+			# Close serial port
+			if self._serial and self._serial.is_open:
+				self._serial.close()
+		finally:
+			# Release object
+			self._serial = None
+			self._mode = self.MODE_NONE
+			# Release resource
+			serial_locks[self._name].release()
 
 	# Get the number of bytes in the input buffer
 	def in_waiting(self) -> int:
@@ -86,6 +118,12 @@ class DriverSerial:
 			Returns:
 				- int: number of bytes in the reception buffer
 		"""
+		# Integrity test
+		if self._mode != self.MODE_PERSISTENT:
+			raise RuntimeError("Serial port not in persistent mode")
+		# Error
+		if not self._serial or not self._serial.is_open:
+			return 0
 		# Result
 		return self._serial.in_waiting
 
@@ -98,8 +136,14 @@ class DriverSerial:
 				- size (int): number of bytes to read
 
 			Returns:
-				- int: bytes read from the serial port
+				- bytes: bytes read from the serial port
 		"""
+		# Integrity test
+		if self._mode != self.MODE_PERSISTENT:
+			raise RuntimeError("Serial port not in persistent mode")
+		# Error
+		if not self._serial or not self._serial.is_open:
+			return b""
 		# Result
 		return self._serial.read(size)
 
@@ -114,6 +158,12 @@ class DriverSerial:
 			Returns:
 				- int: number of bytes written
 		"""
+		# Integrity test
+		if self._mode != self.MODE_PERSISTENT:
+			raise RuntimeError("Serial port not in persistent mode")
+		# Error
+		if not self._serial or not self._serial.is_open:
+			return 0
 		# Result
 		return self._serial.write(data)
 
@@ -126,52 +176,32 @@ class DriverSerial:
 				- timeout (float): waiting time
 
 			Returns:
-				- str: bytes read from the serial port
+				- str: bytes read from the serial port or "?" if a timeout/error occurs
 		"""
-		# Initialize
-		frame_rx = ""
+		# Integrity test
+		if self._mode == self.MODE_PERSISTENT:
+			raise RuntimeError("Serial port already opened in persistent mode")
 		# Wait for resource
-		serial_locks[self._name].acquire()
-		# Open
-		self._serial = serial.Serial(self._name, self._speed, timeout=self._timeout)
-		# Flush serial port
-		self._serial.flushInput()
-		self._serial.flushOutput()
-		# Initialize time-out
-		timeout = datetime.datetime.now().timestamp() + timeout
-		# Acquisition loop
-		if self._serial.isOpen():
+		with serial_locks[self._name]:
+			# Select mode
+			self._mode = self.MODE_ONESHOT
 			try:
-				# Reception process
-				while True:
-					# Time out
-					if datetime.datetime.now().timestamp() >= timeout:
-						# Close serial port
-						self._serial.close()
-						# Release resource
-						serial_locks[self._name].release()
-						# Exit
-						return ""
-					# Wait character
-					if self._serial.in_waiting == 0:
-						continue
-					# Read frame
-					frame_rx = self._serial.read(self._size).decode()
-					# Check end of line
-					if frame_rx[-2] != "\r":
-						continue
-					# Extract data
-					frame_rx = frame_rx[0:-2]
-					# Exit
-					break
-			# Error
-			except Exception as err:
-				# Trace
-				print(err)
-				print(traceback.format_exc())
-		# Close serial port
-		self._serial.close()
-		# Release resource
-		serial_locks[self._name].release()
-		# Result
-		return frame_rx
+				# Open serial port
+				with serial.Serial(self._name, self._speed, timeout=timeout) as ser:
+					# Flush serial port
+					ser.reset_input_buffer()
+					# Read until newline
+					buffer = ser.read_until(b"\n")
+					# Timeout
+					if not buffer:
+						return "?"
+					# Decode
+					frame_rx = buffer.decode("ascii", errors="ignore")
+					# Result
+					return frame_rx.rstrip("\r\n")
+			# Serial port error
+			except serial.SerialException:
+				return "?"
+			# Reset mode
+			finally:
+				self._mode = self.MODE_NONE

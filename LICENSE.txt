@@ -1,4 +1,4 @@
-Copyright (c) 2024 nke Instrumentation
+Copyright (c) 2026 nke Instrumentation
 
 The information contained in this document is the exclusive technical information of nke Instrumentation.
 The transmission, reproduction, distribution and publication of this document, as well as the use of its

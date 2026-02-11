@@ -6,8 +6,8 @@
 
 __authors__ = "Christophe SCHAEFFER"
 __copyright__ = "nke Instrumentation"
-__date__ = "2024-06-07"
-__version__ = "1.0.0"
+__date__ = "2026-02-11"
+__version__ = "1.0.1"
 
 # Standard libraries
 import os
@@ -17,7 +17,6 @@ import datetime
 import zipfile
 import traceback
 from checksumdir import dirhash
-from simple_file_checksum import get_checksum
 
 if __name__ == "__main__":
 	# Process launched outside main
@@ -29,8 +28,8 @@ from system.system_lib import system_driver
 from system.rtc import rtc_driver
 from system.serial_lib import DriverSerial
 from system.timer_lib import DriverTimer
-from system.share_lib import DataShare, FileShare
-from system.config import user_driver
+from system.share_lib import DataShare, FileShare, get_profile
+from system.config import user_drivers
 from system.technical import technical_driver
 from system.trace_lib import trace_log
 from system.const import *
@@ -100,6 +99,39 @@ def nmea_checksum_compute_binary(frame: str, content: bytes, count_frame: int, c
 	return checksum
 
 
+def compress_all_sensors():
+	"""
+	Compress all files from 'payload/' into a single archive.
+	"""
+	src = "payload/"
+	tmp = "temp/" + get_profile() + "_payload.hex"
+	dst = "payload/" + get_profile() + "_payload.hex"
+	# Nothing to compress
+	if not os.listdir(src):
+		return
+	# Remove old temporary file if exists
+	if os.path.exists(tmp):
+		os.remove(tmp)
+	try:
+		# Create new zip archive
+		with zipfile.ZipFile(tmp, "w", compression=zipfile.ZIP_DEFLATED) as zip_file:
+			for file_name in os.listdir(src):
+				file_path = os.path.join(src, file_name)
+				# Exclude metadata and technical files
+				if os.path.isfile(file_path) and\
+					"payload.xml" not in file_name and\
+					"payload.txt" not in file_name and\
+					"payload.hex" not in file_name:
+					zip_file.write(file_path, arcname=file_name)
+					os.remove(file_path)
+		# Move temp archive to final destination
+		os.rename(tmp, dst)
+		trace_log("EMAP     > Compressed files into " + get_profile() + "_payload.hex")
+	# Error
+	except Exception as e:
+		trace_log(f"EMAP     > Compression error: {e}")
+
+
 # Class definition
 class DriverEMAP:
 	"""
@@ -110,12 +142,21 @@ class DriverEMAP:
 	def __init__(self):
 		# Manager
 		if not os.name == "nt":
-			self._serial = DriverSerial("COM_8", 57600, len("DATA,xxx,xxxx,*CS\r\n") + 512, 0.15)
+			self._serial = DriverSerial("COM_8", 57600, 0.15)
 		else:
-			self._serial = DriverSerial("COM_1", 57600, len("DATA,xxx,xxxx,*CS\r\n") + 512, 0.15)
+			self._serial = DriverSerial("COM_1", 57600, 0.15)
 		self._timer = DriverTimer("emap")
-		self._payload_step = DataShare("payload_step")
-		self._payload = user_driver
+		self._tech_step = DataShare("tech_step")
+		self._sleep_enable = False
+		# User access
+		self._user_step = []
+		self._payloads = []
+		for driver in user_drivers:
+			if driver.user_index == 0:
+				self._user_step.append(DataShare("user_step"))
+			else:
+				self._user_step.append(DataShare(f"user{driver.user_index}_step"))
+			self._payloads.append(driver)
 		# Status
 		share = FileShare("profile.txt")
 		share.read()
@@ -133,6 +174,13 @@ class DriverEMAP:
 		if self._navigation == "?":
 			self._navigation = "XX"
 
+	@staticmethod
+	def _get_user_info_file(user_index: int) -> str:
+		"""
+		Return the user info filename depending on user index
+		"""
+		return "user.txt" if user_index == 0 else f"user{user_index}.txt"
+
 	# Status json
 	def status_json(self) -> object:
 		"""
@@ -142,50 +190,25 @@ class DriverEMAP:
 				- object: json object
 		"""
 		# Navigation stage
-		if self._navigation == "NA":
-			navigation = "BUOYANCY_DECREASE"
-		elif self._navigation == "NB":
-			navigation = "DESCENT"
-		elif self._navigation == "NC":
-			navigation = "PARK"
-		elif self._navigation == "ND":
-			navigation = "DEEP_DESCENT"
-		elif self._navigation == "NE":
-			navigation = "DEEP_PARK"
-		elif self._navigation == "NF":
-			navigation = "ASCENT"
-		elif self._navigation == "NG":
-			navigation = "SUB_SURFACE"
-		elif self._navigation == "NH":
-			navigation = "BUOYANCY_INCREASE"
-		elif self._navigation == "NI":
-			navigation = "RESCUE"
-		elif self._navigation == "NJ":
-			navigation = "ASCENT"
-		elif self._navigation == "NK":
-			navigation = "ASCENT_SLOWLY"
-		elif self._navigation == "NL":
-			navigation = "ASCENT_RESUME"
-		elif self._navigation == "SB":
-			navigation = "GPS"
-		elif self._navigation == "SC":
-			navigation = "RUDICS"
-		elif self._navigation == "SF":
-			navigation = "SURFACE_ACQUISITION"
-		elif self._navigation == "TC":
-			navigation = "DATA_PROCESSING"
-		elif self._navigation == "FN":
-			navigation = "END_OF_LIFE"
-		else:
-			navigation = "UNDEFINED"
+		navigation = USEA_NAVIGATION_MAP_2.get(self._navigation, "UNDEFINED")
 		# Sleep
-		if os.path.isfile("share/sleep.txt"):
+		if os.path.exists("share/sleep.txt"):
 			sleep = "Enabled"
 		else:
 			sleep = "Disabled"
 		# User information
-		user_info = FileShare("user.txt")
-		user_info.read()
+		if not self._payloads:
+			user_value = "?"
+		else:
+			users_info_with_state = []
+			for driver in self._payloads:
+				file_name = self._get_user_info_file(driver.user_index)
+				user_share = FileShare(file_name)
+				user_share.read()
+				info = user_share.content.string.strip()
+				state = USEA_USER_STATE_MAP.get(info, USEA_USER_STEP_IDLE)
+				users_info_with_state.append((state, info))
+			user_value = max(users_info_with_state, key=lambda x: x[0])[1]
 		# Save
 		result = {
 			"profile": self._profile,
@@ -193,7 +216,7 @@ class DriverEMAP:
 			"pressure": self._pressure,
 			"boot count": technical_driver.boot_count(),
 			"sleep": sleep,
-			"user": user_info.content.string}
+			"user": user_value}
 		# Result
 		return result
 
@@ -211,7 +234,7 @@ class DriverEMAP:
 		self._serial.write(frame_ascii.encode("ascii"))
 		trace_log("EMAP     > Tx=" + frame_ascii)
 
-	# Send frame over EMAP link
+	# Send frame over EMAP link (string content)
 	def _send_ascii_no_trace(self, frame: str):
 		"""
 			Send a frame on the serial port
@@ -224,6 +247,7 @@ class DriverEMAP:
 		time.sleep(0.05)
 		self._serial.write(frame_ascii.encode("ascii"))
 
+	# Send frame over EMAP link (binary content)
 	def _send_binary(self, frame: str, content: bytes):
 		"""
 			Send a frame on the serial port (without data detail on debug)
@@ -242,6 +266,17 @@ class DriverEMAP:
 		self._serial.write(string.encode("ascii"))
 		trace_log("EMAP     > Tx=" + frame_ascii)
 
+	# Activate/deactivate sleep mode management
+	def sleep_mode_activation(self, enable: bool):
+		"""
+			Activate/deactivate the sleep management
+
+			Parameters:
+				- enable (bool): True or False
+		"""
+		# Store activation status
+		self._sleep_enable = enable
+
 	# Get time before next activity
 	def get_time_before_activity(self) -> float:
 		"""
@@ -250,6 +285,9 @@ class DriverEMAP:
 			Returns:
 				- float: time remaining before the next activity (sec)
 		"""
+		# Sleep available
+		if not self._sleep_enable:
+			return 0.0
 		# Waiting for the next command
 		if self._timer.remaining_time() > 0.0:
 			return EMAP_WAKEUP_DURATION - self._timer.remaining_time()
@@ -297,10 +335,10 @@ def logger_extract(size: int):
 	log_dst_name = "temp/payload.log"
 	zip_dst_name = "payload/payload_logger.zip"
 	# Remove dst logger
-	if os.path.isfile(log_dst_name):
+	if os.path.exists(log_dst_name):
 		os.remove(log_dst_name)
 	# Remove dst archive
-	if os.path.isfile(zip_dst_name):
+	if os.path.exists(zip_dst_name):
 		os.remove(zip_dst_name)
 	# Read extract
 	file_src = open(log_src_name, "r")
@@ -364,7 +402,7 @@ def update_application():
 		else:
 			current_file_name = "./" + new_file_name
 		# Remove file
-		if os.path.isfile(current_file_name):
+		if os.path.exists(current_file_name):
 			os.remove(current_file_name)
 		# Move file
 		os.rename(zip_path + "/" + new_file_name, current_file_name)
@@ -380,8 +418,62 @@ def update_application():
 	time.sleep(1.0)
 	# Apply changes
 	if update:
-		if not os.name == "nt":
+		if os.name != "nt":
+			# noinspection PyProtectedMember,PyUnresolvedReferences
 			os._exit(0)
+
+
+# Compute source checksum
+def source_checksum(user_files: list[str]) -> str:
+	"""
+	Compute the checksum of python source code
+
+	Returns:
+		- str: checksum string
+	"""
+	import shutil
+	import os
+
+	def calc_dir_checksum(temp_dir: str) -> str:
+		chk = dirhash(temp_dir, "md5")
+		return hex(int(chk[0:8], 16) ^ int(chk[8:16], 16) ^ int(chk[16:24], 16) ^ int(chk[24:32], 16))
+
+	# Compute checksum "main"
+	temp_main = "temp/chk_1/"
+	shutil.rmtree(temp_main, ignore_errors=True)
+	os.makedirs(temp_main)
+	shutil.copyfile("main.py", temp_main + "main.py")
+	str_1 = calc_dir_checksum(temp_main)
+	shutil.rmtree(temp_main)
+	# Compute checksum "system"
+	temp_system = "temp/chk_2/"
+	shutil.rmtree(temp_system, ignore_errors=True)
+	os.makedirs(temp_system)
+	for file_name in os.listdir("system/"):
+		if file_name.endswith(".py"):
+			shutil.copyfile("system/" + file_name, temp_system + file_name)
+	str_2 = calc_dir_checksum(temp_system)
+	shutil.rmtree(temp_system)
+	# Compute checksum "user"
+	temp_user = "temp/chk_3/"
+	shutil.rmtree(temp_user, ignore_errors=True)
+	os.makedirs(temp_user)
+	valid_user_files = False
+	for uf in user_files:
+		if not uf:
+			continue
+		user_path = os.path.join("user", uf)
+		if not os.path.isfile(user_path):
+			continue
+		shutil.copyfile(user_path, os.path.join(temp_user, uf))
+		valid_user_files = True
+	if valid_user_files:
+		str_3 = calc_dir_checksum(temp_user)
+	else:
+		str_3 = "none"
+	shutil.rmtree(temp_user)
+	# Result
+	return f"{str_1}-{str_2}-{str_3}"
 
 
 # Manager
@@ -403,8 +495,9 @@ def manager(self):
 
 	# Loop
 	if self._serial.open():
-		try:
-			while True:
+		# Loop
+		while True:
+			try:
 
 				# New character ?
 				if self._serial.in_waiting() == 0:
@@ -436,6 +529,8 @@ def manager(self):
 				if not nmea_checksum_check(frame_rx):
 					# Print
 					trace_log("EMAP     > [CHECKSUM]")
+					# Flush buffer
+					self._serial.read(1024)
 					# Continue
 					continue
 				# Extract data
@@ -447,8 +542,10 @@ def manager(self):
 				if "VERSION" in frame_string[0:7]:
 					# Print
 					trace_log("EMAP     > Rx=$" + frame_string)
+					# Get version
+					versions_str = "/".join([payload.get_version() for payload in self._payloads])
 					# Reply
-					self._send_ascii("VERSIONACK," + USEA_VERSION + "-" + self._payload.get_version())
+					self._send_ascii("VERSIONACK," + USEA_VERSION + "-" + versions_str)
 
 				# NAV processing
 				elif "NAV," in frame_string[0:4]:
@@ -456,6 +553,15 @@ def manager(self):
 					trace_log("EMAP     > Rx=$" + frame_string)
 					# Parse
 					split = data_string.split(",")
+					# Manage sleep activation
+					if split[2] == "0":
+						# Deactivate
+						self.sleep_mode_activation(False)
+					else:
+						# Print
+						trace_log("EMAP     > Sleep mode enabled")
+						# Activate
+						self.sleep_mode_activation(True)
 					# Store information
 					self._profile = f"{int(split[1]):03}_{int(split[2]):02}"
 					# Share information
@@ -551,8 +657,12 @@ def manager(self):
 				# PING processing
 				elif "PING" in frame_string[0:4]:
 					# Sensor processing
-					if self._payload_step.read() == USEA_PAYLOAD_STEP_TREAT:
+					if (
+						(self._tech_step.read() == USEA_TECHNICAL_STEP_TREAT) or
+						any(user.read() == USEA_USER_STEP_TREAT for user in self._user_step)):
 						continue
+					# Compress
+					compress_all_sensors()
 					# Print
 					trace_log("EMAP     > Rx=$" + frame_string)
 					# Reply
@@ -567,37 +677,44 @@ def manager(self):
 					# Version
 					if split[2] == "?payload-version":
 						# Get version
-						reply = "Version " + USEA_VERSION + "-" + self._payload.get_version()
+						reply = "Version " + USEA_VERSION + "-" + "/".join([p.get_version() for p in self._payloads])
 						# Reply
 						self._send_ascii("COMMANDACK," + str(len(reply)) + "," + reply)
 					# Checksum
 					elif split[2] == "?payload-checksum":
 						# Compute checksums
-						chk_1 = get_checksum("main.py", algorithm="md5")
-						chk_2 = dirhash("system", "md5", excluded_extensions=["pyc", "html", "ico", "woff", "js", "css"])
-						chk_3 = get_checksum("user/" + user_driver.source_code, algorithm="md5")
-						str_1 = hex(int(chk_1[0:8], 16) ^ int(chk_1[8:16], 16) ^ int(chk_1[16:24], 16) ^ int(chk_1[24:32], 16))
-						str_2 = hex(int(chk_2[0:8], 16) ^ int(chk_2[8:16], 16) ^ int(chk_2[16:24], 16) ^ int(chk_2[24:32], 16))
-						str_3 = hex(int(chk_3[0:8], 16) ^ int(chk_3[8:16], 16) ^ int(chk_3[16:24], 16) ^ int(chk_3[24:32], 16))
-						reply = str_1 + "-" + str_2 + "-" + str_3
+						user_files = [p.config_file for p in self._payloads]
+						reply = source_checksum(user_files)
 						# Reply
 						self._send_ascii("COMMANDACK," + str(len(reply)) + "," + reply)
 					# Configuration
 					elif split[2] == "?payload-configuration":
 						# Acquire data
-						reply = user_driver.source_code
+						reply = "/".join([p.source_code for p in self._payloads])
 						# Reply
 						self._send_ascii("COMMANDACK," + str(len(reply)) + "," + reply)
 					# Sensor test
 					elif split[2] == "?payload-data":
 						# Acquire data
-						reply = self._payload.get_data()
+						if len(self._payloads) == 1:
+							reply = self._payloads[0].get_data()
+						else:
+							values = []
+							for i, p in enumerate(self._payloads, start=1):
+								values.append(f"user{i}={p.get_data()}")
+							reply = ",".join(values)
 						# Reply
 						self._send_ascii("COMMANDACK," + str(len(reply)) + "," + reply)
 					# Autotest
 					elif split[2] == "!payload-autotest":
 						# Test
-						reply = "payload : ok\r\n" + self._payload.test()
+						if len(self._payloads) == 1:
+							reply = "payload : ok\r\n" + self._payloads[0].test()
+						else:
+							lines = ["payload : ok"]
+							for i, p in enumerate(self._payloads, start=1):
+								lines.append(p.test())
+							reply = "\r\n".join(lines)
 						# Reply
 						self._send_ascii("COMMANDACK," + str(len(reply)) + "," + reply)
 					# Flush system
@@ -615,7 +732,7 @@ def manager(self):
 					# Update
 					elif split[2] == "!update:payload_update.zip":
 						# Check if update file exists
-						if os.path.isfile("temp/payload_update.zip"):
+						if os.path.exists("temp/payload_update.zip"):
 							# Reply
 							self._send_ascii("COMMANDACK,12,Command okay")
 							# Wait
@@ -634,10 +751,26 @@ def manager(self):
 						time.sleep(0.5)
 						# Restart
 						system_driver.reboot()
+					# Test sleep mode
+					elif split[2] == "!payload-low-power:3":
+						# Reply
+						self._send_ascii("COMMANDACK,12,Command okay")
+						# Delay
+						time.sleep(0.5)
+						# Sleep for 10 seconds
+						rtc_driver.program_wakealarm_sleep("10")
+					# Test standby mode
+					elif split[2] == "!payload-low-power:1":
+						# Reply
+						self._send_ascii("COMMANDACK,12,Command okay")
+						# Delay
+						time.sleep(0.5)
+						# Sleep for 10 seconds
+						rtc_driver.program_wakealarm_standby("10")
 					# Activate sleep mode
 					elif split[2] == "!payload-sleep:1":
 						# Save
-						if not os.path.isfile("share/sleep.txt"):
+						if not os.path.exists("share/sleep.txt"):
 							file_request = open("share/sleep.txt", "w")
 							file_request.close()
 						# Reply
@@ -645,14 +778,14 @@ def manager(self):
 					# Deactivate sleep mode
 					elif split[2] == "!payload-sleep:0":
 						# Save
-						if os.path.isfile("share/sleep.txt"):
+						if os.path.exists("share/sleep.txt"):
 							os.remove("share/sleep.txt")
 						# Reply
 						self._send_ascii("COMMANDACK,12,Command okay")
 					# Logger request
 					elif split[2] == "!payload-logger:1":
 						# Test request
-						if not os.path.isfile("temp/logger.txt"):
+						if not os.path.exists("temp/logger.txt"):
 							file_request = open("temp/logger.txt", "w")
 							file_request.close()
 						# Reply
@@ -660,7 +793,7 @@ def manager(self):
 					# Cancel logger request
 					elif split[2] == "!payload-logger:0":
 						# Save
-						if os.path.isfile("temp/logger.txt"):
+						if os.path.exists("temp/logger.txt"):
 							os.remove("temp/logger.txt")
 						# Reply
 						self._send_ascii("COMMANDACK,12,Command okay")
@@ -673,7 +806,7 @@ def manager(self):
 					# Print
 					trace_log("EMAP     > Rx=$" + frame_string)
 					# Logger request
-					if os.path.isfile("temp/logger.txt"):
+					if os.path.exists("temp/logger.txt"):
 						# Prepare logger extract
 						logger_extract(64 * 1024)
 						# Remove request
@@ -716,7 +849,7 @@ def manager(self):
 					# Buffer size
 					emap_buffer_size = int(split[2]) - len("DATA,xxx,xxxx,*CS")
 					# Reply
-					if os.path.isfile(file_name):
+					if os.path.exists(file_name):
 						self._send_ascii("GETACK," + str(os.path.getsize(file_name)))
 					else:
 						self._send_ascii("GETNACK")
@@ -732,7 +865,7 @@ def manager(self):
 						# Filename
 						file_name = "config/payload.cfg"
 						# Remove file
-						if os.path.isfile(file_name):
+						if os.path.exists(file_name):
 							os.remove(file_name)
 						# Initialize data block
 						index_cpt = 1
@@ -743,7 +876,7 @@ def manager(self):
 						# Filename
 						file_name = "temp/payload_update.zip"
 						# Remove file
-						if os.path.isfile(file_name):
+						if os.path.exists(file_name):
 							os.remove(file_name)
 						# Initialize data block
 						index_cpt = 1
@@ -808,7 +941,7 @@ def manager(self):
 						# Reply
 						self._send_ascii("EOF")
 						# Remove archive
-						if os.path.isfile(file_name):
+						if os.path.exists(file_name):
 							os.remove(file_name)
 					# New block
 					elif int(split[1]) == index_cpt:
@@ -844,13 +977,13 @@ def manager(self):
 					# Print
 					trace_log("EMAP     > Rx=$" + frame_string + " [UNDEFINED]")
 
-		# Error
-		except Exception as err:
-			# Trace
-			print(err)
-			print(traceback.format_exc())
-			# Trace
-			trace_log("EMAP     > [ERROR]")
+			# Error
+			except Exception as err:
+				# Trace
+				print(err)
+				print(traceback.format_exc())
+				# Trace
+				trace_log("EMAP     > [ERROR]")
 
 	# Close serial port
 	self._serial.close()

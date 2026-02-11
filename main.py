@@ -6,8 +6,8 @@
 
 __authors__ = "Christophe SCHAEFFER"
 __copyright__ = "nke Instrumentation"
-__date__ = "2024-06-07"
-__version__ = "1.0.0"
+__date__ = "2026-02-11"
+__version__ = "1.0.1"
 
 # Standard libraries
 import os
@@ -23,7 +23,7 @@ from system.technical import technical_driver
 from system.web_server import web_server
 from system.ctd import ctd_driver
 from system.emap import emap_driver
-from system.config import user_driver
+from system.config import user_drivers
 from system.trace_lib import trace_log
 
 # Main function
@@ -35,23 +35,11 @@ if __name__ == "__main__":
 	system_driver.watchdog_feed()
 
 	# Create paths
-	if not os.path.exists("log"):
-		os.makedirs("log")
-	if not os.path.exists("config"):
-		os.makedirs("config")
-	if not os.path.exists("share"):
-		os.makedirs("share")
-	if not os.path.exists("ctd"):
-		os.makedirs("ctd")
-	if not os.path.exists("payload"):
-		os.makedirs("payload")
-	if not os.path.exists("temp"):
-		os.makedirs("temp")
-	if not os.path.exists("trash"):
-		os.makedirs("trash")
+	for path in ("log", "config", "share", "ctd", "payload", "temp", "trash"):
+		os.makedirs(path, exist_ok=True)
 
 	# Cleanup files
-	if os.path.isfile("share/synchro.txt"):
+	if os.path.exists("share/synchro.txt"):
 		os.remove("share/synchro.txt")
 
 	# Restore system clock
@@ -63,42 +51,48 @@ if __name__ == "__main__":
 	# Trace
 	trace_log("MAIN     > Launch tasks")
 
-	# Create tasks
+	# Create system tasks
 	thread_technical = threading.Thread(target=technical_driver.run, name="task_technical", daemon=True)
 	thread_web_server = threading.Thread(target=web_server.run, name="task_web_server", daemon=True)
 	thread_emap = threading.Thread(target=emap_driver.run, name="task_emap", daemon=True)
 	thread_ctd = threading.Thread(target=ctd_driver.run, name="task_ctd", daemon=True)
-	thread_user = threading.Thread(target=user_driver.run, name="task_user", daemon=True)
+	# Create user tasks
+	user_threads = []
+	for i, user in enumerate(user_drivers, 1):
+		user_threads.append(threading.Thread(target=user.run, name=f"task_user{i}", daemon=True))
 
-	# Launch tasks
+	# Launch system tasks
 	thread_technical.start()
 	thread_web_server.start()
 	thread_emap.start()
 	thread_ctd.start()
-	thread_user.start()
+	# Launch user tasks
+	for thread in user_threads:
+		thread.start()
 
 	# Trace
 	trace_log("MAIN     > Application is running")
 
 	# Main loop
-	try:
-		while True:
+	while True:
+		try:
 
 			# Feed the watchdog
 			system_driver.watchdog_feed()
 
 			# Power management
-			if os.path.isfile("share/sleep.txt"):
+			if os.path.exists("share/sleep.txt"):
 				# Tasks activity survey
-				activity_emap = emap_driver.get_time_before_activity()
-				activity_user = user_driver.get_time_before_activity()
-				activity_next = int(min(activity_emap, activity_user))
+				activities = [emap_driver.get_time_before_activity()]
+				for driver in user_drivers:
+					activities.append(driver.get_time_before_activity())
+				activity_next = int(min(activities))
 				# No planned activity
 				if activity_next > 20:
 					# Suspend CPLD
 					io_sleepn.set_off()
 					# Suspend system
-					rtc_driver.program_wakealarm(activity_next - 5)
+					rtc_driver.program_wakealarm_sleep(activity_next - 5)
 					# Awake CPLD
 					io_sleepn.set_on()
 					# Wait
@@ -110,10 +104,10 @@ if __name__ == "__main__":
 				# Wait
 				time.sleep(1.0)
 
-	# Error
-	except Exception as err:
-		# Trace
-		print(err)
-		print(traceback.format_exc())
-		# Trace
-		trace_log("MAIN     > [ERROR]")
+		# Error
+		except Exception as err:
+			# Trace
+			print(err)
+			print(traceback.format_exc())
+			# Trace
+			trace_log("MAIN     > [ERROR]")

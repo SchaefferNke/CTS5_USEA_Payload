@@ -8,7 +8,7 @@
     <title>System tasks &#8212; USEA-Payload documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="_static/nature.css?v=2388c7e7" />
-    <script src="_static/documentation_options.js?v=8d563738"></script>
+    <script src="_static/documentation_options.js?v=292eb321"></script>
     <script src="_static/doctools.js?v=888ff710"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="icon" href="_static/Picto32x32.ico"/>
@@ -58,9 +58,12 @@
 <li class="toctree-l2"><a class="reference internal" href="emap.html#emap.DriverEMAP"><code class="docutils literal notranslate"><span class="pre">DriverEMAP</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="emap.html#emap.DriverEMAP.get_time_before_activity"><code class="docutils literal notranslate"><span class="pre">DriverEMAP.get_time_before_activity()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="emap.html#emap.DriverEMAP.run"><code class="docutils literal notranslate"><span class="pre">DriverEMAP.run()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="emap.html#emap.DriverEMAP.sleep_mode_activation"><code class="docutils literal notranslate"><span class="pre">DriverEMAP.sleep_mode_activation()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="emap.html#emap.DriverEMAP.status_json"><code class="docutils literal notranslate"><span class="pre">DriverEMAP.status_json()</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="emap.html#emap.compress_all_sensors"><code class="docutils literal notranslate"><span class="pre">compress_all_sensors()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="emap.html#emap.source_checksum"><code class="docutils literal notranslate"><span class="pre">source_checksum()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="emap.html#emap.update_application"><code class="docutils literal notranslate"><span class="pre">update_application()</span></code></a></li>
 </ul>
 </li>
@@ -105,7 +108,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="io_lib.html">io_lib</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="io_lib.html#io_lib.DriverIOInput"><code class="docutils literal notranslate"><span class="pre">DriverIOInput</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="io_lib.html#io_lib.DriverIOInput.is_on"><code class="docutils literal notranslate"><span class="pre">DriverIOInput.is_on()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="io_lib.html#io_lib.DriverIOInput.get"><code class="docutils literal notranslate"><span class="pre">DriverIOInput.get()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="io_lib.html#io_lib.DriverIOOutput"><code class="docutils literal notranslate"><span class="pre">DriverIOOutput</span></code></a><ul>
@@ -148,16 +151,18 @@
 <li class="toctree-l3"><a class="reference internal" href="share_lib.html#share_lib.DataShare.write"><code class="docutils literal notranslate"><span class="pre">DataShare.write()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="share_lib.html#share_lib.DataShareContent"><code class="docutils literal notranslate"><span class="pre">DataShareContent</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="share_lib.html#share_lib.EventShare"><code class="docutils literal notranslate"><span class="pre">EventShare</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="share_lib.html#share_lib.EventShare.is_set"><code class="docutils literal notranslate"><span class="pre">EventShare.is_set()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="share_lib.html#share_lib.EventShare.reset"><code class="docutils literal notranslate"><span class="pre">EventShare.reset()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="share_lib.html#share_lib.EventShare.set"><code class="docutils literal notranslate"><span class="pre">EventShare.set()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="share_lib.html#share_lib.EventShare.wait"><code class="docutils literal notranslate"><span class="pre">EventShare.wait()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="share_lib.html#share_lib.EventShare.wait_timeout"><code class="docutils literal notranslate"><span class="pre">EventShare.wait_timeout()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="share_lib.html#share_lib.FileShare"><code class="docutils literal notranslate"><span class="pre">FileShare</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="share_lib.html#share_lib.FileShare.lock"><code class="docutils literal notranslate"><span class="pre">FileShare.lock()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="share_lib.html#share_lib.FileShare.read"><code class="docutils literal notranslate"><span class="pre">FileShare.read()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="share_lib.html#share_lib.FileShare.unlock"><code class="docutils literal notranslate"><span class="pre">FileShare.unlock()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="share_lib.html#share_lib.FileShare.write"><code class="docutils literal notranslate"><span class="pre">FileShare.write()</span></code></a></li>
 </ul>
 </li>
@@ -225,7 +230,7 @@
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-    &#169; Copyright 2023, nke Instrumentation.
+    &#169; Copyright 2026, nke Instrumentation.
     </div>
   </body>
 </html>

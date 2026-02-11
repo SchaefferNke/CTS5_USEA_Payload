@@ -6,8 +6,8 @@
 
 __authors__ = "Christophe SCHAEFFER"
 __copyright__ = "nke Instrumentation"
-__date__ = "2024-06-07"
-__version__ = "1.0.0"
+__date__ = "2026-02-11"
+__version__ = "1.0.1"
 
 # Standard libraries
 import os
@@ -28,7 +28,7 @@ if __name__ == "__main__":
 # Project libraries
 from system.technical import technical_driver
 from system.emap import emap_driver
-from system.trace_lib import trace_log
+from system.trace_lib import trace_log, set_web_server
 
 # Web server
 templateFolder = os.path.join(os.path.dirname(__file__), "web")
@@ -62,7 +62,8 @@ def restart_post():
 	# Trace
 	trace_log("WEB      > Restart application")
 	# Reboot
-	if not os.name == "nt":
+	if os.name != "nt":
+		# noinspection PyProtectedMember,PyUnresolvedReferences
 		os._exit(0)
 	# Reply
 	return "", 204
@@ -74,7 +75,8 @@ def exit_post():
 	# Trace
 	trace_log("WEB      > Exit application")
 	# Reboot
-	if not os.name == "nt":
+	if os.name != "nt":
+		# noinspection PyProtectedMember,PyUnresolvedReferences
 		os._exit(1)
 	# Reply
 	return "", 204
@@ -86,9 +88,10 @@ def sleep_on_post():
 	# Trace
 	trace_log("WEB      > Sleep enabled")
 	# Save
-	if not os.path.isfile("share/sleep.txt"):
-		file_request = open("share/sleep.txt", "w")
-		file_request.close()
+	try:
+		open("share/sleep.txt", "w").close()
+	except (OSError, PermissionError):
+		pass
 	# Reply
 	return "", 204
 
@@ -99,8 +102,11 @@ def sleep_off_post():
 	# Trace
 	trace_log("WEB      > Sleep disabled")
 	# Save
-	if os.path.isfile("share/sleep.txt"):
-		os.remove("share/sleep.txt")
+	try:
+		if os.path.exists("share/sleep.txt"):
+			os.remove("share/sleep.txt")
+	except (OSError, PermissionError):
+		pass
 	# Reply
 	return "", 204
 
@@ -132,7 +138,7 @@ def web_page(req_path):
 
 
 # Socket query
-@app_sock.route('/rtlog')
+@app_sock.route('/rtlog')  # noqa
 def web_socket(wsock):
 	while True:
 		if web_server.message_rcv > web_server.message_trs + 1 and web_server.message_trs > 0:
@@ -184,6 +190,8 @@ class WebServer:
 
 # Create resources
 web_server = WebServer()
+# Injection dans trace_lib
+set_web_server(web_server)
 
 
 # Test function

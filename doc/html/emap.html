@@ -8,7 +8,7 @@
     <title>emap &#8212; USEA-Payload documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="_static/nature.css?v=2388c7e7" />
-    <script src="_static/documentation_options.js?v=8d563738"></script>
+    <script src="_static/documentation_options.js?v=292eb321"></script>
     <script src="_static/doctools.js?v=888ff710"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="icon" href="_static/Picto32x32.ico"/>
@@ -77,6 +77,18 @@
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="emap.DriverEMAP.sleep_mode_activation">
+<span class="sig-name descname"><span class="pre">sleep_mode_activation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">enable</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#emap.DriverEMAP.sleep_mode_activation" title="Link to this definition">¶</a></dt>
+<dd><p>Activate/deactivate the sleep management</p>
+<dl class="simple">
+<dt>Parameters:</dt><dd><ul class="simple">
+<li><p>enable (bool): True or False</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="emap.DriverEMAP.status_json">
 <span class="sig-name descname"><span class="pre">status_json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">object</span></span></span><a class="headerlink" href="#emap.DriverEMAP.status_json" title="Link to this definition">¶</a></dt>
 <dd><p>Save json information</p>
@@ -88,6 +100,24 @@
 </dl>
 </dd></dl>
 
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="emap.compress_all_sensors">
+<span class="sig-prename descclassname"><span class="pre">emap.</span></span><span class="sig-name descname"><span class="pre">compress_all_sensors</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#emap.compress_all_sensors" title="Link to this definition">¶</a></dt>
+<dd><p>Compress all files from ‘payload/’ into a single archive.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="emap.source_checksum">
+<span class="sig-prename descclassname"><span class="pre">emap.</span></span><span class="sig-name descname"><span class="pre">source_checksum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_files</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#emap.source_checksum" title="Link to this definition">¶</a></dt>
+<dd><p>Compute the checksum of python source code</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><ul class="simple">
+<li><p>str: checksum string</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
@@ -112,9 +142,12 @@
 <li><a class="reference internal" href="#emap.DriverEMAP"><code class="docutils literal notranslate"><span class="pre">DriverEMAP</span></code></a><ul>
 <li><a class="reference internal" href="#emap.DriverEMAP.get_time_before_activity"><code class="docutils literal notranslate"><span class="pre">DriverEMAP.get_time_before_activity()</span></code></a></li>
 <li><a class="reference internal" href="#emap.DriverEMAP.run"><code class="docutils literal notranslate"><span class="pre">DriverEMAP.run()</span></code></a></li>
+<li><a class="reference internal" href="#emap.DriverEMAP.sleep_mode_activation"><code class="docutils literal notranslate"><span class="pre">DriverEMAP.sleep_mode_activation()</span></code></a></li>
 <li><a class="reference internal" href="#emap.DriverEMAP.status_json"><code class="docutils literal notranslate"><span class="pre">DriverEMAP.status_json()</span></code></a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#emap.compress_all_sensors"><code class="docutils literal notranslate"><span class="pre">compress_all_sensors()</span></code></a></li>
+<li><a class="reference internal" href="#emap.source_checksum"><code class="docutils literal notranslate"><span class="pre">source_checksum()</span></code></a></li>
 <li><a class="reference internal" href="#emap.update_application"><code class="docutils literal notranslate"><span class="pre">update_application()</span></code></a></li>
 </ul>
 </li>
@@ -156,7 +189,7 @@
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-    &#169; Copyright 2023, nke Instrumentation.
+    &#169; Copyright 2026, nke Instrumentation.
     </div>
   </body>
 </html>

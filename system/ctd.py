@@ -6,8 +6,8 @@
 
 __authors__ = "Christophe SCHAEFFER"
 __copyright__ = "nke Instrumentation"
-__date__ = "2024-06-07"
-__version__ = "1.0.0"
+__date__ = "2026-02-11"
+__version__ = "1.0.1"
 
 # Standard libraries
 import os
@@ -57,10 +57,6 @@ class DriverCTD:
 		self._share_data = FileShare("ctd.txt")
 		# Output
 		self.output = DataCTD()
-		self.output.timestamp = 0.0
-		self.output.pressure = 0.0
-		self.output.temperature = 0.0
-		self.output.salinity = 0.0
 
 	# Run task
 	def run(self):
@@ -85,8 +81,8 @@ def manager(self):
 	trace_log("CTD      > Activate")
 
 	# Loop
-	try:
-		while True:
+	while True:
+		try:
 
 			# Read resource
 			self._share_data.read()
@@ -94,12 +90,14 @@ def manager(self):
 			# New ctd sample
 			if self._share_data.content.timestamp > self.output.timestamp:
 				# Parse
-				split = self._share_data.content.string.split(",")
+				values = self._share_data.content.string.split(",")
+				if len(values) != 3:
+					raise ValueError("Invalid CTD data format")
 				# Extract
 				self.output.timestamp = self._share_data.content.timestamp
-				self.output.pressure = float(split[0])
-				self.output.temperature = float(split[1])
-				self.output.salinity = float(split[2])
+				self.output.pressure = float(values[0])
+				self.output.temperature = float(values[1])
+				self.output.salinity = float(values[2])
 				# Store data
 				file = open("ctd/" + get_profile() + "_ctd.csv", "a+")
 				file.write(
@@ -113,13 +111,13 @@ def manager(self):
 			else:
 				time.sleep(0.1)
 
-	# Error
-	except Exception as err:
-		# Trace
-		print(err)
-		print(traceback.format_exc())
-		# Trace
-		trace_log("CTD      > [ERROR]")
+		# Error
+		except Exception as err:
+			# Trace
+			print(err)
+			print(traceback.format_exc())
+			# Trace
+			trace_log("CTD      > [ERROR]")
 
 
 # Test function

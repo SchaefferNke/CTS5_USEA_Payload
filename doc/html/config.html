@@ -8,7 +8,7 @@
     <title>config &#8212; USEA-Payload documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="_static/nature.css?v=2388c7e7" />
-    <script src="_static/documentation_options.js?v=8d563738"></script>
+    <script src="_static/documentation_options.js?v=292eb321"></script>
     <script src="_static/doctools.js?v=888ff710"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="icon" href="_static/Picto32x32.ico"/>
@@ -55,9 +55,11 @@
 <p id="module-config">config.py</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="config.UserConfig">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">config.</span></span><span class="sig-name descname"><span class="pre">UserConfig</span></span><a class="headerlink" href="#config.UserConfig" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">config.</span></span><span class="sig-name descname"><span class="pre">UserConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_index</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#config.UserConfig" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>UserConfig class: user application configuration</p>
+<p>user_index = 0 → user.ini (mono-user legacy mode)
+user_index &gt;=1 → user{i}.ini (multi-user)</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="config.UserConfig.get_data">
 <span class="sig-name descname"><span class="pre">get_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#config.UserConfig.get_data" title="Link to this definition">¶</a></dt>
@@ -106,7 +108,7 @@
 <dd><p>Test process</p>
 <dl class="simple">
 <dt>Returns:</dt><dd><ul class="simple">
-<li><p>str: result string (“xxxxxxxx: ok/error” format)</p></li>
+<li><p>str: result string (“id_8_digits: ok/error” format)</p></li>
 </ul>
 </dd>
 </dl>
@@ -175,7 +177,7 @@
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-    &#169; Copyright 2023, nke Instrumentation.
+    &#169; Copyright 2026, nke Instrumentation.
     </div>
   </body>
 </html>

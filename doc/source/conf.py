@@ -10,10 +10,10 @@ sys.path.insert(0,os.path.abspath('../../system'))
 # -- Project information -----------------------------------------------------
 
 project = 'APMT Profiler - USEA-Payload'
-copyright = '2023, nke Instrumentation'
+copyright = '2026, nke Instrumentation'
 author = 'Christophe SCHAEFFER'
 version = '1.0'
-release = '1.0.0'
+release = '1.0.1'
 
 # -- General configuration ---------------------------------------------------
 

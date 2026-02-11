@@ -6,22 +6,30 @@
 
 __authors__ = "Christophe SCHAEFFER"
 __copyright__ = "nke Instrumentation"
-__date__ = "2024-06-07"
-__version__ = "1.0.0"
+__date__ = "2026-02-11"
+__version__ = "1.0.1"
+
 
 # Standard libraries
+import os
 import sys
 import time
-from configparser import RawConfigParser
-# import traceback
+from configparser import RawConfigParser, NoSectionError, NoOptionError
+
+# Project libraries
+from system.trace_lib import trace_log
+
+# Configuration
+USER_MAX_NUMBER = 4
 
 
 # Read user configuration field
-def read_configuration(section: str, field: str) -> str:
+def read_configuration(config_file: str, section: str, field: str) -> str:
 	"""
 		Read user configuration field
 
 		Parameters:
+			- config_file (str) : filename
 			- section (str): section string
 			- field (str): field string
 
@@ -31,11 +39,11 @@ def read_configuration(section: str, field: str) -> str:
 	try:
 		# Read config
 		config = RawConfigParser()
-		config.read("./user/user.ini")
+		config.read("./user/"+config_file)
 		# Result
 		return config.get(section, field)
 
-	except Exception as err:
+	except (NoSectionError, NoOptionError, KeyError, ValueError, AttributeError):
 		# Result
 		return "undefined"
 
@@ -54,16 +62,16 @@ def load_class(source_code: str, class_name: str, default_class):
 			- class: user class
 	"""
 	try:
+		# Undefined
+		if not source_code or source_code == "undefined":
+			return default_class
 		# Load module
 		sys.path.insert(1, "./user")
 		user_module = __import__(source_code.split(".")[0])
 		# Result
 		return getattr(user_module, class_name, default_class)
 
-	except Exception as err:
-		# Trace
-		# print(err)
-		# print(traceback.format_exc())
+	except (ModuleNotFoundError, AttributeError, ImportError):
 		# Result
 		return default_class
 
@@ -85,10 +93,7 @@ def load_function(user_class, str_function: str, ptr_default):
 		# Result
 		return getattr(user_class, str_function, ptr_default)
 
-	except Exception as err:
-		# Trace
-		# print(err)
-		# print(traceback.format_exc())
+	except TypeError:
 		# Result
 		return ptr_default
 
@@ -99,24 +104,29 @@ class DefaultConfig:
 		DefaultConfig class: default application configuration
 	"""
 
+	# Create resource
+	def __init__(self, user_index: int = 0):
+		# Manager
+		self.user_index = user_index
+
 	# Run
-	@staticmethod
+	# noinspection PyMethodMayBeStatic
 	def run(self): time.sleep(0.1)
 
 	# Get time before next activity
-	@staticmethod
+	# noinspection PyMethodMayBeStatic
 	def get_time_before_activity(self): return 3600.0
 
 	# Get version
-	@staticmethod
+	# noinspection PyMethodMayBeStatic
 	def get_version(self): return "none"
 
 	# Dummy measurement
-	@staticmethod
-	def get_data(self): return "user=none"
+	# noinspection PyMethodMayBeStatic
+	def get_data(self): return "none"
 
 	# Test process
-	@staticmethod
+	# noinspection PyMethodMayBeStatic
 	def test(self): return "user    : none"
 
 
@@ -124,11 +134,16 @@ class DefaultConfig:
 class UserConfig:
 	"""
 		UserConfig class: user application configuration
+
+		user_index = 0 → user.ini (mono-user legacy mode)
+		user_index >=1 → user{i}.ini (multi-user)
 	"""
 
 	# Create resource
-	def __init__(self):
+	def __init__(self, config_file: str, user_index: int = 0):
 		# Manager
+		self.config_file = config_file
+		self.user_index = user_index
 		self.source_code = "none"
 		self._class_mission = None
 		self._ptr_run = None
@@ -144,27 +159,27 @@ class UserConfig:
 			Load user configuration
 		"""
 		# Read user configuration
-		str_source_code = read_configuration("APPLICATION", "source_code")
-		str_class_mission = read_configuration("MISSION", "class_mission")
-		str_function_run = read_configuration("MISSION", "function_run")
-		str_function_time_before_activity = read_configuration("MISSION", "function_time_before_activity")
-		str_class_command = read_configuration("COMMAND", "class_command")
-		str_function_version = read_configuration("COMMAND", "function_version")
-		str_function_measurement = read_configuration("COMMAND", "function_measurement")
-		str_function_test = read_configuration("COMMAND", "function_test")
+		str_source_code = read_configuration(self.config_file, "APPLICATION", "source_code")
+		str_class_mission = read_configuration(self.config_file, "MISSION", "class_mission")
+		str_function_run = read_configuration(self.config_file, "MISSION", "function_run")
+		str_function_time_before_activity = read_configuration(self.config_file, "MISSION", "function_time_before_activity")
+		str_class_command = read_configuration(self.config_file, "COMMAND", "class_command")
+		str_function_version = read_configuration(self.config_file, "COMMAND", "function_version")
+		str_function_measurement = read_configuration(self.config_file, "COMMAND", "function_measurement")
+		str_function_test = read_configuration(self.config_file, "COMMAND", "function_test")
 		if not str_source_code == "":
 			self.source_code = str_source_code
 		# Load mission configuration
 		user_class_mission = load_class(str_source_code, str_class_mission, DefaultConfig)
-		self._ptr_run = load_function(user_class_mission, str_function_run, default_driver.run)
-		self._ptr_next_activity = load_function(user_class_mission, str_function_time_before_activity, default_driver.get_time_before_activity)
-		self._class_mission = user_class_mission()
+		self._ptr_run = load_function(user_class_mission, str_function_run, DefaultConfig.run)
+		self._ptr_next_activity = load_function(user_class_mission, str_function_time_before_activity, DefaultConfig.get_time_before_activity)
+		self._class_mission = user_class_mission(self.user_index)
 		# Load command configuration
 		user_class_command = load_class(str_source_code, str_class_command, DefaultConfig)
-		self._ptr_version = load_function(user_class_command, str_function_version, default_driver.get_version)
-		self._ptr_measurement = load_function(user_class_command, str_function_measurement, default_driver.get_data)
-		self._ptr_test = load_function(user_class_command, str_function_test, default_driver.test)
-		self._class_command = user_class_command()
+		self._ptr_version = load_function(user_class_command, str_function_version, DefaultConfig.get_version)
+		self._ptr_measurement = load_function(user_class_command, str_function_measurement, DefaultConfig.get_data)
+		self._ptr_test = load_function(user_class_command, str_function_test, DefaultConfig.test)
+		self._class_command = user_class_command(self.user_index)
 
 	# Run task
 	def run(self):
@@ -213,13 +228,39 @@ class UserConfig:
 			Test process
 
 			Returns:
-				- str: result string ("xxxxxxxx: ok/error" format)
+				- str: result string ("id_8_digits: ok/error" format)
 		"""
 		# Call function
 		return self._ptr_test(self._class_command)
 
 
+# Remove file if exists
+def remove_file_if_exists(path: str):
+	if os.path.exists(path):
+		os.remove(path)
+
+
 # Create resources
 default_driver = DefaultConfig()
-user_driver = UserConfig()
-user_driver.load()
+user_drivers = []
+# Mono-user legacy
+if os.path.exists("./user/user.ini"):
+	driver = UserConfig("user.ini", 0)
+	trace_log(f"CONFIG   > Load {driver.config_file}")
+	driver.load()
+	user_drivers.append(driver)
+	for i in range(1, USER_MAX_NUMBER + 1):
+		remove_file_if_exists(f"./share/user{i}.txt")
+# Multi-user
+else:
+	for i in range(1, USER_MAX_NUMBER + 1):
+		if not os.path.exists(f"./user/user{i}.ini"):
+			continue
+		driver = UserConfig(f"user{i}.ini", i)
+		trace_log(f"CONFIG   > Load {driver.config_file}")
+		driver.load()
+		user_drivers.append(driver)
+	loaded_count = len(user_drivers)
+	remove_file_if_exists("./share/user.txt")
+	for i in range(loaded_count + 1, USER_MAX_NUMBER + 1):
+		remove_file_if_exists(f"./share/user{i}.txt")

@@ -6,8 +6,8 @@
 
 __authors__ = "Christophe SCHAEFFER"
 __copyright__ = "nke Instrumentation"
-__date__ = "2024-06-07"
-__version__ = "1.0.0"
+__date__ = "2026-02-11"
+__version__ = "1.0.1"
 
 # Standard libraries
 import datetime
@@ -55,11 +55,11 @@ class DriverRTC:
 		# Trace
 		trace_log("RTC      > Synchronize=" + datetime.datetime.now().strftime("20%y-%m-%d %H:%M:%S"))
 
-	# Program wakealarm
+	# Program wakealarm in sleep mode (S3)
 	@staticmethod
-	def program_wakealarm(delay: int):
+	def program_wakealarm_sleep(delay: int):
 		"""
-			Program wakealarm
+			Program wakealarm (Sleep)
 
 			Parameters:
 				- delay (int): delay time from now (seconds)
@@ -67,7 +67,23 @@ class DriverRTC:
 		# Trace
 		trace_log("RTC      > Awake system in " + str(delay) + " seconds")
 		# Program wakeup
-		system_driver.program_wakealarm(delay)
+		system_driver.program_wakealarm_sleep(delay)
+		# Trace
+		trace_log("RTC      > Awake")
+
+	# Program wakealarm in sleep mode (S1)
+	@staticmethod
+	def program_wakealarm_standby(delay: int):
+		"""
+			Program wakealarm (Standby)
+
+			Parameters:
+				- delay (int): delay time from now (seconds)
+		"""
+		# Trace
+		trace_log("RTC      > Awake system in " + str(delay) + " seconds")
+		# Program wakeup
+		system_driver.program_wakealarm_standby(delay)
 		# Trace
 		trace_log("RTC      > Awake")
 

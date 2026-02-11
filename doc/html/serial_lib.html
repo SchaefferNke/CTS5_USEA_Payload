@@ -8,7 +8,7 @@
     <title>serial_lib &#8212; USEA-Payload documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="_static/nature.css?v=2388c7e7" />
-    <script src="_static/documentation_options.js?v=8d563738"></script>
+    <script src="_static/documentation_options.js?v=292eb321"></script>
     <script src="_static/doctools.js?v=888ff710"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="icon" href="_static/Picto32x32.ico"/>
@@ -55,16 +55,24 @@
 <p id="module-serial_lib">serial_lib.py</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="serial_lib.DriverSerial">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">serial_lib.</span></span><span class="sig-name descname"><span class="pre">DriverSerial</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">speed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#serial_lib.DriverSerial" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">serial_lib.</span></span><span class="sig-name descname"><span class="pre">DriverSerial</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">speed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#serial_lib.DriverSerial" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>DriverSerial class: serial port resource access for tasks</p>
 <dl class="simple">
 <dt>Attributes:</dt><dd><ul class="simple">
 <li><p>name (str): name (eg: “COM_1”)</p></li>
 <li><p>speed (int): baud rate (eg: 57600 bauds)</p></li>
-<li><p>size (int): read buffer size</p></li>
 <li><p>timeout (float): reading timeout (sec)</p></li>
 </ul>
+</dd>
+<dt>Access modes (exclusive):</dt><dd><ul class="simple">
+<li><p>persistent : open/read/write/close</p></li>
+<li><p>oneshot    : receive_ascii</p></li>
+</ul>
+</dd>
+<dt>Important:</dt><dd><p>When the serial port is opened in persistent mode, the serial resource and the associated lock are held
+exclusively until close() is explicitly called.
+open() must be paired with close() to release the lock and the resource.</p>
 </dd>
 </dl>
 <dl class="py method">
@@ -107,7 +115,7 @@
 </ul>
 </dd>
 <dt>Returns:</dt><dd><ul class="simple">
-<li><p>int: bytes read from the serial port</p></li>
+<li><p>bytes: bytes read from the serial port</p></li>
 </ul>
 </dd>
 </dl>
@@ -123,7 +131,7 @@
 </ul>
 </dd>
 <dt>Returns:</dt><dd><ul class="simple">
-<li><p>str: bytes read from the serial port</p></li>
+<li><p>str: bytes read from the serial port or “?” if a timeout/error occurs</p></li>
 </ul>
 </dd>
 </dl>
@@ -209,7 +217,7 @@
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-    &#169; Copyright 2023, nke Instrumentation.
+    &#169; Copyright 2026, nke Instrumentation.
     </div>
   </body>
 </html>

@@ -6,8 +6,8 @@
 
 __authors__ = "Christophe SCHAEFFER"
 __copyright__ = "nke Instrumentation"
-__date__ = "2024-06-07"
-__version__ = "1.0.0"
+__date__ = "2026-02-11"
+__version__ = "1.0.1"
 
 # Standard libraries
 import os
@@ -37,8 +37,8 @@ class EventShare:
 	def __init__(self, name: str):
 		# Manager
 		self._name = name
-		if not name in events:
-			events[name] = threading.Event()
+		if not self._name in events:
+			events[self._name] = threading.Event()
 
 	# Set event
 	def set(self):
@@ -75,23 +75,25 @@ class EventShare:
 		# Wait
 		events[self._name].wait()
 
+	# Wait event
+	def wait_timeout(self, timeout: float) -> bool:
+		"""
+			Wait until the event is set
+
+			Attributes:
+				- timeout (float): timeout value
+
+			Returns:
+				- bool: False in case of timeout
+		"""
+		# Wait
+		return events[self._name].wait(timeout=timeout)
+
 
 # Lock list
 var_locks = {}
-
-
-# File record definition
-class DataShareContent:
-	"""
-		DataShareContent class: shared variable
-
-		Attributes:
-			- value (object): variable object
-	"""
-
-	# Variable
-	def __init__(self):
-		self.value = 0
+# Value list
+var_value = {}
 
 
 # Class definition
@@ -106,49 +108,77 @@ class DataShare:
 			- Binary semaphore used for mutual exclusion on a resource variable
 	"""
 
-	# Variable
-	variable = DataShareContent()
-
 	# Create resource
 	def __init__(self, name: str):
 		# Manager
 		self._name = name
 		if not name in var_locks:
-			var_locks[name] = threading.Lock()
+			var_locks[self._name] = threading.Lock()
+		# Value
+		var_value[self._name] = -1
 
 	# Read resource
-	def read(self) -> object:
+	def read(self, timeout: float | None = None) -> object:
 		"""
 			Read a variable
+
+			Parameters:
+				- timeout (float): timeout value
 
 			Returns:
 				- object: data object
 		"""
+		# Optional timeout
+		if timeout is None:
+			timeout = 60.0
+		# Select lock
+		lock = var_locks[self._name]
 		# Wait for resource
-		if not var_locks[self._name].acquire(timeout=60.0):
+		acquired = lock.acquire(timeout=timeout)
+		# Timeout
+		if not acquired:
 			# Result
-			return 0
+			return -1
 		# Read value
-		value = self.variable.value
+		try:
+			# Result
+			return var_value[self._name]
 		# Release resource
-		var_locks[self._name].release()
-		# Result
-		return value
+		finally:
+			lock.release()
 
 	# Write resource
-	def write(self, value: object):
+	def write(self, value: object, timeout: float | None = None) -> bool:
 		"""
 			Write a variable
 
 			Parameters:
 				- value (object): data object
+				- timeout (float): timeout value
+
+			Returns:
+				- bool: False in case of timeout
 		"""
+		# Optional timeout
+		if timeout is None:
+			timeout = 60.0
+		# Select lock
+		lock = var_locks[self._name]
 		# Wait for resource
-		var_locks[self._name].acquire()
-		# Write value
-		self.variable.value = value
+		acquired = lock.acquire(timeout=timeout)
+		# Timeout
+		if not acquired:
+			# Error
+			return False
+		# Try
+		try:
+			# Write
+			var_value[self._name] = value
+			# Ok
+			return True
 		# Release resource
-		var_locks[self._name].release()
+		finally:
+			lock.release()
 
 
 # Lock list
@@ -161,7 +191,7 @@ class FileShareContent:
 		FileShareContent class: shared file
 
 		Attributes:
-			- timestamp (str): Unix Epoch timestamp
+			- timestamp (float): Unix Epoch timestamp
 			- string (str): event
 	"""
 
@@ -187,83 +217,125 @@ class FileShare:
 	def __init__(self, filename: str):
 		# Manager
 		self._filename = filename
-		if not filename in file_locks:
-			file_locks[filename] = threading.Lock()
+		if not self._filename in file_locks:
+			file_locks[self._filename] = threading.Lock()
 		# File content
 		self.content = FileShareContent()
 		self.content.timestamp = 0.0
 		self.content.string = ""
 
 	# Read resource file
-	def read(self) -> object:
+	def read(self, timeout: float | None = None) -> object:
 		"""
 			Read from file
+
+			Parameters:
+				- timeout (float): timeout value
 
 			Returns:
 				- object: content (timestamp and string)
 		"""
+		# Optional timeout
+		if timeout is None:
+			timeout = 60.0
 		# Resource doesn't exist
-		if not os.path.isfile("share/" + self._filename):
+		if not os.path.exists("share/" + self._filename):
 			# Fill empty content
 			self.content.timestamp = 0.0
 			self.content.string = "?"
 			# Result
 			return str(self.content)
 		# Wait for resource
-		if not file_locks[self._filename].acquire(timeout=60.0):
+		if not file_locks[self._filename].acquire(timeout=timeout):
 			# Fill empty content
 			self.content.timestamp = 0.0
 			self.content.string = "?"
 			# Result
 			return str(self.content)
 		# Read file
-		file = open("share/" + self._filename, "r")
-		info = file.read()
-		file.close()
+		try:
+			with open("share/" + self._filename, "r") as file:
+				info = file.read()
+		# Release resource
+		finally:
+			file_locks[self._filename].release()
 		# Parse
 		split = info.split(";")
+		# Verify
+		if not len(split) == 2:
+			# Print
+			print(info)
+			# Fill empty content
+			self.content.timestamp = 0.0
+			self.content.string = "?"
+			# Result
+			return str(self.content)
 		# Extract
 		self.content.timestamp = float(split[0])
 		self.content.string = split[1]
-		# Release resource
-		file_locks[self._filename].release()
 		# Result
 		return str(self.content)
 
 	# Write resource file
-	def write(self, info: str):
+	def write(self, info: str, timeout: float | None = None) -> bool:
 		"""
 			Write in file
 
 			Parameters:
 				- info (str): string to write
+				- timeout (float): timeout value
+
+			Returns:
+				- bool: False in case of timeout
 		"""
+		# Optional timeout
+		if timeout is None:
+			timeout = 60.0
 		# Wait for resource
-		file_locks[self._filename].acquire()
-		# Timestamp
-		now = datetime.datetime.now()
-		# Write file
-		file = open("share/" + self._filename, "w")
-		file.write(f"{now.timestamp():.3f}" + ";" + info)
-		file.close()
+		acquired = file_locks[self._filename].acquire(timeout=timeout)
+		# Timeout
+		if not acquired:
+			return False
+		# Try
+		try:
+			# Timestamp
+			now = datetime.datetime.now()
+			# Write file
+			with open("share/" + self._filename, "w") as file:
+				file.write(f"{now.timestamp():.3f}" + ";" + info)
 		# Release resource
-		file_locks[self._filename].release()
+		finally:
+			file_locks[self._filename].release()
+		# Result
+		return True
 
 	# Lock resource file
-	def lock(self):
+	def lock(self, timeout: float | None = None) -> bool:
 		"""
 			Lock file
+
+			Parameters:
+				- timeout (float): timeout value
+
+			Returns:
+				- bool: False in case of timeout
 		"""
+		# Optional timeout
+		if timeout is None:
+			timeout = 60.0
 		# Wait for resource
-		file_locks[self._filename].acquire()
+		return file_locks[self._filename].acquire(timeout=timeout)
 
 	# Unlock resource file
 	def unlock(self):
 		"""
 			Unlock file
 		"""
+		# Select resource
+		lock = file_locks[self._filename]
 		# Release resource
-		file_locks[self._filename].release()
+		if lock.locked():
+			lock.release()
 
 
 # Get current profile
@@ -295,42 +367,8 @@ def get_navigation() -> int:
 	# Read resource
 	share.read()
 	# Result
-	if share.content.string == "NA":
-		return USEA_NAVIGATION_STATE_BUOYANCY_DECREASE
-	elif share.content.string == "NB":
-		return USEA_NAVIGATION_STATE_DESCENT
-	elif share.content.string == "NC":
-		return USEA_NAVIGATION_STATE_PARK
-	elif share.content.string == "ND":
-		return USEA_NAVIGATION_STATE_DEEP_DESCENT
-	elif share.content.string == "NE":
-		return USEA_NAVIGATION_STATE_DEEP_PARK
-	elif share.content.string == "NF":
-		return USEA_NAVIGATION_STATE_ASCENT
-	elif share.content.string == "NG":
-		return USEA_NAVIGATION_STATE_SUB_SURFACE
-	elif share.content.string == "NH":
-		return USEA_NAVIGATION_STATE_BUOYANCY_INCREASE
-	elif share.content.string == "NI":
-		return USEA_NAVIGATION_STATE_RESCUE
-	elif share.content.string == "NJ":
-		return USEA_NAVIGATION_STATE_ASCENT_1
-	elif share.content.string == "NK":
-		return USEA_NAVIGATION_STATE_ASCENT_2
-	elif share.content.string == "NL":
-		return USEA_NAVIGATION_STATE_ASCENT_3
-	elif share.content.string == "SB":
-		return USEA_NAVIGATION_STATE_GPS
-	elif share.content.string == "SC":
-		return USEA_NAVIGATION_STATE_RUDICS
-	elif share.content.string == "SF":
-		return USEA_NAVIGATION_STATE_SURFACE_ACQUISITION
-	elif share.content.string == "TC":
-		return USEA_NAVIGATION_STATE_DATA_PROCESSING
-	elif share.content.string == "FN":
-		return USEA_NAVIGATION_STATE_END_OF_LIFE
-	else:
-		return USEA_NAVIGATION_STATE_UNDEFINED
+	nav_code = share.content.string
+	return USEA_NAVIGATION_MAP_1.get(nav_code, USEA_NAVIGATION_STATE_UNDEFINED)
 
 
 # Get current pressure
@@ -345,5 +383,11 @@ def get_pressure() -> float:
 	share = FileShare("pressure.txt")
 	# Read resource
 	share.read()
+	# Integrity test
+	if share.content.string == "?":
+		return 0.0
 	# Result
-	return float(share.content.string)
+	try:
+		return float(share.content.string)
+	except ValueError:
+		return 0.0

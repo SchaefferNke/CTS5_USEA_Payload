@@ -6,13 +6,17 @@
 
 __authors__ = "Christophe SCHAEFFER"
 __copyright__ = "nke Instrumentation"
-__date__ = "2024-06-07"
-__version__ = "1.0.0"
+__date__ = "2026-02-11"
+__version__ = "1.0.1"
 
 # Standard libraries
 import os
 import sys
-import time
+try:
+	import smbus
+except ImportError:
+	import types
+	smbus = types.SimpleNamespace(SMBus=lambda bus: None)
 
 if __name__ == "__main__":
 	# Process launched outside main
@@ -23,6 +27,7 @@ if __name__ == "__main__":
 from system.rtc import DriverRTC
 from system.io_lib import DriverIOOutput, DriverIOInput
 from system.serial_lib import DriverSerial
+from system.trace_lib import trace_log
 
 
 # Class definition
@@ -32,7 +37,9 @@ class DriverFactory:
 	"""
 
 	# Create resource
-	def __init__(self):
+	def __init__(self, user_index: int):
+		# Manager
+		self._user_index = user_index
 		# Hardware resource
 		self._resource = ""
 
@@ -62,7 +69,7 @@ class DriverFactory:
 				- name (str): IO name (eg: "GPIO_3_4")
 		"""
 		self._resource = DriverIOInput(name)
-		if self._resource.is_on():
+		if self._resource.get():
 			print("Input\t" + name + "\t= on")
 		else:
 			print("Input\t" + name + "\t= off")
@@ -76,7 +83,7 @@ class DriverFactory:
 				- name (str): Serial port name (eg: "COM_1")
 		"""
 		try:
-			self._resource = DriverSerial(name, 9600, 32, 0.15)
+			self._resource = DriverSerial(name, 9600, 0.15)
 			self._resource.open()
 			self._resource.write("Test".encode("ascii"))
 			result = self._resource.read(32).decode()
@@ -86,10 +93,11 @@ class DriverFactory:
 			else:
 				print("Serial\t" + name + "\t\t= error")
 
-		except Exception:
+		except (OSError, IOError, ValueError):
 			print("Serial\t" + name + "\t\t= not available")
 
 	# Test I2C
+	# noinspection PyMethodMayBeStatic
 	def test_i2c(self, name: str):
 		"""
 			I2C port test sequence
@@ -97,10 +105,23 @@ class DriverFactory:
 			Parameters:
 				- name (str): I2C port name (eg: "I2C_1")
 		"""
-		# TODO: to implement
-		print("I2C\t" + name + "\t\t= not implemented")
+		if smbus is None:
+			print("I2C\t" + name + "\t\t= not available")
+			return
+
+		try:
+			bus = smbus.SMBus(0)
+			value = bus.read_byte_data(0x6B, 0x0F)
+			if value == 0x70:
+				print("I2C\t" + name + "\t\t= success")
+			else:
+				print("I2C\t" + name + "\t\t= error")
+
+		except (FileNotFoundError, OSError):
+			print("I2C\t" + name + "\t\t= not available")
 
 	# Test SPI
+	# noinspection PyMethodMayBeStatic
 	def test_spi(self, name: str):
 		"""
 			SPI port test sequence
@@ -121,14 +142,14 @@ class DriverFactory:
 		"""
 		try:
 			test_file = "/media/sd/test.txt"
-			if os.path.isfile(test_file):
+			if os.path.exists(test_file):
 				os.remove(test_file)
 			self._resource = open(test_file, "w")
 			self._resource.write("Writing test\n")
 			self._resource.close()
 			print("SD\t" + name + "\t\t= success")
 
-		except Exception:
+		except (OSError, IOError):
 			print("SD\t" + name + "\t\t= not available")
 
 	# Test RTC
@@ -144,27 +165,31 @@ class DriverFactory:
 			self._resource.restore()
 			print("RTC\t" + name + "\t\t= success")
 
-		except Exception:
+		except OSError:
 			print("RTC\t" + name + "\t\t= not available")
 
 	# Run task
+	# noinspection PyMethodMayBeStatic
 	def run(self):
 		"""
 			Working task
 		"""
 		# Scheduler
-		manager(self)
+		manager()
 
 
 # Create resources
-factory_driver = DriverFactory()
+factory_driver = DriverFactory(0)
 
 
 # Manager
-def manager(self):
+def manager():
 	"""
 		Running task
 	"""
+
+	# Trace
+	trace_log("FACTORY  > Activate")
 
 	# RTC
 	factory_driver.test_rtc("RTC_0")
