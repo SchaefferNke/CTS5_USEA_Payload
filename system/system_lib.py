@@ -6,8 +6,8 @@
 
 __authors__ = "Christophe SCHAEFFER"
 __copyright__ = "nke Instrumentation"
-__date__ = "2026-02-11"
-__version__ = "1.0.1"
+__date__ = "2026-07-03"
+__version__ = "1.0.2"
 
 # Standard libraries
 import os
@@ -172,7 +172,7 @@ class DriverSystem:
 				- bool: True if the SD card is inserted
 		"""
 		if not os.name == "nt":
-			# Program wakeup
+			# Detect SD card
 			result = os.system("sudo ls /dev/mmcblk0 >/dev/null 2>&1")
 		else:
 			result = 256
@@ -180,6 +180,61 @@ class DriverSystem:
 		if result == 0:
 			return True
 		return False
+
+	# Format Disk2
+	@staticmethod
+	def disk2_format() -> bool:
+		"""
+			Disk2 formatting
+
+			Returns:
+				- bool: True if the SD card is formatted
+		"""
+		if os.name == "nt":
+			return False
+		# Define partition and mount point
+		partition = "/dev/mmcblk0p1"
+		mount_point = "/media/sd"
+		# Check if partition exists
+		if not os.path.exists(partition):
+			return False
+		# Ensure the mount point exists
+		os.makedirs(mount_point, exist_ok=True)
+		# Unmount if already mounted
+		os.system(f"sudo umount {partition} 2>/dev/null || true")
+		time.sleep(1.0)
+		# Format SD card with FAT32 (silently) and sync
+		if os.system(f"sudo LC_ALL=C sh -c 'mkfs.vfat -F 32 {partition} >/dev/null 2>&1 && sync'") != 0:
+			return False
+		# Mount the SD card
+		os.system(f"sudo mount {partition} {mount_point} 2>/dev/null")
+		time.sleep(1.0)
+		# Return True, assuming reboot will be done to finalize
+		return True
+
+	# Test Disk2
+	@staticmethod
+	def disk2_test() -> bool:
+		"""
+			Disk2 test
+
+			Returns:
+				- bool: True if the SD card test succeed
+		"""
+		if os.name == "nt":
+			return False
+		# Check mount
+		if not os.path.ismount("/media/sd"):
+			return False
+		# Write test file
+		try:
+			with open("/media/sd/test.txt", "w") as f:
+				f.write("success")
+			os.system("sync")
+		except OSError:
+			return False
+		# Result
+		return True
 
 	# Set output on
 	@staticmethod

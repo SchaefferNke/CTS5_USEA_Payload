@@ -49,6 +49,10 @@ main.py
 
 ## Version history
 
+### 1.0.2 (2026-07-08)
+- Improving application robustness
+- Adding SD card management
+
 ### 1.0.1 (2026-02-11)
 - Improving the reference application
 - Adding multi-user support

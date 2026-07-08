@@ -6,7 +6,7 @@
 
 __authors__ = "Christophe SCHAEFFER"
 __copyright__ = "nke Instrumentation"
-__date__ = "2026-02-11"
+__date__ = "2026-07-01"
 __version__ = "1.0.1"
 
 # Standard libraries
@@ -31,11 +31,11 @@ from system.trace_lib import trace_log
 from system.const import *
 
 # Versioning
-SENSO_VERSION = "1.0.1"
+SENSO_VERSION = __version__
 
 # Senso output format
-SENSO_OUTPUT_PHY_3 = False
-SENSO_OUTPUT_RAW_50 = True
+SENSO_OUTPUT_PHY_3 = True
+SENSO_OUTPUT_RAW_50 = False
 
 
 # Validate raw value
@@ -55,9 +55,17 @@ def _parse_senso_frame(self, frame_data: str) -> bool:
 		Returns:
 			- bool: True if parsing is successful
 	"""
+	# No data
+	if not frame_data or frame_data == "?":
+		# Print
+		trace_log("SENSO    > Time-out")
+		# Result
+		return False
 	# Check header
-	if not frame_data or not frame_data.startswith("SENSO,D,"):
+	if not frame_data.startswith("SENSO,D,"):
+		# Print
 		trace_log("SENSO    > Frame parse error (no header)")
+		# Result
 		return False
 	# Try
 	try:
@@ -128,8 +136,6 @@ def acquisition_process_with_power(self, string: str) -> bool:
 		result = True
 	# Error
 	else:
-		# Print
-		trace_log("SENSO    > Time-out")
 		# Count error
 		if string == "Acquire":
 			self._tech.diagnosis_count_error()
@@ -168,8 +174,6 @@ def acquisition_process_no_power(self, string: str) -> bool:
 		result = True
 	# Error
 	else:
-		# Print
-		trace_log("SENSO    > Time-out")
 		# Count error
 		if string == "Acquire":
 			self._tech.diagnosis_count_error()
@@ -243,6 +247,7 @@ class DriverSenso:
 	# Create resource
 	def __init__(self, user_index: int):
 		# Manager
+		self._stop = False
 		self._user_index = user_index
 		self._active = False
 		self._step = USEA_USER_STEP_IDLE
@@ -252,8 +257,10 @@ class DriverSenso:
 		self._timer = DriverTimer("senso")
 		if user_index == 0:
 			self._share_step = DataShare("user_step")
+			self._share_info = FileShare("user.txt")
 		else:
 			self._share_step = DataShare(f"user{user_index}_step")
+			self._share_info = FileShare(f"user{self._user_index}.txt")
 		self._tech = DriverTechnicalUser("SENSO")
 		# Output
 		self.output = DataSenso()
@@ -297,20 +304,20 @@ class DriverSenso:
 		# Acquire
 		return acquisition_process_no_power(self, "Acquire")
 
-	# Share information string
-	def share_info(self):
+	# Set and share state
+	def set_state(self, state):
 		"""
-			Share information string
+		Set and share the state machine state
+
+		Parameters:
+			state (int): step
 		"""
-		# Share information
-		if self._user_index == 0:
-			file_name = "user.txt"
-		else:
-			file_name = f"user{self._user_index}.txt"
-		user_info = FileShare(file_name)
-		# Processing step
-		step_name = next((name for name, value in USEA_USER_STATE_MAP.items() if value == self._step), "?")
-		user_info.write(step_name)
+		# Set state
+		self._step = state
+		# Share with process
+		self._share_step.write(state)
+		# Share with web interface
+		self._share_info.write(next((name for name, value in USEA_USER_STATE_MAP.items() if value == self._step), "?"))
 
 
 # Class definition
@@ -384,12 +391,14 @@ def manager(self):
 		Running task
 	"""
 
+	# Trace
+	trace_log("SENSO    > Activate")
+
+	self._stop = False
+
 	file_name = ""
 	timestamp_record = 0.0
 	start_date = ""
-
-	# Trace
-	trace_log("SENSO    > Activate")
 
 	# Activate task
 	self._active = True
@@ -397,13 +406,11 @@ def manager(self):
 	self._timer.wait_until_synchro()
 	# Start timer
 	self._timer.start_base_time(1.0)
-	# Share step
-	self._share_step.write(self._step)
-	# Share info
-	self.share_info()
+	# Share
+	self.set_state(self._step)
 
 	# Loop
-	while True:
+	while not self._stop:
 		try:
 
 			# Sensor activated ?
@@ -427,11 +434,7 @@ def manager(self):
 					# Print
 					trace_log("SENSO    > Start acquisition")
 					# Start recording
-					self._step = USEA_USER_STEP_RECORD
-					# Share step
-					self._share_step.write(self._step)
-					# Share info
-					self.share_info()
+					self.set_state(USEA_USER_STEP_RECORD)
 					# Reset error flags counters
 					self._tech.diagnosis_reset()
 					# Power-on
@@ -460,9 +463,7 @@ def manager(self):
 					# Base time count
 					if self._timer.is_tick():
 						# Acquisition in progress
-						self._step = USEA_USER_STEP_SAMPLE
-						# Share info
-						self.share_info()
+						self.set_state(USEA_USER_STEP_SAMPLE)
 						# Acquire
 						if self.acquire_sample():
 							# Recording period management
@@ -470,7 +471,7 @@ def manager(self):
 								# Update record timestamp
 								timestamp_record = self.output.timestamp
 								# Store data
-								with open(file_name, "a+") as file:
+								with open(file_name, "a") as file:
 									if SENSO_OUTPUT_PHY_3:
 										file.write(
 											f"{self.output.timestamp:.1f}" + ";" +
@@ -487,9 +488,7 @@ def manager(self):
 											f"{self.output.channel_b2:.1f}" + ";" +
 											f"{self.output.channel_b3:.1f}" + "\n")
 						# Acquisition finished
-						self._step = USEA_USER_STEP_RECORD
-						# Share info
-						self.share_info()
+						self.set_state(USEA_USER_STEP_RECORD)
 					# Wait
 					else:
 						time.sleep(0.1)
@@ -499,16 +498,12 @@ def manager(self):
 					now = datetime.datetime.now()
 					stop_date = now.strftime("%d/%m/%y %H:%M:%S\n")
 					# Save start and stop dates
-					with open(file_name, "a+") as file:
+					with open(file_name, "a") as file:
 						file.write(start_date + stop_date)
 					# Print
 					trace_log("SENSO    > Stop acquisition")
 					# Stop recording
-					self._step = USEA_USER_STEP_SURFACE
-					# Share step
-					self._share_step.write(self._step)
-					# Share info
-					self.share_info()
+					self.set_state(USEA_USER_STEP_SURFACE)
 					# Power-off
 					self._io_power.set_off()
 
@@ -526,31 +521,30 @@ def manager(self):
 					# Print
 					trace_log("SENSO    > Processing")
 					# Start processing
-					self._step = USEA_USER_STEP_TREAT
-					# Share step
-					self._share_step.write(self._step)
-					# Share info
-					self.share_info()
+					self.set_state(USEA_USER_STEP_TREAT)
 					# Save errors
 					self._tech.diagnosis_save()
 					# Stop processing
-					self._step = USEA_USER_STEP_IDLE
-					# Share step
-					self._share_step.write(self._step)
-					# Share info
-					self.share_info()
+					self.set_state(USEA_USER_STEP_IDLE)
 				# Other
 				else:
 					# Stop recording
-					self._step = USEA_USER_STEP_IDLE
-					# Share step
-					self._share_step.write(self._step)
-					# Share info
-					self.share_info()
+					self.set_state(USEA_USER_STEP_IDLE)
 
 			# Other
 			else:
 				time.sleep(0.1)
+
+		# Stop
+		except KeyboardInterrupt:
+			# Trace
+			trace_log("SENSO    > Deactivate")
+			# Stop
+			self._stop = True
+			# Power-off
+			self._io_power.set_off()
+			# Wait
+			time.sleep(0.1)
 
 		# Error
 		except Exception as err:

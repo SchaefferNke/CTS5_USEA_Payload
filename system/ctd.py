@@ -6,8 +6,8 @@
 
 __authors__ = "Christophe SCHAEFFER"
 __copyright__ = "nke Instrumentation"
-__date__ = "2026-02-11"
-__version__ = "1.0.1"
+__date__ = "2026-07-03"
+__version__ = "1.0.2"
 
 # Standard libraries
 import os
@@ -90,21 +90,19 @@ def manager(self):
 			# New ctd sample
 			if self._share_data.content.timestamp > self.output.timestamp:
 				# Parse
-				values = self._share_data.content.string.split(",")
-				if len(values) != 3:
-					raise ValueError("Invalid CTD data format")
+				split = self._share_data.content.string.split(",")
 				# Extract
 				self.output.timestamp = self._share_data.content.timestamp
-				self.output.pressure = float(values[0])
-				self.output.temperature = float(values[1])
-				self.output.salinity = float(values[2])
+				self.output.pressure = float(split[0])
+				self.output.temperature = float(split[1])
+				self.output.salinity = float(split[2])
 				# Store data
-				file = open("ctd/" + get_profile() + "_ctd.csv", "a+")
+				file = open("ctd/" + get_profile() + "_ctd.csv", "a")
 				file.write(
 					f"{self.output.timestamp:.3f}" + "," +
 					f"{self.output.pressure:.2f}" + "," +
-					f"{self.output.temperature:.3f}" + "," +
-					f"{self.output.salinity:.3f}" + "\n")
+					f"{self.output.temperature:.4f}" + "," +
+					f"{self.output.salinity:.4f}" + "\n")
 				file.close()
 
 			# Wait

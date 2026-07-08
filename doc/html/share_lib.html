@@ -253,12 +253,61 @@
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="share_lib.get_ctrl_action">
+<span class="sig-prename descclassname"><span class="pre">share_lib.</span></span><span class="sig-name descname"><span class="pre">get_ctrl_action</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#share_lib.get_ctrl_action" title="Link to this definition">¶</a></dt>
+<dd><p>Read parking duration</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><ul class="simple">
+<li><p>float: timestamp</p></li>
+<li><p>str: action (eg: “PUMP”)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="share_lib.get_navigation">
 <span class="sig-prename descclassname"><span class="pre">share_lib.</span></span><span class="sig-name descname"><span class="pre">get_navigation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#share_lib.get_navigation" title="Link to this definition">¶</a></dt>
 <dd><p>Read navigation identification string</p>
 <dl class="simple">
 <dt>Returns:</dt><dd><ul class="simple">
 <li><p>int: navigation identification value (see const.py)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="share_lib.get_parking_duration">
+<span class="sig-prename descclassname"><span class="pre">share_lib.</span></span><span class="sig-name descname"><span class="pre">get_parking_duration</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#share_lib.get_parking_duration" title="Link to this definition">¶</a></dt>
+<dd><p>Read parking duration</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><ul class="simple">
+<li><p>int: duration time (sec)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="share_lib.get_parking_pressure">
+<span class="sig-prename descclassname"><span class="pre">share_lib.</span></span><span class="sig-name descname"><span class="pre">get_parking_pressure</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#share_lib.get_parking_pressure" title="Link to this definition">¶</a></dt>
+<dd><p>Read parking target pressure</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><ul class="simple">
+<li><p>int: pressure value (dbar)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="share_lib.get_parking_timestamp">
+<span class="sig-prename descclassname"><span class="pre">share_lib.</span></span><span class="sig-name descname"><span class="pre">get_parking_timestamp</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#share_lib.get_parking_timestamp" title="Link to this definition">¶</a></dt>
+<dd><p>Read parking starting date</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><ul class="simple">
+<li><p>float: timestamp</p></li>
 </ul>
 </dd>
 </dl>
@@ -322,7 +371,11 @@
 </ul>
 </li>
 <li><a class="reference internal" href="#share_lib.FileShareContent"><code class="docutils literal notranslate"><span class="pre">FileShareContent</span></code></a></li>
+<li><a class="reference internal" href="#share_lib.get_ctrl_action"><code class="docutils literal notranslate"><span class="pre">get_ctrl_action()</span></code></a></li>
 <li><a class="reference internal" href="#share_lib.get_navigation"><code class="docutils literal notranslate"><span class="pre">get_navigation()</span></code></a></li>
+<li><a class="reference internal" href="#share_lib.get_parking_duration"><code class="docutils literal notranslate"><span class="pre">get_parking_duration()</span></code></a></li>
+<li><a class="reference internal" href="#share_lib.get_parking_pressure"><code class="docutils literal notranslate"><span class="pre">get_parking_pressure()</span></code></a></li>
+<li><a class="reference internal" href="#share_lib.get_parking_timestamp"><code class="docutils literal notranslate"><span class="pre">get_parking_timestamp()</span></code></a></li>
 <li><a class="reference internal" href="#share_lib.get_pressure"><code class="docutils literal notranslate"><span class="pre">get_pressure()</span></code></a></li>
 <li><a class="reference internal" href="#share_lib.get_profile"><code class="docutils literal notranslate"><span class="pre">get_profile()</span></code></a></li>
 </ul>

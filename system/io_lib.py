@@ -6,8 +6,8 @@
 
 __authors__ = "Christophe SCHAEFFER"
 __copyright__ = "nke Instrumentation"
-__date__ = "2026-02-11"
-__version__ = "1.0.1"
+__date__ = "2026-07-03"
+__version__ = "1.0.2"
 
 # Standard libraries
 import threading

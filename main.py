@@ -6,8 +6,8 @@
 
 __authors__ = "Christophe SCHAEFFER"
 __copyright__ = "nke Instrumentation"
-__date__ = "2026-02-11"
-__version__ = "1.0.1"
+__date__ = "2026-07-03"
+__version__ = "1.0.2"
 
 # Standard libraries
 import os
@@ -44,7 +44,7 @@ if __name__ == "__main__":
 
 	# Restore system clock
 	rtc_driver.restore()
-	# CPLD awake command
+	# CPLD activation
 	io_sleepn = DriverIOOutput("GPIO_3_27")
 	io_sleepn.set_on()
 
@@ -74,8 +74,8 @@ if __name__ == "__main__":
 	trace_log("MAIN     > Application is running")
 
 	# Main loop
-	while True:
-		try:
+	try:
+		while True:
 
 			# Feed the watchdog
 			system_driver.watchdog_feed()
@@ -86,13 +86,15 @@ if __name__ == "__main__":
 				activities = [emap_driver.get_time_before_activity()]
 				for driver in user_drivers:
 					activities.append(driver.get_time_before_activity())
-				activity_next = int(min(activities))
+				activity_next = max(0, int(min(activities)))
 				# No planned activity
 				if activity_next > 20:
 					# Suspend CPLD
 					io_sleepn.set_off()
 					# Suspend system
 					rtc_driver.program_wakealarm_sleep(activity_next - 5)
+					# Refresh EMAP heartbeat after wakeup
+					emap_driver.heartbeat = time.monotonic()
 					# Awake CPLD
 					io_sleepn.set_on()
 					# Wait
@@ -104,10 +106,26 @@ if __name__ == "__main__":
 				# Wait
 				time.sleep(1.0)
 
-		# Error
-		except Exception as err:
-			# Trace
-			print(err)
-			print(traceback.format_exc())
-			# Trace
-			trace_log("MAIN     > [ERROR]")
+			# EMAP alive ?
+			if time.monotonic() - emap_driver.heartbeat > 60:
+				# Trace
+				trace_log("MAIN     > EMAP blocked")
+				# Clean folder
+				files = os.listdir("./share")
+				for file_name in files:
+					os.remove("./share/" + file_name)
+				# Reboot
+				system_driver.reboot()
+
+	# Error
+	except Exception as err:
+		# Trace
+		print(err)
+		print(traceback.format_exc())
+		# Trace
+		trace_log("MAIN     > [ERROR]")
+
+	# Stop
+	finally:
+		# CPLD deactivation
+		io_sleepn.set_off()

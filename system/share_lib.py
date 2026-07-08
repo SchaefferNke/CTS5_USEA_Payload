@@ -6,12 +6,12 @@
 
 __authors__ = "Christophe SCHAEFFER"
 __copyright__ = "nke Instrumentation"
-__date__ = "2026-02-11"
-__version__ = "1.0.1"
+__date__ = "2026-07-03"
+__version__ = "1.0.2"
 
 # Standard libraries
 import os
-import datetime
+import time
 import threading
 
 # Project libraries
@@ -115,7 +115,8 @@ class DataShare:
 		if not name in var_locks:
 			var_locks[self._name] = threading.Lock()
 		# Value
-		var_value[self._name] = -1
+		if self._name not in var_value:
+			var_value[self._name] = -1
 
 	# Read resource
 	def read(self, timeout: float | None = None) -> object:
@@ -260,7 +261,7 @@ class FileShare:
 		finally:
 			file_locks[self._filename].release()
 		# Parse
-		split = info.split(";")
+		split = info.split(";", 1)
 		# Verify
 		if not len(split) == 2:
 			# Print
@@ -298,11 +299,9 @@ class FileShare:
 			return False
 		# Try
 		try:
-			# Timestamp
-			now = datetime.datetime.now()
 			# Write file
 			with open("share/" + self._filename, "w") as file:
-				file.write(f"{now.timestamp():.3f}" + ";" + info)
+				file.write(f"{time.time():.3f}" + ";" + info)
 		# Release resource
 		finally:
 			file_locks[self._filename].release()
@@ -391,3 +390,89 @@ def get_pressure() -> float:
 		return float(share.content.string)
 	except ValueError:
 		return 0.0
+
+
+# Get parking timestamp
+def get_parking_timestamp() -> float:
+	"""
+		Read parking starting date
+
+		Returns:
+			- float: timestamp
+	"""
+	# Create resource
+	share = FileShare("parking.txt")
+	# Read resource
+	share.read()
+	# Result
+	try:
+		return float(share.content.timestamp)
+	except (ValueError, TypeError):
+		return 0.0
+
+
+# Get parking pressure
+def get_parking_pressure() -> int:
+	"""
+		Read parking target pressure
+
+		Returns:
+			- int: pressure value (dbar)
+	"""
+	# Create resource
+	share = FileShare("parking.txt")
+	# Read resource
+	share.read()
+	# Integrity test
+	if share.content.string in ("", "?"):
+		return 0
+	# Result
+	try:
+		return int(share.content.string.split(",")[0])
+	except ValueError:
+		return 0
+
+
+# Get parking duration
+def get_parking_duration() -> int:
+	"""
+		Read parking duration
+
+		Returns:
+			- int: duration time (sec)
+	"""
+	# Create resource
+	share = FileShare("parking.txt")
+	# Read resource
+	share.read()
+	# Integrity test
+	if share.content.string in ("", "?"):
+		return 0
+	# Result
+	try:
+		return int(share.content.string.split(",")[1])
+	except ValueError:
+		return 0
+
+
+# Get control action
+def get_ctrl_action() -> tuple[float, str]:
+	"""
+		Read parking duration
+
+		Returns:
+			- float: timestamp
+			- str: action (eg: "PUMP")
+	"""
+	# Create resource
+	share = FileShare("ctrl.txt")
+	# Read resource
+	share.read()
+	# Integrity test
+	if share.content.string in ("", "?"):
+		return 0.0, "NONE"
+	# Result
+	try:
+		return share.content.timestamp, share.content.string
+	except ValueError:
+		return 0.0, "NONE"

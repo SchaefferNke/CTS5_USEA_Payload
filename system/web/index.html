@@ -195,7 +195,7 @@
             <p id="disk1-bargraph" class="none">
              <span class="outer"><span id="disk1-inner" class="inner"></span></span>
             </p>
-            <p id="disk1-size"></p>&nbsp
+            <p id="disk1-size"></p>
             <p id="disk1-usage">...</p>
            </div>
           </div>
@@ -205,12 +205,12 @@
            <div class="ico-line-cont">
             <div class="ico-gs-memory"></div>
            </div>
-           <label>Disk 2 (uSD)</label>
+           <label>Disk 2 (microSD)</label>
            <div class="param-value">
             <p id="disk2-bargraph" class="none">
              <span class="outer"><span id="disk2-inner" class="inner"></span></span>
             </p>
-            <p id="disk2-size"></p>&nbsp
+            <p id="disk2-size"></p>
             <p id="disk2-usage">...</p>
            </div>
           </div>
@@ -253,13 +253,13 @@
     did("cpu-usage").innerHTML        = dtd["cpu-usage"] + "%";
     did("cpu-temperature").innerHTML  = dtd["cpu-temperature"] + " °C";
     did("memory-usage").innerHTML     = dtd["memory-usage"] + "%";
-    did("disk1-size").innerHTML       = dtd["disk1-size"] + " GB (Used: ";
-    did("disk1-usage").innerHTML      = dtd["disk1-usage"] + "%)";
+    did("disk1-size").innerHTML       = dtd["disk1-size"] + " GB (";
+    did("disk1-usage").innerHTML      = dtd["disk1-usage"] + "% used)";
     vFBargraph(did("disk1-usage").innerHTML,"disk1-inner");
     did("disk1-bargraph").classList.remove("none")
     if(dtd["disk2-present"]=="True"){
-     did("disk2-size").innerHTML  = dtd["disk2-size"] + " GB (Used: ";
-     did("disk2-usage").innerHTML = dtd["disk2-usage"] + "%)";
+     did("disk2-size").innerHTML  = dtd["disk2-size"] + " GB (";
+     did("disk2-usage").innerHTML = dtd["disk2-usage"] + "% used)";
      vFBargraph(did("disk2-usage").innerHTML,"disk2-inner");
      did("disk2-bargraph").classList.remove("none")
     }

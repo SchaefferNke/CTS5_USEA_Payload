@@ -6,8 +6,8 @@
 
 __authors__ = "Christophe SCHAEFFER"
 __copyright__ = "nke Instrumentation"
-__date__ = "2026-02-11"
-__version__ = "1.0.1"
+__date__ = "2026-02-20"
+__version__ = "1.0.2"
 
 # Standard libraries
 import os
@@ -30,7 +30,7 @@ from system.trace_lib import trace_log
 from system.const import *
 
 # Versioning
-SILICATE_VERSION = "1.0.1"
+SILICATE_VERSION = __version__
 
 
 # Compute NMEA checksum (receive)
