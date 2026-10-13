@@ -6,8 +6,8 @@
 
 __authors__ = "Christophe SCHAEFFER"
 __copyright__ = "nke Instrumentation"
-__date__ = "2026-07-03"
-__version__ = "1.0.2"
+__date__ = "2026-09-30"
+__version__ = "1.0.3"
 
 # Standard libraries
 import time
@@ -320,8 +320,16 @@ class DriverTimer:
 						delta = float(share.content.string)
 					except (ValueError, TypeError):
 						return
+					# Limit delta
+					if delta > 3600:
+						delta = 3600
+					elif delta < -3600:
+						delta = -3600
 					# Compute remaining time
 					remaining = self._stop - now - delta
+					# Integrity test
+					if remaining < 0:
+						remaining = 0
 					# Update timer
 					self._start = new_start
 					self._stop = now + remaining

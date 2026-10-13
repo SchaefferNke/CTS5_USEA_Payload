@@ -6,8 +6,8 @@
 
 __authors__ = "Christophe SCHAEFFER"
 __copyright__ = "nke Instrumentation"
-__date__ = "2026-07-03"
-__version__ = "1.0.2"
+__date__ = "2026-09-30"
+__version__ = "1.0.3"
 
 # Standard libraries
 import os
@@ -107,7 +107,7 @@ if __name__ == "__main__":
 				time.sleep(1.0)
 
 			# EMAP alive ?
-			if time.monotonic() - emap_driver.heartbeat > 60:
+			if time.monotonic() - emap_driver.heartbeat > 120:
 				# Trace
 				trace_log("MAIN     > EMAP blocked")
 				# Clean folder

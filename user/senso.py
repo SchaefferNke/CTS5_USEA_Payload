@@ -6,8 +6,8 @@
 
 __authors__ = "Christophe SCHAEFFER"
 __copyright__ = "nke Instrumentation"
-__date__ = "2026-07-01"
-__version__ = "1.0.1"
+__date__ = "2026-10-12"
+__version__ = "1.0.3"
 
 # Standard libraries
 import os
@@ -15,6 +15,7 @@ import sys
 import time
 import datetime
 import traceback
+from enum import Enum
 
 if __name__ == "__main__":
 	# Process launched outside main
@@ -33,158 +34,11 @@ from system.const import *
 # Versioning
 SENSO_VERSION = __version__
 
-# Senso output format
-SENSO_OUTPUT_PHY_3 = True
-SENSO_OUTPUT_RAW_50 = False
 
-
-# Validate raw value
-def clamp_raw(val: int) -> int:
-	if val < 0:
-		return 0
-	if val > 262143:
-		return 262143
-	return val
-
-
-# Analyse frame
-def _parse_senso_frame(self, frame_data: str) -> bool:
-	"""
-		Parse SENSO frame and fill output structure
-
-		Returns:
-			- bool: True if parsing is successful
-	"""
-	# No data
-	if not frame_data or frame_data == "?":
-		# Print
-		trace_log("SENSO    > Time-out")
-		# Result
-		return False
-	# Check header
-	if not frame_data.startswith("SENSO,D,"):
-		# Print
-		trace_log("SENSO    > Frame parse error (no header)")
-		# Result
-		return False
-	# Try
-	try:
-		# Parse
-		split = frame_data.split(",")
-		# Reference
-		self.output.timestamp = datetime.datetime.now().timestamp()
-		self.output.pressure = get_pressure()
-		# Extract
-		if SENSO_OUTPUT_PHY_3:
-			if len(split) < 5:
-				trace_log(f"SENSO    > Frame parse error (bad size: {len(split)})")
-				return False
-			self.output.channel1 = float(split[2])
-			self.output.channel2 = float(split[3])
-			self.output.channel3 = float(split[4])
-		elif SENSO_OUTPUT_RAW_50:
-			if len(split) < 61:
-				trace_log(f"SENSO    > Frame parse error (bad size: {len(split)})")
-				return False
-			self.output.channel_a1 = float(split[5])
-			self.output.channel_a2 = float(split[6])
-			self.output.channel_a3 = float(split[7])
-			for i in range(16):
-				value = int(split[i + 8])
-				raw = value - 4900
-				self.output.channels_a[i] = clamp_raw(raw)
-			self.output.channel_b1 = float(split[24])
-			self.output.channel_b2 = float(split[25])
-			self.output.channel_b3 = float(split[26])
-			for i in range(34):
-				value = int(split[i + 27])
-				raw = value - 4900
-				self.output.channels_b[i] = clamp_raw(raw)
-	# Error
-	except (IndexError, ValueError) as e:
-		# Print
-		trace_log(f"SENSO    > Frame parse error ({e})")
-		# Result
-		return False
-	# Result
-	return True
-
-
-# Acquisition process (with power management)
-def acquisition_process_with_power(self, string: str) -> bool:
-	"""
-		Sample acquisition process (with power management)
-
-		Returns:
-			- bool: True if the acquisition process is successful
-	"""
-	# Power-on
-	self._io_power.set_on()
-	# Warm-up
-	time.sleep(2.5)
-	# Acquisition
-	frame_data = self._serial.receive_ascii(1.5)
-	print(frame_data)
-	# Treatment
-	if _parse_senso_frame(self, frame_data):
-		# Print
-		trace_log("SENSO    > " + f"{self.output.timestamp:.1f}" + ',' + f"{self.output.pressure:.2f}" + ',' + frame_data[8:])
-		# Count success
-		if string == "Acquire":
-			self._tech.diagnosis_count_success()
-		# Result
-		result = True
-	# Error
-	else:
-		# Count error
-		if string == "Acquire":
-			self._tech.diagnosis_count_error()
-		# Result
-		result = False
-	# Count alarm
-	if string == "Acquire":
-		if not self._io_alarm.get():
-			self._tech.diagnosis_count_alarm()
-	# Power-off
-	self._io_power.set_off()
-	# Delay before new power-on (for proper operation of the sensor)
-	time.sleep(0.5)
-	# Result
-	return result
-
-
-# Acquisition process (without power management)
-def acquisition_process_no_power(self, string: str) -> bool:
-	"""
-		Sample acquisition process (without power management)
-
-		Returns:
-			- bool: True if the acquisition process is successful
-	"""
-	# Acquisition
-	frame_data = self._serial.receive_ascii(1.5)
-	# Treatment
-	if _parse_senso_frame(self, frame_data):
-		# Print
-		trace_log("SENSO    > " + f"{self.output.timestamp:.1f}" + ',' + f"{self.output.pressure:.2f}" + ',' + frame_data[8:])
-		# Count success
-		if string == "Acquire":
-			self._tech.diagnosis_count_success()
-		# Result
-		result = True
-	# Error
-	else:
-		# Count error
-		if string == "Acquire":
-			self._tech.diagnosis_count_error()
-		# Result
-		result = False
-	# Count alarm
-	if string == "Acquire":
-		if not self._io_alarm.get():
-			self._tech.diagnosis_count_alarm()
-	# Result
-	return result
+class AcquisitionMode(Enum):
+	PROFILE = 1
+	DATA = 2
+	AUTOTEST = 3
 
 
 # Class definition
@@ -193,49 +47,20 @@ class DataSenso:
 		DataSenso class: sensor data
 
 		Attributes:
-			[SENSO_OUTPUT_PHY_3]
 			- timestamp (float): timestamp
 			- pressure (float): pressure value
 			- channel1 (float): channel 1 physical value
 			- channel2 (float): channel 2 physical value
 			- channel3 (float): channel 3 physical value
-			[SENSO_OUTPUT_RAW_50]
-			- timestamp (float): timestamp
-			- pressure (float): pressure value
-			- channel_a1 (float): channel a physical value 1
-			- channel_a2 (float): channel a physical value 2
-			- channel_a3 (float): channel a physical value 3
-			- channels_a[0] (unsigned int): channel a1 raw value
-			- ...
-			- channels_a[15] (unsigned int): channel a16 raw value
-			- channel_b1 (float): channel b physical value 1
-			- channel_b2 (float): channel b physical value 2
-			- channel_b3 (float): channel b physical value 3
-			- channels_b[0] (unsigned int): channel b1 raw value
-			- ...
-			- channels_b[15] (unsigned int): channel b34 raw value
 	"""
 
 	# Output
-	if SENSO_OUTPUT_PHY_3:
-		def __init__(self):
-			self.timestamp = 0.0
-			self.pressure = 0.0
-			self.channel1 = 0.0
-			self.channel2 = 0.0
-			self.channel3 = 0.0
-	elif SENSO_OUTPUT_RAW_50:
-		def __init__(self):
-			self.timestamp = 0.0
-			self.pressure = 0.0
-			self.channel_a1 = 0.0
-			self.channel_a2 = 0.0
-			self.channel_a3 = 0.0
-			self.channels_a = [0] * 16
-			self.channel_b1 = 0.0
-			self.channel_b2 = 0.0
-			self.channel_b3 = 0.0
-			self.channels_b = [0] * 34
+	def __init__(self):
+		self.timestamp = 0.0
+		self.pressure = 0.0
+		self.channel1 = 0.0
+		self.channel2 = 0.0
+		self.channel3 = 0.0
 
 
 # Class definition
@@ -251,9 +76,9 @@ class DriverSenso:
 		self._user_index = user_index
 		self._active = False
 		self._step = USEA_USER_STEP_IDLE
-		self._io_power = DriverIOOutput("GPIO_3_20")
-		self._io_alarm = DriverIOInput("GPIO_5_5")
-		self._serial = DriverSerial("COM_5", 19200, 0.5)
+		self._io_power = DriverIOOutput("GPIO_3_19")
+		self._io_alarm = DriverIOInput("GPIO_1_0")
+		self._serial = DriverSerial("COM_4", 19200, 0.5)
 		self._timer = DriverTimer("senso")
 		if user_index == 0:
 			self._share_step = DataShare("user_step")
@@ -264,6 +89,133 @@ class DriverSenso:
 		self._tech = DriverTechnicalUser("SENSO")
 		# Output
 		self.output = DataSenso()
+
+	# Analyse frame
+	def _parse_senso_frame(self, frame_data: str) -> bool:
+		"""
+			Parse SENSO frame and fill output structure
+
+			Returns:
+				- bool: True if parsing is successful
+		"""
+		# No data
+		if not frame_data or frame_data == "?":
+			# Print
+			trace_log("SENSO    > Time-out")
+			# Result
+			return False
+		# Check header
+		if not frame_data.startswith("SENSO,D,"):
+			# Print
+			trace_log("SENSO    > Frame parse error (no header)")
+			# Result
+			return False
+		# Try
+		try:
+			# Parse
+			split = frame_data.split(",")
+			# Reference
+			self.output.timestamp = datetime.datetime.now().timestamp()
+			self.output.pressure = get_pressure()
+			# Extract
+			if len(split) < 5:
+				# Print
+				trace_log(f"SENSO    > Frame parse error (bad size: {len(split)})")
+				# Result
+				return False
+			# Store output
+			self.output.channel1 = float(split[2])
+			self.output.channel2 = float(split[3])
+			self.output.channel3 = float(split[4])
+		# Error
+		except (IndexError, ValueError) as e:
+			# Print
+			trace_log(f"SENSO    > Frame parse error ({e})")
+			# Result
+			return False
+		# Result
+		return True
+
+	# Acquisition process (pulsed mode)
+	def _acquisition_process_pulsed_mode(self, mode: AcquisitionMode) -> bool:
+		"""
+			Sample acquisition process (pulsed mode)
+
+			Returns:
+				- bool: True if the acquisition process is successful
+		"""
+		# Power-on
+		self._io_power.set_on()
+		# Warm-up
+		time.sleep(1.5)
+		# Acquisition
+		frame_data = self._serial.receive_ascii(2.0)
+		# Treatment
+		if self._parse_senso_frame(frame_data):
+			# Print
+			trace_log("SENSO    > " + f"{self.output.timestamp:.1f}" + ',' + f"{self.output.pressure:.2f}" + ',' + frame_data[8:])
+			# Count success
+			if mode == AcquisitionMode.PROFILE:
+				self._tech.diagnosis_count_success()
+			# Result
+			result = True
+		# Error
+		else:
+			# Count error
+			if mode == AcquisitionMode.PROFILE:
+				self._tech.diagnosis_count_error()
+			# Result
+			result = False
+		# Count alarm
+		if mode == AcquisitionMode.PROFILE:
+			if not self._io_alarm.get():
+				self._tech.diagnosis_count_alarm()
+		# Power-off
+		self._io_power.set_off()
+		# Delay before new power-on (for proper operation of the sensor)
+		time.sleep(0.5)
+		# Result
+		return result
+
+	# Get version
+	# noinspection PyMethodMayBeStatic
+	def get_version(self) -> str: return SENSO_VERSION
+
+	# Dummy measurement
+	def get_data(self) -> str:
+		"""
+			Dummy measurement
+
+			Returns:
+				- str: result string (eg: "c1=15.367", "no reply" if error)
+		"""
+		# Acquire
+		if self._acquisition_process_pulsed_mode(AcquisitionMode.DATA):
+			# Reply
+			return "c1=" + f"{self.output.channel1:.3f}" +\
+				", c2=" + f"{self.output.channel2:.3f}" +\
+				", c3=" + f"{self.output.channel3:.3f}"
+		# Error
+		else:
+			# Reply
+			return "no reply"
+
+	# Test sensor
+	def test(self) -> str:
+		"""
+			Test process
+
+			Returns:
+				- str: result string (eg: "senso   : ok", senso   : ok/error format)
+		"""
+		# Acquire
+		if self._acquisition_process_pulsed_mode(AcquisitionMode.AUTOTEST):
+			# Reply
+			return "senso   : ok"
+		# Error
+		else:
+			# Reply
+			return "senso   : error"
 
 	# Get time before next activity
 	def get_time_before_activity(self) -> float:
@@ -302,7 +254,7 @@ class DriverSenso:
 				- bool: True if the acquisition process is successful
 		"""
 		# Acquire
-		return acquisition_process_no_power(self, "Acquire")
+		return self._acquisition_process_pulsed_mode(AcquisitionMode.PROFILE)
 
 	# Set and share state
 	def set_state(self, state):
@@ -318,67 +270,6 @@ class DriverSenso:
 		self._share_step.write(state)
 		# Share with web interface
 		self._share_info.write(next((name for name, value in USEA_USER_STATE_MAP.items() if value == self._step), "?"))
-
-
-# Class definition
-class TestSenso:
-	"""
-		TestSenso class: manage test commands with sensor
-	"""
-
-	# Create resource
-	def __init__(self, user_index: int):
-		# Manager
-		self._user_index = user_index
-		self._io_power = DriverIOOutput("GPIO_3_20")
-		self._io_alarm = DriverIOInput("GPIO_5_5")
-		self._serial = DriverSerial("COM_5", 19200, 0.5)
-		# Output
-		self.output = DataSenso()
-
-	# Get version
-	# noinspection PyMethodMayBeStatic
-	def get_version(self) -> str: return SENSO_VERSION
-
-	# Dummy measurement
-	def get_data(self) -> str:
-		"""
-			Dummy measurement
-
-			Returns:
-				- str: result string (eg: "c1=15.367", "no reply" if error)
-		"""
-		# Acquire
-		if acquisition_process_with_power(self, "Test"):
-			# Reply
-			if SENSO_OUTPUT_PHY_3:
-				return "c1=" + f"{self.output.channel1:.3f}" +\
-					", c2=" + f"{self.output.channel2:.3f}" +\
-					", c3=" + f"{self.output.channel3:.3f}"
-			elif SENSO_OUTPUT_RAW_50:
-				return "a3=" + str(self.output.channel_a3) +\
-					",... , b3=" + str(self.output.channel_b3)
-		# Error
-		else:
-			# Reply
-			return "no reply"
-
-	# Test sensor
-	def test(self) -> str:
-		"""
-			Test process
-
-			Returns:
-				- str: result string (eg: "senso   : ok", senso   : ok/error format)
-		"""
-		# Acquire
-		if acquisition_process_with_power(self, "Autotest"):
-			# Reply
-			return "senso   : ok"
-		# Error
-		else:
-			# Reply
-			return "senso   : error"
 
 
 # Create resources
@@ -397,15 +288,13 @@ def manager(self):
 	self._stop = False
 
 	file_name = ""
-	timestamp_record = 0.0
-	start_date = ""
 
 	# Activate task
 	self._active = True
 	# Synchronize timer
 	self._timer.wait_until_synchro()
 	# Start timer
-	self._timer.start_base_time(1.0)
+	self._timer.start_base_time(10.0)
 	# Share
 	self.set_state(self._step)
 
@@ -420,7 +309,6 @@ def manager(self):
 
 			# Read resources
 			navigation = get_navigation()
-			pressure = get_pressure()
 
 			# Wait
 			if self._step == USEA_USER_STEP_IDLE:
@@ -428,19 +316,12 @@ def manager(self):
 				if navigation == USEA_NAVIGATION_STATE_ASCENT:
 					# Create file name
 					file_name = "payload/" + get_profile() + "_senso.csv"
-					# Get start date
-					now = datetime.datetime.now()
-					start_date = now.strftime("%d/%m/%y %H:%M:%S\n")
 					# Print
 					trace_log("SENSO    > Start acquisition")
 					# Start recording
 					self.set_state(USEA_USER_STEP_RECORD)
 					# Reset error flags counters
 					self._tech.diagnosis_reset()
-					# Power-on
-					self._io_power.set_on()
-					# Warm-up
-					time.sleep(2.5)
 				# Wait
 				else:
 					time.sleep(0.1)
@@ -452,41 +333,21 @@ def manager(self):
 					(navigation == USEA_NAVIGATION_STATE_ASCENT) or
 					(navigation == USEA_NAVIGATION_STATE_ASCENT_1) or
 					(navigation == USEA_NAVIGATION_STATE_ASCENT_2) or
-					(navigation == USEA_NAVIGATION_STATE_ASCENT_3) or
-					(navigation == USEA_NAVIGATION_STATE_SUB_SURFACE)):
-					# Recording period
-					if   pressure > 1000.0: record_period = 30.0  # noqa: E203,E222,E271,E701
-					elif pressure >  300.0: record_period = 10.0  # noqa: E203,E222,E271,E701
-					elif pressure >  100.0: record_period =  2.0  # noqa: E203,E222,E271,E701
-					elif pressure >    2.0: record_period =  1.0  # noqa: E203,E222,E271,E701
-					else                  : record_period = 20.0  # noqa: E203,E222,E271,E701
+					(navigation == USEA_NAVIGATION_STATE_ASCENT_3)):
 					# Base time count
 					if self._timer.is_tick():
 						# Acquisition in progress
 						self.set_state(USEA_USER_STEP_SAMPLE)
 						# Acquire
 						if self.acquire_sample():
-							# Recording period management
-							if self.output.timestamp >= timestamp_record + record_period:
-								# Update record timestamp
-								timestamp_record = self.output.timestamp
-								# Store data
-								with open(file_name, "a") as file:
-									if SENSO_OUTPUT_PHY_3:
-										file.write(
-											f"{self.output.timestamp:.1f}" + ";" +
-											f"{self.output.pressure:.2f}" + ";" +
-											f"{self.output.channel1:.3f}" + ";" +
-											f"{self.output.channel2:.3f}" + ";" +
-											f"{self.output.channel3:.3f}" + "\n")
-									elif SENSO_OUTPUT_RAW_50:
-										file.write(f"{self.output.pressure:.2f}" + ";")
-										for i in range(16):
-											file.write(str(self.output.channels_a[i]) + ";")
-										file.write(
-											f"{self.output.channel_b1:.1f}" + ";" +
-											f"{self.output.channel_b2:.1f}" + ";" +
-											f"{self.output.channel_b3:.1f}" + "\n")
+							# Store data
+							with open(file_name, "a") as file:
+								file.write(
+									f"{self.output.timestamp:.1f}" + ";" +
+									f"{self.output.pressure:.2f}" + ";" +
+									f"{self.output.channel1:.3f}" + ";" +
+									f"{self.output.channel2:.3f}" + ";" +
+									f"{self.output.channel3:.3f}" + "\n")
 						# Acquisition finished
 						self.set_state(USEA_USER_STEP_RECORD)
 					# Wait
@@ -494,18 +355,10 @@ def manager(self):
 						time.sleep(0.1)
 				# Other
 				else:
-					# Get stopping date
-					now = datetime.datetime.now()
-					stop_date = now.strftime("%d/%m/%y %H:%M:%S\n")
-					# Save start and stop dates
-					with open(file_name, "a") as file:
-						file.write(start_date + stop_date)
 					# Print
 					trace_log("SENSO    > Stop acquisition")
 					# Stop recording
 					self.set_state(USEA_USER_STEP_SURFACE)
-					# Power-off
-					self._io_power.set_off()
 
 			# Surface
 			elif self._step == USEA_USER_STEP_SURFACE:
@@ -515,9 +368,7 @@ def manager(self):
 					(navigation == USEA_NAVIGATION_STATE_SURFACE_ACQUISITION)):
 					time.sleep(0.1)
 				# Treatment step
-				elif (
-					(navigation == USEA_NAVIGATION_STATE_DATA_PROCESSING) or
-					(navigation == USEA_NAVIGATION_STATE_GPS)):
+				elif navigation == USEA_NAVIGATION_STATE_DATA_PROCESSING:
 					# Print
 					trace_log("SENSO    > Processing")
 					# Start processing
@@ -539,6 +390,8 @@ def manager(self):
 		except KeyboardInterrupt:
 			# Trace
 			trace_log("SENSO    > Deactivate")
+			# Stop recording
+			self.set_state(USEA_USER_STEP_IDLE)
 			# Stop
 			self._stop = True
 			# Power-off

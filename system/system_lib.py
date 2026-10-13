@@ -6,8 +6,8 @@
 
 __authors__ = "Christophe SCHAEFFER"
 __copyright__ = "nke Instrumentation"
-__date__ = "2026-07-03"
-__version__ = "1.0.2"
+__date__ = "2026-09-30"
+__version__ = "1.0.3"
 
 # Standard libraries
 import os
@@ -279,6 +279,8 @@ class DriverSystem:
 			cmd = "sudo gpioget " + name
 			cmd_result = subprocess.run(cmd.split(), capture_output=True)
 			split = cmd_result.stdout.decode().split()
+			if not split:
+				return False
 			result = split[0]
 		else:
 			result = "1"
